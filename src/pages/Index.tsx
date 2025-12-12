@@ -59,7 +59,7 @@ const Index = () => {
         {/* Left column: Graph + Table */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Graph */}
-          <div className="flex-1 min-h-[200px] p-3 border-b border-border">
+          <div className="h-[280px] shrink-0 p-3 border-b border-border">
             <TopologyVisualization
               nodes={mockNodes}
               edges={mockEdges}
