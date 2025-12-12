@@ -60,14 +60,14 @@ export const ChatInterface = ({ onSendMessage, isProcessing }: ChatInterfaceProp
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full border-t border-border bg-background-deep">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+    <div className="flex flex-col border-t border-border bg-muted/30">
+      {/* Messages - compact */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-2 max-h-[100px]">
         <AnimatePresence>
-          {messages.map((msg) => (
+          {messages.slice(-2).map((msg) => (
             <motion.div
               key={msg.id}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn(
                 "flex",
@@ -76,7 +76,7 @@ export const ChatInterface = ({ onSendMessage, isProcessing }: ChatInterfaceProp
             >
               <div
                 className={cn(
-                  "max-w-[80%] px-3 py-2 rounded-lg text-sm",
+                  "max-w-[85%] px-3 py-1.5 rounded-lg text-sm",
                   msg.role === 'user'
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-foreground"
@@ -100,9 +100,9 @@ export const ChatInterface = ({ onSendMessage, isProcessing }: ChatInterfaceProp
               onChange={(e) => setInput(e.target.value)}
               placeholder="Задайте вопрос или уточните отчёт..."
               disabled={isProcessing}
-              className="w-full px-4 py-2.5 pr-10 rounded-lg bg-muted border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+              className="w-full px-3 py-2 pr-10 rounded-md bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
             />
-            <Sparkles className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/50" />
+            <Sparkles className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           </div>
           <Button
             type="submit"
@@ -118,7 +118,7 @@ export const ChatInterface = ({ onSendMessage, isProcessing }: ChatInterfaceProp
           </Button>
         </div>
         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-          <span className="px-2 py-0.5 rounded bg-muted">Chat Mode</span>
+          <span className="px-1.5 py-0.5 rounded bg-muted text-[10px]">Chat Mode</span>
           <span>Поиск по 165K статей</span>
         </div>
       </form>
