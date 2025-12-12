@@ -36,7 +36,7 @@ const Index = () => {
   return (
     <div className="h-screen w-full flex overflow-hidden bg-background">
       {/* Left Panel: Report + Chat */}
-      <div className="w-[480px] flex flex-col border-r border-border min-w-0 shrink-0">
+      <div className="w-[560px] flex flex-col border-r border-border min-w-0 shrink-0">
         {/* Report */}
         <div className="flex-1 min-h-0 overflow-hidden">
           <ReportPanel
@@ -70,8 +70,8 @@ const Index = () => {
             />
           </div>
 
-          {/* Table - smaller */}
-          <div className="h-[200px] shrink-0 overflow-hidden">
+          {/* Table */}
+          <div className="flex-1 min-h-0 overflow-auto">
             <EvidenceGrid
               nodes={mockNodes}
               dimensions={mockDimensions}
