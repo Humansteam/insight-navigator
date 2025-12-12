@@ -36,7 +36,7 @@ const Index = () => {
   return (
     <div className="h-screen w-full flex overflow-hidden bg-background">
       {/* Left Panel: Report + Chat */}
-      <div className="w-[520px] flex flex-col border-r border-border min-w-0 shrink-0">
+      <div className="w-[480px] flex flex-col border-r border-border min-w-0 shrink-0">
         {/* Report */}
         <div className="flex-1 min-h-0 overflow-hidden">
           <ReportPanel
@@ -54,22 +54,33 @@ const Index = () => {
         />
       </div>
 
-      {/* Center Panel: Visualization + Table */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-border">
-        {/* Topology Visualization */}
-        <div className="h-[45%] min-h-[280px] p-3 pb-0">
-          <TopologyVisualization
-            nodes={mockNodes}
-            edges={mockEdges}
-            selectedNodeId={selectedNodeId}
-            onSelectNode={setSelectedNodeId}
-            hoveredNodeId={hoveredNodeId}
-            onHoverNode={setHoveredNodeId}
-          />
+      {/* Right Panel: 4 blocks */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top row: Graph + Details */}
+        <div className="flex h-[45%] min-h-[280px] border-b border-border">
+          {/* Block 1: Graph */}
+          <div className="flex-1 p-3 min-w-0">
+            <TopologyVisualization
+              nodes={mockNodes}
+              edges={mockEdges}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={setSelectedNodeId}
+              hoveredNodeId={hoveredNodeId}
+              onHoverNode={setHoveredNodeId}
+            />
+          </div>
+
+          {/* Block 2: Details / Notes */}
+          <div className="w-[300px] shrink-0 border-l border-border">
+            <DynamicContext
+              node={selectedNode}
+              onClose={() => setSelectedNodeId(null)}
+            />
+          </div>
         </div>
 
-        {/* Evidence Grid */}
-        <div className="flex-1 min-h-0">
+        {/* Bottom: Table - full width */}
+        <div className="flex-1 min-h-0 overflow-hidden">
           <EvidenceGrid
             nodes={mockNodes}
             dimensions={mockDimensions}
@@ -79,14 +90,6 @@ const Index = () => {
             onHoverNode={setHoveredNodeId}
           />
         </div>
-      </div>
-
-      {/* Right Panel: Dynamic Context Details */}
-      <div className="w-[320px] shrink-0">
-        <DynamicContext
-          node={selectedNode}
-          onClose={() => setSelectedNodeId(null)}
-        />
       </div>
     </div>
   );
