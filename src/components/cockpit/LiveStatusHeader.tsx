@@ -69,48 +69,67 @@ export const LiveStatusHeader = ({ pipelineStages, queryTags, dimensions }: Live
         ))}
       </div>
 
-      {/* Pipeline Progress */}
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">Pipeline:</span>
-          <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-primary to-primary-glow"
-              initial={{ width: 0 }}
-              animate={{ 
-                width: `${(pipelineStages.filter(s => s.status === 'complete').length / pipelineStages.length) * 100}%` 
-              }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between gap-1">
+      {/* Pipeline Progress - Step Indicator */}
+      <div className="relative">
+        <div className="flex items-center justify-between">
           {pipelineStages.map((stage, i) => {
-            const Icon = stageIcons[stage.id] || Circle;
             const isActive = stage.status === 'running';
             const isComplete = stage.status === 'complete';
+            const isLast = i === pipelineStages.length - 1;
             
             return (
-              <motion.div
-                key={stage.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className={cn(
-                  "flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono",
-                  isActive && "bg-primary/10 text-primary",
-                  isComplete && "text-success",
-                  !isActive && !isComplete && "text-muted-foreground/50"
+              <div key={stage.id} className="flex items-center flex-1 last:flex-none">
+                {/* Stage Node */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: i * 0.1, type: 'spring', stiffness: 300 }}
+                  className="flex flex-col items-center gap-1.5"
+                >
+                  {/* Dot */}
+                  <div className={cn(
+                    "w-3 h-3 rounded-full border-2 transition-all duration-300",
+                    isComplete && "bg-primary border-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]",
+                    isActive && "bg-background border-primary animate-pulse shadow-[0_0_12px_hsl(var(--primary)/0.6)]",
+                    !isActive && !isComplete && "bg-muted border-muted-foreground/30"
+                  )}>
+                    {isActive && (
+                      <motion.div
+                        className="w-full h-full rounded-full bg-primary"
+                        animate={{ scale: [0.5, 1, 0.5], opacity: [0.5, 1, 0.5] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      />
+                    )}
+                  </div>
+                  
+                  {/* Label */}
+                  <div className={cn(
+                    "text-[10px] font-medium text-center whitespace-nowrap",
+                    isComplete && "text-primary",
+                    isActive && "text-primary",
+                    !isActive && !isComplete && "text-muted-foreground/50"
+                  )}>
+                    {stage.name}
+                    {stage.progress !== undefined && isActive && (
+                      <span className="text-primary/70 ml-1">{stage.progress}%</span>
+                    )}
+                  </div>
+                </motion.div>
+
+                {/* Connector Line */}
+                {!isLast && (
+                  <div className="flex-1 h-0.5 mx-2 bg-muted-foreground/20 relative overflow-hidden">
+                    <motion.div
+                      className="absolute inset-y-0 left-0 bg-primary"
+                      initial={{ width: 0 }}
+                      animate={{ 
+                        width: isComplete ? '100%' : isActive ? '50%' : '0%' 
+                      }}
+                      transition={{ duration: 0.5, ease: 'easeOut' }}
+                    />
+                  </div>
                 )}
-              >
-                <Icon className={cn("w-3.5 h-3.5", isActive && "animate-pulse")} />
-                <span className="hidden sm:inline">{stage.name}</span>
-                {getStatusIcon(stage.status)}
-                {stage.progress !== undefined && stage.status === 'running' && (
-                  <span className="text-[10px] text-primary/70">{stage.progress}%</span>
-                )}
-              </motion.div>
+              </div>
             );
           })}
         </div>
