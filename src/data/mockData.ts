@@ -15,167 +15,147 @@ export const mockQueryTags: QueryTag[] = [
   { label: 'Synthesis Methods', type: 'method' },
 ];
 
-export const mockDimensions = ['Temperature', 'Yield', 'Efficiency', 'Cost', 'Stability'];
+export const mockDimensions = ['Key Findings', 'Methodology', 'Quantitative Results', 'Applications', 'Limitations'];
 
 export const mockNodes: DataNode[] = [
   {
     id: 'paper-001',
-    title: 'High-Efficiency Perovskite Solar Cells via Sequential Deposition',
+    title: 'Industrial-Scale Direct Lithium Extraction from Brines',
     umap_x: 0.25,
     umap_y: 0.72,
-    cluster_label: 'Synthesis Methods',
+    cluster_label: 'Industrial Lithium Processing',
     country: 'china',
     score: 0.94,
-    year: 2023,
+    year: 2024,
     authors: ['Zhang, W.', 'Liu, H.', 'Chen, X.'],
-    abstract: 'We demonstrate a novel sequential deposition method for high-efficiency perovskite solar cells achieving 25.7% power conversion efficiency under standard test conditions.',
+    abstract: 'A membrane-based DLE system achieving 95% lithium recovery rate at industrial scale with reduced water consumption.',
     citations: 187,
     dimensions: {
-      'Temperature': { value: '150°C', confidence: 'high' },
-      'Yield': { value: '95%', confidence: 'high' },
-      'Efficiency': { value: '25.7%', confidence: 'high' },
-      'Cost': { value: '$0.25/W', confidence: 'med' },
-      'Stability': { value: '1000h @ 85°C', confidence: 'high' },
+      'Key Findings': { value: 'A membrane-based DLE system...', confidence: 'high' },
+      'Methodology': { value: 'Membrane-based DLE system', confidence: 'high' },
+      'Quantitative Results': { value: '95% lithium recovery rate at...', confidence: 'high' },
+      'Applications': { value: 'Reduces water consumption by...', confidence: 'high' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
   {
     id: 'paper-002',
-    title: 'Scalable Manufacturing of Tandem Solar Modules',
+    title: 'High-Nickel Cathode Manufacturing Optimization',
     umap_x: 0.31,
     umap_y: 0.68,
-    cluster_label: 'Manufacturing',
+    cluster_label: 'Industrial Lithium Processing',
     country: 'china',
     score: 0.89,
     year: 2024,
     authors: ['Wang, L.', 'Li, M.'],
-    abstract: 'This work presents a roll-to-roll manufacturing process for perovskite-silicon tandem modules with 28.3% efficiency.',
+    abstract: 'NCM811 cathode production yield improvements through real-time AI monitoring systems.',
     citations: 64,
     dimensions: {
-      'Temperature': { value: '120°C', confidence: 'high' },
-      'Yield': { value: '87%', confidence: 'med' },
-      'Efficiency': { value: '28.3%', confidence: 'high' },
-      'Cost': { value: '$0.18/W', confidence: 'low' },
-      'Stability': { value: '500h @ 85°C', confidence: 'med' },
+      'Key Findings': { value: 'NCM811 cathode production yield...', confidence: 'high' },
+      'Methodology': { value: 'real-time AI monitoring', confidence: 'high' },
+      'Quantitative Results': { value: 'Energy consumption reduced by 25%', confidence: 'high' },
+      'Applications': { value: '—', confidence: 'low' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
   {
     id: 'paper-003',
-    title: 'Interface Engineering for Enhanced Carrier Transport',
+    title: 'Closed-Loop Battery Recycling: From End-of-Life to New Cells',
     umap_x: 0.72,
     umap_y: 0.45,
-    cluster_label: 'Interface Studies',
+    cluster_label: 'Industrial Lithium Processing',
     country: 'usa',
     score: 0.91,
     year: 2023,
     authors: ['Smith, J.', 'Johnson, R.', 'Williams, K.'],
-    abstract: 'We report on interface engineering strategies that significantly enhance carrier transport in perovskite solar cells.',
+    abstract: 'Our hydrometallurgical process achieves 99.2% Li, 98.8% Co, 97.5% Ni recovery with cost optimization.',
     citations: 142,
     dimensions: {
-      'Temperature': { value: '100°C', confidence: 'high' },
-      'Yield': { value: '92%', confidence: 'high' },
-      'Efficiency': { value: '24.8%', confidence: 'high' },
-      'Cost': { value: '$0.32/W', confidence: 'med' },
-      'Stability': { value: '2000h @ 65°C', confidence: 'high' },
+      'Key Findings': { value: 'Our hydrometallurgical...', confidence: 'high' },
+      'Methodology': { value: 'hydrometallurgical process', confidence: 'high' },
+      'Quantitative Results': { value: '99.2% Li, 98.8% Co, 97.5% Ni, cost...', confidence: 'high' },
+      'Applications': { value: 'recycling of spent batteries to produ...', confidence: 'low' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
   {
     id: 'paper-004',
-    title: 'Mixed-Halide Perovskites for Bandgap Tuning',
+    title: 'Solid-State Electrolyte Discovery via High-Throughput Screening',
     umap_x: 0.68,
     umap_y: 0.52,
-    cluster_label: 'Material Design',
+    cluster_label: 'Solid-State Electrolytes',
     country: 'usa',
     score: 0.87,
     year: 2024,
     authors: ['Davis, M.', 'Brown, A.'],
-    abstract: 'Investigation of mixed-halide compositions for precise bandgap engineering in perovskite absorbers.',
+    abstract: '12 novel sulfide electrolytes with ionic conductivity exceeding 10 mS/cm identified via ML screening.',
     citations: 89,
     dimensions: {
-      'Temperature': { value: '180°C', confidence: 'med' },
-      'Yield': { value: '78%', confidence: 'low' },
-      'Efficiency': { value: '23.1%', confidence: 'high' },
-      'Cost': { value: '$0.45/W', confidence: 'low' },
-      'Stability': { value: '800h @ 85°C', confidence: 'med' },
+      'Key Findings': { value: '12 novel sulfide electrolytes with...', confidence: 'high' },
+      'Methodology': { value: 'Machine learning screening of...', confidence: 'high' },
+      'Quantitative Results': { value: '100,000 compounds and 12 novel sulfi...', confidence: 'high' },
+      'Applications': { value: '—', confidence: 'low' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
   {
     id: 'paper-005',
-    title: 'Lead-Free Perovskite Alternatives: Tin-Based Systems',
+    title: 'Understanding Lithium Dendrite Formation Using In-Situ TEM',
     umap_x: 0.45,
     umap_y: 0.28,
-    cluster_label: 'Alternative Materials',
+    cluster_label: 'Solid-State Electrolytes',
     country: 'europe',
     score: 0.82,
     year: 2023,
     authors: ['Müller, S.', 'Schmidt, T.', 'Weber, F.'],
-    abstract: 'Comprehensive study on tin-based perovskite alternatives for environmentally sustainable photovoltaics.',
+    abstract: 'Direct observation of dendrite nucleation mechanism at solid electrolyte interfaces.',
     citations: 112,
     dimensions: {
-      'Temperature': { value: '90°C', confidence: 'high' },
-      'Yield': { value: '72%', confidence: 'med' },
-      'Efficiency': { value: '14.2%', confidence: 'high' },
-      'Cost': { value: '$0.55/W', confidence: 'med' },
-      'Stability': { value: '300h @ 65°C', confidence: 'high' },
+      'Key Findings': { value: 'dendrite nucleation mechanism', confidence: 'high' },
+      'Methodology': { value: 'In-Situ TEM', confidence: 'high' },
+      'Quantitative Results': { value: '0.5 mA/cm²', confidence: 'high' },
+      'Applications': { value: '—', confidence: 'low' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
   {
     id: 'paper-006',
-    title: 'Defect Passivation Using 2D/3D Heterostructures',
+    title: 'Lithium Metal Anode Stabilization via Artificial SEI',
     umap_x: 0.52,
     umap_y: 0.35,
-    cluster_label: 'Defect Engineering',
+    cluster_label: 'Solid-State Electrolytes',
     country: 'europe',
     score: 0.93,
     year: 2024,
     authors: ['García, P.', 'Martin, C.'],
-    abstract: 'Novel 2D/3D heterostructure approach for effective defect passivation in high-efficiency devices.',
+    abstract: 'LiF-rich artificial SEI enables 500 cycles at 99.2% Coulombic efficiency.',
     citations: 156,
     dimensions: {
-      'Temperature': { value: '110°C', confidence: 'high' },
-      'Yield': { value: '91%', confidence: 'high' },
-      'Efficiency': { value: '26.1%', confidence: 'high' },
-      'Cost': { value: '$0.28/W', confidence: 'high' },
-      'Stability': { value: '1500h @ 85°C', confidence: 'high' },
+      'Key Findings': { value: 'LiF-rich artificial SEI enables 500 cycle...', confidence: 'high' },
+      'Methodology': { value: 'LiF-rich artificial SEI', confidence: 'high' },
+      'Quantitative Results': { value: '500 cycles at 99.2% Coulombic...', confidence: 'high' },
+      'Applications': { value: 'No dendrite formation observe...', confidence: 'high' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
   {
     id: 'paper-007',
-    title: 'Accelerated Stability Testing Protocols',
+    title: 'All-Solid-State Battery with Sulfide Electrolyte: 500 Wh/kg',
     umap_x: 0.15,
     umap_y: 0.55,
-    cluster_label: 'Testing Methods',
+    cluster_label: 'Solid-State Electrolytes',
     country: 'china',
     score: 0.78,
-    year: 2023,
+    year: 2024,
     authors: ['Zhao, Y.', 'Yang, J.'],
-    abstract: 'Standardized accelerated testing protocols for predicting long-term stability of perovskite modules.',
+    abstract: 'Use of argyrodite Li6PS5Cl electrolyte enables 500 Wh/kg energy density with fast charging capability.',
     citations: 78,
     dimensions: {
-      'Temperature': { value: '85°C', confidence: 'high' },
-      'Yield': { value: 'N/A', confidence: 'low' },
-      'Efficiency': { value: 'N/A', confidence: 'low' },
-      'Cost': { value: 'N/A', confidence: 'low' },
-      'Stability': { value: '5000h protocol', confidence: 'high' },
-    },
-  },
-  {
-    id: 'paper-008',
-    title: 'Machine Learning for Process Optimization',
-    umap_x: 0.82,
-    umap_y: 0.75,
-    cluster_label: 'AI/ML Methods',
-    country: 'usa',
-    score: 0.86,
-    year: 2024,
-    authors: ['Anderson, T.', 'Lee, S.'],
-    abstract: 'Application of machine learning algorithms for optimizing perovskite deposition parameters.',
-    citations: 95,
-    dimensions: {
-      'Temperature': { value: '140°C (optimal)', confidence: 'high' },
-      'Yield': { value: '89%', confidence: 'med' },
-      'Efficiency': { value: '24.5%', confidence: 'high' },
-      'Cost': { value: '$0.22/W', confidence: 'med' },
-      'Stability': { value: '1200h @ 85°C', confidence: 'med' },
+      'Key Findings': { value: '500 Wh/kg energy density achieved', confidence: 'high' },
+      'Methodology': { value: 'Use of argyrodite Li6PS5Cl electrolyte', confidence: 'high' },
+      'Quantitative Results': { value: '500 Wh/kg', confidence: 'high' },
+      'Applications': { value: 'Fast charging capability...', confidence: 'high' },
+      'Limitations': { value: '—', confidence: 'low' },
     },
   },
 ];
@@ -185,11 +165,11 @@ export const mockEdges: DataEdge[] = [
   { source_id: 'paper-001', target_id: 'paper-007', weight: 0.62 },
   { source_id: 'paper-002', target_id: 'paper-007', weight: 0.71 },
   { source_id: 'paper-003', target_id: 'paper-004', weight: 0.78 },
-  { source_id: 'paper-003', target_id: 'paper-008', weight: 0.65 },
+  { source_id: 'paper-003', target_id: 'paper-006', weight: 0.65 },
   { source_id: 'paper-004', target_id: 'paper-005', weight: 0.55 },
   { source_id: 'paper-005', target_id: 'paper-006', weight: 0.82 },
   { source_id: 'paper-006', target_id: 'paper-003', weight: 0.68 },
-  { source_id: 'paper-008', target_id: 'paper-001', weight: 0.59 },
+  { source_id: 'paper-007', target_id: 'paper-001', weight: 0.59 },
 ];
 
 export const mockSessions: AnalysisSession[] = [
@@ -208,35 +188,45 @@ export const mockDivergence: DivergenceMetric = {
 
 export const mockReportText = `## Executive Summary
 
-The analysis of **165,432 scientific articles** reveals significant divergence in perovskite solar cell research between major geopolitical regions. China leads in manufacturing scalability [[paper-001]] [[paper-002]], while the United States demonstrates advantages in fundamental materials science [[paper-003]] [[paper-004]].
+The analysis of **165,432 scientific articles** reveals significant divergence in lithium battery research between major geopolitical regions. China leads in manufacturing scalability [[paper-001]] [[paper-002]], while the United States demonstrates advantages in fundamental materials science [[paper-003]] [[paper-004]].
 
 ## Key Findings by Dimension
 
-### Temperature Processing
-Chinese research clusters around **lower processing temperatures** (90-150°C), optimizing for energy efficiency in manufacturing [[paper-001]]. US approaches favor slightly higher temperatures (100-180°C) with emphasis on crystallinity control [[paper-004]].
+### Industrial Processing
+Chinese research clusters around **high-efficiency extraction methods** with membrane-based DLE systems achieving 95% lithium recovery [[paper-001]]. Manufacturing optimization through AI monitoring shows 25% energy reduction [[paper-002]].
 
-### Efficiency Metrics
-The highest reported efficiencies emerge from **2D/3D heterostructure** approaches developed in European labs, achieving **26.1%** [[paper-006]]. Chinese sequential deposition methods follow closely at **25.7%** [[paper-001]].
+### Recycling Technologies
+The highest recovery rates emerge from **hydrometallurgical processes** developed in US labs, achieving **99.2% Li, 98.8% Co** recovery [[paper-003]]. European standardized approaches focus on process sustainability [[paper-005]].
 
-### Stability Concerns
-A critical **conflict** exists in stability data:
-- Chinese protocols report **1000-1500h** at 85°C [[paper-001]] [[paper-002]]
-- European standardized testing suggests **longer protocols needed** [[paper-005]]
+### Solid-State Advances
+A critical **breakthrough** exists in solid-state technology:
+- Chinese protocols report **500 Wh/kg** energy density [[paper-007]]
+- European artificial SEI enables **500 cycles at 99.2% efficiency** [[paper-006]]
 
-### Cost Analysis
-Manufacturing cost estimates vary significantly by region:
-| Region | Cost Range | Confidence |
-|--------|-----------|------------|
-| China | $0.18-0.25/W | Medium |
-| USA | $0.32-0.45/W | Low |
-| Europe | $0.28-0.55/W | Medium |
+### Novel Materials Discovery
+ML screening identifies 12 novel sulfide electrolytes [[paper-004]] with ionic conductivity >10 mS/cm.
 
 ## Strategic Recommendations
 
 1. **Monitor Chinese manufacturing advances** - Scale advantages widening
-2. **Invest in interface engineering** - US fundamental research yielding efficiency gains
-3. **Prioritize stability standardization** - Current metrics not comparable across regions
-4. **Consider lead-free alternatives** - Regulatory pressure increasing [[paper-005]]
+2. **Invest in solid-state technology** - Breakthrough energy densities achieved
+3. **Prioritize recycling infrastructure** - High recovery rates demonstrated
+4. **Consider ML-driven discovery** - Accelerated materials screening
 
 ---
 *Analysis confidence: **High** | Papers analyzed: 165,432 | Last updated: 2024-12-12*`;
+
+export const mockSearchQueries = [
+  'Основные подходы к производству литиевых батарей в Китае',
+  'Как изменилось производство электролитов за последние 5 лет',
+  'Какие материалы используются в solid-state батареях',
+  'Какие показатели эффективности характерны для DLE систем',
+];
+
+export const mockExtractionDimensions = [
+  'Key Findings',
+  'Methodology', 
+  'Quantitative Results',
+  'Applications',
+  'Limitations',
+];
