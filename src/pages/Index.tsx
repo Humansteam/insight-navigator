@@ -1,30 +1,31 @@
 import { useState, useMemo } from 'react';
-import { LeftSidebar } from '@/components/cockpit/LeftSidebar';
-import { LiveStatusHeader } from '@/components/cockpit/LiveStatusHeader';
-import { TopologyWidget } from '@/components/cockpit/TopologyWidget';
-import { EvidenceGrid } from '@/components/cockpit/EvidenceGrid';
-import { StrategicReport } from '@/components/cockpit/StrategicReport';
-import { ContextDetails } from '@/components/cockpit/ContextDetails';
-import {
-  mockPipelineStages,
-  mockQueryTags,
-  mockDimensions,
-  mockNodes,
-  mockDivergence,
-  mockSessions,
-  mockReportText,
-} from '@/data/mockData';
+import { AnimatePresence } from 'framer-motion';
+import { ChatInterface } from '@/components/cockpit/ChatInterface';
+import { ReportPanel } from '@/components/cockpit/ReportPanel';
+import { NetworkGraph } from '@/components/cockpit/NetworkGraph';
+import { PaperDetails } from '@/components/cockpit/PaperDetails';
+import { mockNodes, mockEdges, mockReportText } from '@/data/mockData';
+import { Zap } from 'lucide-react';
 
 const Index = () => {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>('sess-001');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [reportText, setReportText] = useState(mockReportText);
+  const [isGenerating, setIsGenerating] = useState(true);
 
   const selectedNode = useMemo(
     () => mockNodes.find((n) => n.id === selectedNodeId) || null,
     [selectedNodeId]
   );
+
+  const handleSendMessage = (message: string) => {
+    setIsProcessing(true);
+    // Simulate processing
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 2000);
+  };
 
   const handleCitationHover = (paperId: string | null) => {
     setHoveredNodeId(paperId);
@@ -36,70 +37,63 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full flex overflow-hidden bg-background">
-      {/* Left Sidebar */}
-      <LeftSidebar
-        sessions={mockSessions}
-        activeSessionId={activeSessionId}
-        onSelectSession={setActiveSessionId}
-        onNewAnalysis={() => console.log('New analysis')}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
+      {/* Left Panel: Chat + Report */}
+      <div className="w-1/2 flex flex-col border-r border-border min-w-0">
+        {/* Header */}
+        <header className="h-12 border-b border-border flex items-center px-4 shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded bg-primary/20 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-primary" />
+            </div>
+            <span className="font-semibold text-sm text-foreground tracking-tight">MORPHIK</span>
+          </div>
+          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="px-2 py-0.5 rounded bg-muted font-mono">165,432 статей</span>
+          </div>
+        </header>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex min-w-0">
-        {/* Center Feed */}
-        <main className="flex-1 min-w-0 overflow-y-auto p-4 space-y-4">
-          {/* Live Status Header */}
-          <LiveStatusHeader
-            pipelineStages={mockPipelineStages}
-            queryTags={mockQueryTags}
-            dimensions={mockDimensions}
+        {/* Report */}
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <ReportPanel
+            markdown={reportText}
+            isGenerating={isGenerating}
+            onCitationHover={handleCitationHover}
+            onCitationClick={handleCitationClick}
           />
+        </div>
 
-          {/* Evidence Grid */}
-          <EvidenceGrid
+        {/* Chat */}
+        <div className="h-[200px] shrink-0">
+          <ChatInterface
+            onSendMessage={handleSendMessage}
+            isProcessing={isProcessing}
+          />
+        </div>
+      </div>
+
+      {/* Right Panel: Graph + Details */}
+      <div className="w-1/2 flex flex-col p-4 gap-4 min-w-0">
+        {/* Network Graph */}
+        <div className="flex-1 min-h-0">
+          <NetworkGraph
             nodes={mockNodes}
-            dimensions={mockDimensions}
+            edges={mockEdges}
             selectedNodeId={selectedNodeId}
             onSelectNode={setSelectedNodeId}
             hoveredNodeId={hoveredNodeId}
             onHoverNode={setHoveredNodeId}
           />
+        </div>
 
-          {/* Strategic Report */}
-          <StrategicReport
-            markdown={mockReportText}
-            onCitationHover={handleCitationHover}
-            onCitationClick={handleCitationClick}
-          />
-        </main>
-
-        {/* Right Context Panel */}
-        <aside className="w-[420px] shrink-0 border-l border-border p-4 flex flex-col gap-4 overflow-hidden">
-          {/* Topology Widget */}
-          <div className="h-[45%] min-h-[280px]">
-            <TopologyWidget
-              nodes={mockNodes}
-              divergence={mockDivergence}
-              selectedNodeId={selectedNodeId}
-              onSelectNode={setSelectedNodeId}
-              hoveredNodeId={hoveredNodeId}
-              onHoverNode={setHoveredNodeId}
-            />
-          </div>
-
-          {/* Context Details */}
-          <div className="flex-1 min-h-0">
-            <ContextDetails
-              selectedNode={selectedNode}
+        {/* Paper Details */}
+        <AnimatePresence>
+          {selectedNode && (
+            <PaperDetails
+              node={selectedNode}
               onClose={() => setSelectedNodeId(null)}
-              totalPapers={165432}
-              velocityScore={87}
-              growthRate={23}
             />
-          </div>
-        </aside>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
