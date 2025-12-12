@@ -54,12 +54,12 @@ const Index = () => {
         />
       </div>
 
-      {/* Right Panel: 4 blocks */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Top row: Graph + Details */}
-        <div className="flex h-[45%] min-h-[280px] border-b border-border">
-          {/* Block 1: Graph */}
-          <div className="flex-1 p-3 min-w-0">
+      {/* Right Panel: Graph/Table + Details */}
+      <div className="flex-1 flex min-w-0 overflow-hidden">
+        {/* Left column: Graph + Table */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Graph */}
+          <div className="flex-1 min-h-[200px] p-3 border-b border-border">
             <TopologyVisualization
               nodes={mockNodes}
               edges={mockEdges}
@@ -70,24 +70,24 @@ const Index = () => {
             />
           </div>
 
-          {/* Block 2: Details / Notes */}
-          <div className="w-[300px] shrink-0 border-l border-border">
-            <DynamicContext
-              node={selectedNode}
-              onClose={() => setSelectedNodeId(null)}
+          {/* Table - smaller */}
+          <div className="h-[200px] shrink-0 overflow-hidden">
+            <EvidenceGrid
+              nodes={mockNodes}
+              dimensions={mockDimensions}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={setSelectedNodeId}
+              hoveredNodeId={hoveredNodeId}
+              onHoverNode={setHoveredNodeId}
             />
           </div>
         </div>
 
-        {/* Bottom: Table - full width */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <EvidenceGrid
-            nodes={mockNodes}
-            dimensions={mockDimensions}
-            selectedNodeId={selectedNodeId}
-            onSelectNode={setSelectedNodeId}
-            hoveredNodeId={hoveredNodeId}
-            onHoverNode={setHoveredNodeId}
+        {/* Right column: Details - full height */}
+        <div className="w-[320px] shrink-0 border-l border-border">
+          <DynamicContext
+            node={selectedNode}
+            onClose={() => setSelectedNodeId(null)}
           />
         </div>
       </div>
