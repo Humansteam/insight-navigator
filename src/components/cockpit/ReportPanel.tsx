@@ -159,14 +159,61 @@ export const ReportPanel = ({
         </div>
       </div>
 
-      {/* Live Progress */}
-      <div className="px-4 py-2 border-b border-border bg-muted/30">
-        <div className="text-xs text-muted-foreground mb-1">Live Progress</div>
-        <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-          <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: '85%' }} />
-        </div>
-        <div className="text-[10px] text-muted-foreground mt-1">
-          Planner: Defined Dimensions → Retriever: {totalPapers} Papers Found → Extraction: 85% Complete → Synthesis: In Progress...
+      {/* Live Progress - Step Indicator */}
+      <div className="px-4 py-3 border-b border-border bg-muted/30">
+        <div className="text-xs text-muted-foreground mb-3">Live Progress</div>
+        
+        {/* Steps */}
+        <div className="flex items-center justify-between">
+          {[
+            { name: 'Planner', status: 'complete', detail: 'Defined Dimensions' },
+            { name: 'Retriever', status: 'complete', detail: `${totalPapers} Papers Found` },
+            { name: 'Extraction', status: 'active', detail: '85% Complete' },
+            { name: 'Synthesis', status: 'pending', detail: 'In Progress...' },
+          ].map((step, i, arr) => (
+            <div key={step.name} className="flex items-center flex-1 last:flex-none">
+              {/* Step Node */}
+              <div className="flex flex-col items-center gap-1">
+                {/* Dot */}
+                <div className={cn(
+                  "w-2.5 h-2.5 rounded-full transition-all duration-300",
+                  step.status === 'complete' && "bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]",
+                  step.status === 'active' && "bg-primary animate-pulse shadow-[0_0_10px_hsl(var(--primary)/0.6)]",
+                  step.status === 'pending' && "bg-muted-foreground/30"
+                )} />
+                
+                {/* Label */}
+                <div className={cn(
+                  "text-[10px] font-medium whitespace-nowrap",
+                  step.status === 'complete' && "text-primary",
+                  step.status === 'active' && "text-primary",
+                  step.status === 'pending' && "text-muted-foreground/50"
+                )}>
+                  {step.name}
+                </div>
+                <div className={cn(
+                  "text-[9px] whitespace-nowrap",
+                  step.status === 'pending' ? "text-muted-foreground/40" : "text-muted-foreground"
+                )}>
+                  {step.detail}
+                </div>
+              </div>
+
+              {/* Connector Line */}
+              {i < arr.length - 1 && (
+                <div className="flex-1 h-0.5 mx-2 bg-muted-foreground/20 relative overflow-hidden self-start mt-1">
+                  <div 
+                    className={cn(
+                      "absolute inset-y-0 left-0 bg-primary transition-all duration-500",
+                      step.status === 'complete' && "w-full",
+                      step.status === 'active' && "w-1/2",
+                      step.status === 'pending' && "w-0"
+                    )}
+                  />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
