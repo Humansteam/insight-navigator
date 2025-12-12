@@ -159,32 +159,41 @@ export const ReportPanel = ({
         </div>
       </div>
 
-      {/* Live Progress - Step Indicator */}
+      {/* Live Progress - Timeline */}
       <div className="px-4 py-3 border-b border-border bg-muted/30">
         <div className="text-xs text-muted-foreground mb-3">Live Progress</div>
         
-        {/* Steps */}
-        <div className="flex items-center justify-between">
-          {[
-            { name: 'Planner', status: 'complete', detail: 'Defined Dimensions' },
-            { name: 'Retriever', status: 'complete', detail: `${totalPapers} Papers Found` },
-            { name: 'Extraction', status: 'active', detail: '85% Complete' },
-            { name: 'Synthesis', status: 'pending', detail: 'In Progress...' },
-          ].map((step, i, arr) => (
-            <div key={step.name} className="flex items-center flex-1 last:flex-none">
-              {/* Step Node */}
-              <div className="flex flex-col items-center gap-1">
-                {/* Dot */}
+        {/* Timeline */}
+        <div className="relative">
+          {/* Base line */}
+          <div className="absolute top-1.5 left-0 right-0 h-[2px] bg-muted-foreground/20" />
+          {/* Progress line */}
+          <div className="absolute top-1.5 left-0 h-[2px] bg-primary transition-all duration-500" style={{ width: '62%' }} />
+          
+          {/* Steps on the line */}
+          <div className="relative flex justify-between">
+            {[
+              { name: 'Planner', status: 'complete', detail: 'Defined Dimensions' },
+              { name: 'Retriever', status: 'complete', detail: `${totalPapers} Papers Found` },
+              { name: 'Extraction', status: 'active', detail: '85% Complete' },
+              { name: 'Synthesis', status: 'pending', detail: 'In Progress...' },
+            ].map((step) => (
+              <div key={step.name} className="flex flex-col items-center">
+                {/* Dot on line */}
                 <div className={cn(
-                  "w-2.5 h-2.5 rounded-full transition-all duration-300",
-                  step.status === 'complete' && "bg-primary shadow-[0_0_8px_hsl(var(--primary)/0.5)]",
-                  step.status === 'active' && "bg-primary animate-pulse shadow-[0_0_10px_hsl(var(--primary)/0.6)]",
-                  step.status === 'pending' && "bg-muted-foreground/30"
-                )} />
+                  "w-3 h-3 rounded-full border-2 bg-background z-10",
+                  step.status === 'complete' && "border-primary bg-primary",
+                  step.status === 'active' && "border-primary bg-background shadow-[0_0_8px_hsl(var(--primary)/0.6)]",
+                  step.status === 'pending' && "border-muted-foreground/30 bg-background"
+                )}>
+                  {step.status === 'active' && (
+                    <div className="w-full h-full rounded-full bg-primary animate-pulse scale-50" />
+                  )}
+                </div>
                 
-                {/* Label */}
+                {/* Label below */}
                 <div className={cn(
-                  "text-[10px] font-medium whitespace-nowrap",
+                  "text-[10px] font-medium mt-1.5 whitespace-nowrap",
                   step.status === 'complete' && "text-primary",
                   step.status === 'active' && "text-primary",
                   step.status === 'pending' && "text-muted-foreground/50"
@@ -198,22 +207,8 @@ export const ReportPanel = ({
                   {step.detail}
                 </div>
               </div>
-
-              {/* Connector Line */}
-              {i < arr.length - 1 && (
-                <div className="flex-1 h-0.5 mx-2 bg-muted-foreground/20 relative overflow-hidden self-start mt-1">
-                  <div 
-                    className={cn(
-                      "absolute inset-y-0 left-0 bg-primary transition-all duration-500",
-                      step.status === 'complete' && "w-full",
-                      step.status === 'active' && "w-1/2",
-                      step.status === 'pending' && "w-0"
-                    )}
-                  />
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
