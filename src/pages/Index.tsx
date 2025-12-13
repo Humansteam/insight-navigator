@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronRight, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { ChevronRight, PanelRight } from 'lucide-react';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
@@ -61,7 +61,7 @@ const Index = () => {
             </h2>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="flex gap-1">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className={cn(
@@ -72,6 +72,17 @@ const Index = () => {
             </div>
             <span className="text-sm text-muted-foreground">Research report</span>
             <ThemeSwitcher />
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className={cn(
+                "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors",
+                isSidebarOpen 
+                  ? "bg-secondary border-border" 
+                  : "bg-background border-border hover:bg-accent"
+              )}
+            >
+              <PanelRight className="w-4 h-4" />
+            </button>
           </div>
         </header>
 
@@ -116,18 +127,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Sidebar Toggle Button */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-6 h-12 bg-muted border border-border rounded-l-md flex items-center justify-center hover:bg-accent transition-colors"
-        style={{ right: isSidebarOpen ? '360px' : '0' }}
-      >
-        {isSidebarOpen ? (
-          <PanelRightClose className="w-4 h-4 text-muted-foreground" />
-        ) : (
-          <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
-        )}
-      </button>
 
       {/* Right Sidebar: Origin Papers */}
       <div className={cn(
