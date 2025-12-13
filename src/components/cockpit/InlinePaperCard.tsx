@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DataNode } from '@/types/morphik';
 
@@ -9,16 +9,29 @@ interface InlinePaperCardProps {
 
 export const InlinePaperCard = ({ paper, index }: InlinePaperCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const keyFindings = paper.dimensions?.['Key Findings']?.value || paper.abstract || '—';
   const fullText = paper.abstract || keyFindings;
   const truncatedPopup = fullText.length > 280 ? fullText.slice(0, 280) + '...' : fullText;
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 150);
+  };
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="my-4 border border-border rounded-lg overflow-hidden bg-card/50 relative"
+      className="my-4 border border-border rounded-lg overflow-visible bg-card/50"
     >
       <table className="w-full table-fixed">
         <thead>
@@ -47,8 +60,8 @@ export const InlinePaperCard = ({ paper, index }: InlinePaperCardProps) => {
             </td>
             <td 
               className="py-3 px-3 align-top relative"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               <span className="text-sm text-muted-foreground leading-relaxed line-clamp-2 cursor-help">
                 {keyFindings}
@@ -62,9 +75,14 @@ export const InlinePaperCard = ({ paper, index }: InlinePaperCardProps) => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute left-0 top-full mt-1 z-50 w-80 p-3 rounded-lg border border-border bg-popover shadow-lg"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    className="absolute left-0 bottom-full mb-2 z-[100] w-80 p-3 rounded-lg border border-border bg-background shadow-xl"
+                    style={{ 
+                      boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+                    }}
                   >
-                    <p className="text-sm text-popover-foreground leading-relaxed">
+                    <p className="text-sm text-foreground leading-relaxed">
                       {truncatedPopup}
                     </p>
                   </motion.div>
