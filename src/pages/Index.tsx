@@ -22,25 +22,46 @@ const Index = () => {
           Lithium Battery Research Analysis
         </h1>
 
-        {/* Lead paragraph */}
-        <p className="text-lg text-muted-foreground leading-relaxed mb-2">
+        {/* Lead paragraph - no citations */}
+        <p className="text-lg text-muted-foreground leading-relaxed mb-8">
           The analysis reveals significant divergence in lithium battery research between major geopolitical regions. 
-          China leads in manufacturing scalability <Citation id="paper-001" />
+          China leads in manufacturing scalability, while the United States demonstrates 
+          advantages in fundamental materials science.
         </p>
-        <PaperReference id="paper-001" />
 
-        <p className="text-lg text-muted-foreground leading-relaxed mb-2">
-          While the United States demonstrates advantages in fundamental materials science <Citation id="paper-003" />
-        </p>
-        <PaperReference id="paper-003" />
-
-        {/* Abstract Section */}
+        {/* Abstract Section - no inline cards */}
         <SectionHeader title="ABSTRACT" />
-        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+        <p className="text-base text-foreground/90 leading-relaxed mb-6">
           This review synthesizes findings from 165,432 scientific articles examining lithium battery technology 
-          across industrial processing, recycling, and solid-state advances.
+          across industrial processing, recycling, and solid-state advances. Chinese research clusters around 
+          high-efficiency extraction methods with membrane-based DLE systems achieving 95% lithium recovery. 
+          Manufacturing optimization through AI monitoring shows 25% energy reduction. The highest recovery rates 
+          emerge from hydrometallurgical processes developed in US labs, achieving 99.2% Li, 98.8% Co recovery. 
+          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 500 Wh/kg 
+          energy density.
         </p>
 
+        {/* Methods Section */}
+        <CollapsibleSection title="METHODS">
+          <p className="text-base text-foreground/90 leading-relaxed">
+            We analyzed 7 sources from an initial pool of 165,432, using 5 screening criteria. Each paper was 
+            reviewed for 5 key aspects that mattered most to the research question.{' '}
+            <span className="text-primary cursor-pointer hover:underline">More on methods</span>
+          </p>
+        </CollapsibleSection>
+
+        {/* Results Section */}
+        <SectionHeader title="RESULTS" />
+        <h4 className="text-lg font-semibold text-foreground mb-2">Characteristics of Included Studies</h4>
+        <p className="text-base text-foreground/90 leading-relaxed mb-6">
+          This review includes {mockNodes.length} sources examining lithium battery technology, 
+          covering industrial processing, solid-state electrolytes, and recycling methods.
+        </p>
+
+        {/* Thematic Analysis - with inline paper cards */}
+        <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Thematic Analysis</h4>
+        
+        <h5 className="text-base font-semibold text-foreground mb-2">Industrial Processing and Manufacturing</h5>
         <p className="text-base text-foreground/90 leading-relaxed mb-2">
           Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
           achieving 95% lithium recovery <Citation id="paper-001" />
@@ -57,44 +78,6 @@ const Index = () => {
           achieving 99.2% Li, 98.8% Co recovery <Citation id="paper-003" />
         </p>
         <PaperReference id="paper-003" />
-
-        <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 
-          500 Wh/kg energy density <Citation id="paper-007" />
-        </p>
-        <PaperReference id="paper-007" />
-
-        {/* Methods Section */}
-        <CollapsibleSection title="METHODS">
-          <p className="text-base text-foreground/90 leading-relaxed">
-            We analyzed 7 sources from an initial pool of 165,432, using 5 screening criteria. Each paper was 
-            reviewed for 5 key aspects that mattered most to the research question.{' '}
-            <span className="text-primary cursor-pointer hover:underline">More on methods</span>
-          </p>
-        </CollapsibleSection>
-
-        {/* Results Section */}
-        <SectionHeader title="RESULTS" />
-        <h4 className="text-lg font-semibold text-foreground mb-2">Characteristics of Included Studies</h4>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          This review includes {mockNodes.length} sources examining lithium battery technology, 
-          covering industrial processing, solid-state electrolytes, and recycling methods.
-        </p>
-
-        {/* Thematic Analysis */}
-        <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Thematic Analysis</h4>
-        
-        <h5 className="text-base font-semibold text-foreground mb-2">Industrial Processing and Manufacturing</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
-          achieving 95% lithium recovery <Citation id="paper-001" />
-        </p>
-        <PaperReference id="paper-001" />
-
-        <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          Manufacturing optimization through AI monitoring shows 25% energy reduction <Citation id="paper-002" />
-        </p>
-        <PaperReference id="paper-002" />
 
         <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Solid-State Battery Advances</h5>
         <p className="text-base text-foreground/90 leading-relaxed mb-2">
