@@ -4,23 +4,11 @@ import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
-import { AnalysisProcess } from '@/components/cockpit/AnalysisProcess';
-import { CompactTimeline } from '@/components/cockpit/CompactTimeline';
-import { AnalysisStageData } from '@/components/cockpit/AnalysisStage';
+import { ChatAnalysis } from '@/components/cockpit/ChatAnalysis';
 
 // Helper to get paper by id
 const getPaperById = (id: string) => mockNodes.find(p => p.id === id);
 const getPaperIndex = (id: string) => mockNodes.findIndex(p => p.id === id) + 1;
-
-// Completed stages data for compact timeline
-const completedStages: AnalysisStageData[] = [
-  { id: 'planning', name: 'Planning', description: '', status: 'complete', icon: 'search', metrics: [{ label: 'Queries', value: 4 }] },
-  { id: 'retrieval', name: 'Retrieval', description: '', status: 'complete', icon: 'file', metrics: [{ label: 'Papers found', value: 12 }] },
-  { id: 'schema', name: 'Schema', description: '', status: 'complete', icon: 'database', metrics: [{ label: 'Dimensions', value: 6 }] },
-  { id: 'extraction', name: 'Extraction', description: '', status: 'complete', icon: 'chart', metrics: [{ label: 'Facts', value: 47 }] },
-  { id: 'topology', name: 'Topology', description: '', status: 'complete', icon: 'map', metrics: [{ label: 'Divergence', value: 'High' }] },
-  { id: 'synthesis', name: 'Synthesis', description: '', status: 'complete', icon: 'edit', metrics: [{ label: 'Sections', value: 5 }] },
-];
 
 const Index = () => {
   const [inputValue, setInputValue] = useState('');
@@ -167,17 +155,12 @@ const Index = () => {
         {/* Report Content */}
         <div className="flex-1 overflow-auto">
           {analysisPhase === 'analyzing' ? (
-            <AnalysisProcess 
+            <ChatAnalysis 
               query={currentQuery} 
               onComplete={() => setAnalysisPhase('complete')} 
             />
           ) : (
             <div className="max-w-3xl mx-auto px-8 py-10">
-              {/* Compact timeline when complete */}
-              {analysisPhase === 'complete' && (
-                <CompactTimeline stages={completedStages} className="mb-6 -mx-8 -mt-10" />
-              )}
-              
               {/* Date */}
               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
                 December 13, 2025
