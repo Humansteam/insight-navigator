@@ -55,9 +55,20 @@ const Index = () => {
 
   // Render report content - dynamic when engine data available
   const renderReportContent = () => {
-    // If we have engine report, render it
-    if (report?.markdown) {
-      return <EngineReportRenderer markdown={report.markdown} papers={papers} />;
+    // If we have engine report with structured data, render it
+    if (report?.title || report?.markdown) {
+      return (
+        <EngineReportRenderer
+          report={{
+            title: report.title || 'Research Analysis',
+            lead: report.lead || '',
+            abstract: report.abstract || '',
+            methodology: report.methodology || '',
+            markdown: report.markdown || '',
+          }}
+          papers={papers}
+        />
+      );
     }
 
     // Default static content (mockData)
@@ -301,30 +312,131 @@ const Index = () => {
   );
 };
 
-// Engine Report Renderer - parses markdown with [[paper_id]] citations
-const EngineReportRenderer = ({ markdown, papers }: { markdown: string; papers: DataNode[] }) => {
-  // Parse markdown and replace [[paper_id]] with InlinePaperCard
-  const parts = markdown.split(/(\[\[\d+\]\])/g);
+// Engine Report Renderer - renders structured Lovable format
+interface EngineReportProps {
+  report: {
+    title: string;
+    lead: string;
+    abstract: string;
+    methodology: string;
+    markdown: string;
+  };
+  papers: DataNode[];
+}
+
+const EngineReportRenderer = ({ report, papers }: EngineReportProps) => {
+  const [methodsOpen, setMethodsOpen] = useState(false);
 
   const getPaperById = (id: number) => papers.find(p => p.id === `paper-${id}` || p.id === String(id));
 
-  return (
-    <div className="prose prose-sm dark:prose-invert max-w-none">
-      {parts.map((part, i) => {
-        const match = part.match(/\[\[(\d+)\]\]/);
-        if (match) {
-          const paperId = parseInt(match[1], 10);
-          const paper = getPaperById(paperId);
-          if (paper) {
-            const index = papers.indexOf(paper) + 1;
-            return <InlinePaperCard key={i} paper={paper} index={index} />;
-          }
-          return <sup key={i} className="text-primary">*</sup>;
+  // Render markdown body with [[paper_id]] citations
+  const renderMarkdownWithCitations = (text: string) => {
+    if (!text) return null;
+
+    const parts = text.split(/(\[\[\d+\]\])/g);
+
+    return parts.map((part, i) => {
+      const match = part.match(/\[\[(\d+)\]\]/);
+      if (match) {
+        const paperId = parseInt(match[1], 10);
+        const paper = getPaperById(paperId);
+        if (paper) {
+          const index = papers.indexOf(paper) + 1;
+          return <InlinePaperCard key={i} paper={paper} index={index} />;
         }
-        // Render markdown text
-        return <span key={i} dangerouslySetInnerHTML={{ __html: part.replace(/\n/g, '<br/>') }} />;
-      })}
-    </div>
+        return <sup key={i} className="text-primary cursor-pointer">*</sup>;
+      }
+
+      // Parse markdown headers and paragraphs
+      const lines = part.split('\n');
+      return lines.map((line, j) => {
+        const trimmed = line.trim();
+        if (!trimmed) return null;
+
+        // ### Header
+        if (trimmed.startsWith('### ')) {
+          return (
+            <h4 key={`${i}-${j}`} className="text-lg font-semibold text-foreground mt-8 mb-4">
+              {trimmed.replace('### ', '')}
+            </h4>
+          );
+        }
+
+        // #### Subheader
+        if (trimmed.startsWith('#### ')) {
+          return (
+            <h5 key={`${i}-${j}`} className="text-base font-semibold text-foreground mb-2 mt-6">
+              {trimmed.replace('#### ', '')}
+            </h5>
+          );
+        }
+
+        // Regular paragraph (may end with *)
+        const hasCitation = trimmed.endsWith('*');
+        const cleanText = trimmed.replace(/\s*\*\s*$/, '');
+
+        if (cleanText) {
+          return (
+            <p key={`${i}-${j}`} className="text-base text-foreground/90 leading-relaxed mb-2">
+              {cleanText}
+              {hasCitation && <sup className="text-primary mx-0.5">*</sup>}
+            </p>
+          );
+        }
+
+        return null;
+      });
+    });
+  };
+
+  return (
+    <>
+      {/* Title */}
+      <h1 className="text-4xl font-serif font-normal text-foreground mb-6">
+        {report.title}
+      </h1>
+
+      {/* Lead paragraph (italic/muted) */}
+      {report.lead && (
+        <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+          {report.lead}
+        </p>
+      )}
+
+      {/* ABSTRACT section */}
+      {report.abstract && (
+        <>
+          <SectionHeader title="ABSTRACT" />
+          <p className="text-base text-foreground/90 leading-relaxed mb-6">
+            {report.abstract}
+          </p>
+        </>
+      )}
+
+      {/* METHODS section (collapsible) */}
+      {report.methodology && (
+        <div className="mb-6">
+          <button
+            onClick={() => setMethodsOpen(!methodsOpen)}
+            className="flex items-center gap-2 text-sm font-semibold text-primary tracking-wide mb-3 hover:opacity-80 transition-opacity"
+          >
+            METHODS
+            <ChevronRight className={cn("w-4 h-4 transition-transform", methodsOpen && "rotate-90")} />
+          </button>
+          {methodsOpen && (
+            <p className="text-base text-foreground/90 leading-relaxed">
+              {report.methodology}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* RESULTS section header */}
+      <SectionHeader title="RESULTS" />
+
+      {/* Markdown body with citations */}
+      {renderMarkdownWithCitations(report.markdown)}
+    </>
   );
 };
 

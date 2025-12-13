@@ -51,9 +51,14 @@ interface EngineTopology {
 
 interface EngineReport {
   title: string;
-  executive_summary: string;
-  markdown: string;
+  lead: string;           // 1-2 sentence summary (italic in UI)
+  abstract: string;       // Full synthesis for ABSTRACT section
+  methodology: string;    // For METHODS section
+  markdown: string;       // RESULTS + Thematic Analysis body
+  // Legacy
+  executive_summary?: string;
   total_papers_analyzed: number;
+  total_facts_extracted?: number;
 }
 
 type EnginePhase = 'idle' | 'planning' | 'retrieval' | 'schema_design' | 'extraction' | 'topology' | 'synthesis' | 'complete' | 'error';
