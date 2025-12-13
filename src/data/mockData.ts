@@ -230,3 +230,77 @@ export const mockExtractionDimensions = [
   'Applications',
   'Limitations',
 ];
+
+// Executive Summary Data
+export const mockTRLData = [
+  {
+    region: 'China',
+    level: 7,
+    label: 'Industrial scale manufacturing deployed with continuous optimization',
+    papers: ['paper-001', 'paper-002', 'paper-007']
+  },
+  {
+    region: 'USA',
+    level: 5,
+    label: 'Prototype validation in relevant environment',
+    papers: ['paper-003', 'paper-004']
+  },
+  {
+    region: 'Europe',
+    level: 4,
+    label: 'Laboratory validation and component testing',
+    papers: ['paper-005', 'paper-006']
+  }
+];
+
+export const mockConflicts = [
+  {
+    topic: 'Solid-State Electrolyte Stability',
+    status: 'debate' as const,
+    description: 'Paper 004 reports stable sulfide electrolytes, while Paper 005 observes dendrite formation at interfaces under similar conditions.',
+    sources: ['paper-004', 'paper-005']
+  },
+  {
+    topic: 'Recycling Process Economics',
+    status: 'consensus' as const,
+    description: 'All sources agree on hydrometallurgical superiority for mixed battery streams with >97% recovery rates.',
+    sources: ['paper-003', 'paper-006']
+  },
+  {
+    topic: 'Energy Density Ceiling',
+    status: 'debate' as const,
+    description: 'Chinese sources claim 500 Wh/kg achievable, while Western labs report practical limits at 400 Wh/kg for production cells.',
+    sources: ['paper-007', 'paper-004']
+  },
+  {
+    topic: 'DLE Efficiency Metrics',
+    status: 'consensus' as const,
+    description: 'Consensus on membrane-based extraction achieving 95%+ recovery across multiple studies.',
+    sources: ['paper-001', 'paper-002']
+  }
+];
+
+export const mockGaps = [
+  {
+    area: 'Long-term Recycling Economics',
+    description: 'While efficiency metrics are well-documented, there is zero longitudinal data on 10+ year recycling infrastructure costs.',
+    opportunity: 'First-mover advantage for comprehensive lifecycle cost modeling'
+  },
+  {
+    area: 'Cold Climate Performance',
+    description: 'Solid-state battery performance below -20°C remains largely unstudied in production-scale contexts.',
+    opportunity: 'Critical gap for Nordic/Canadian EV market penetration'
+  }
+];
+
+export const mockStrategicHorizon = {
+  currentTrend: 'lithium-ion optimization',
+  futureTrend: 'solid-state commercialization',
+  leader: 'Chinese manufacturing ecosystem',
+  leaderAdvantage: 'scale production and cost efficiency',
+  emergingApproach: 'European sustainability-first approach',
+  emergingReason: 'incoming EU battery passport regulations and circular economy mandates',
+  confidence: 'high' as const,
+  dataDensity: 165432,
+  timeframe: '12-24 months'
+};

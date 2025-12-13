@@ -2,16 +2,39 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ExecutiveSummary, TRLData, ConflictData, GapData, StrategicHorizonData } from './ExecutiveSummary';
+import { mockTRLData, mockConflicts, mockGaps, mockStrategicHorizon } from '@/data/mockData';
 
 interface StrategicReportProps {
   markdown: string;
   onCitationHover: (paperId: string | null) => void;
   onCitationClick: (paperId: string) => void;
+  trlData?: TRLData[];
+  conflicts?: ConflictData[];
+  gaps?: GapData[];
+  strategicHorizon?: StrategicHorizonData;
 }
 
-export const StrategicReport = ({ markdown, onCitationHover, onCitationClick }: StrategicReportProps) => {
+export const StrategicReport = ({ 
+  markdown, 
+  onCitationHover, 
+  onCitationClick,
+  trlData = mockTRLData,
+  conflicts = mockConflicts,
+  gaps = mockGaps,
+  strategicHorizon = mockStrategicHorizon
+}: StrategicReportProps) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
+  const [showExecutiveSummary, setShowExecutiveSummary] = useState(false);
+
+  // Show executive summary after typing completes
+  useEffect(() => {
+    if (!isTyping) {
+      const timer = setTimeout(() => setShowExecutiveSummary(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isTyping]);
 
   useEffect(() => {
     setIsTyping(true);
@@ -203,6 +226,18 @@ export const StrategicReport = ({ markdown, onCitationHover, onCitationClick }: 
       <div className="p-4 prose prose-sm prose-invert max-w-none">
         {renderMarkdown(displayedText)}
         {isTyping && <span className="cursor-blink" />}
+        
+        {/* Executive Summary - Meta-Synthesis Layer */}
+        {showExecutiveSummary && (
+          <ExecutiveSummary
+            trlData={trlData}
+            conflicts={conflicts}
+            gaps={gaps}
+            strategicHorizon={strategicHorizon}
+            onCitationHover={onCitationHover}
+            onCitationClick={onCitationClick}
+          />
+        )}
       </div>
     </motion.div>
   );
