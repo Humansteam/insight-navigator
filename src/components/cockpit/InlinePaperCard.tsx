@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DataNode } from '@/types/morphik';
-import { cn } from '@/lib/utils';
 
 interface InlinePaperCardProps {
   paper: DataNode;
@@ -11,15 +10,15 @@ interface InlinePaperCardProps {
 export const InlinePaperCard = ({ paper, index }: InlinePaperCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const keyFindings = paper.dimensions?.['Key Findings']?.value || paper.abstract || '—';
+  const fullText = paper.abstract || keyFindings;
+  const truncatedPopup = fullText.length > 280 ? fullText.slice(0, 280) + '...' : fullText;
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="my-4 border border-border rounded-lg overflow-hidden bg-card/50"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="my-4 border border-border rounded-lg overflow-hidden bg-card/50 relative"
     >
       <table className="w-full table-fixed">
         <thead>
@@ -46,34 +45,35 @@ export const InlinePaperCard = ({ paper, index }: InlinePaperCardProps) => {
                 </span>
               </div>
             </td>
-            <td className="py-3 px-3 align-top">
-              <span className={cn(
-                "text-sm text-muted-foreground leading-relaxed transition-all duration-200",
-                isHovered ? "" : "line-clamp-2"
-              )}>
+            <td 
+              className="py-3 px-3 align-top relative"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <span className="text-sm text-muted-foreground leading-relaxed line-clamp-2 cursor-help">
                 {keyFindings}
               </span>
+              
+              {/* Popup on hover */}
+              <AnimatePresence>
+                {isHovered && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 top-full mt-1 z-50 w-80 p-3 rounded-lg border border-border bg-popover shadow-lg"
+                  >
+                    <p className="text-sm text-popover-foreground leading-relaxed">
+                      {truncatedPopup}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </td>
           </tr>
         </tbody>
       </table>
-      
-      {/* Expanded details on hover */}
-      <AnimatePresence>
-        {isHovered && paper.abstract && paper.abstract !== keyFindings && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="border-t border-border bg-muted/20 px-4 py-3"
-          >
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              <span className="font-medium text-foreground">Abstract:</span> {paper.abstract}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   );
 };
