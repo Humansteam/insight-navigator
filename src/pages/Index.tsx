@@ -1,22 +1,66 @@
-import { useState } from 'react';
-import { ChevronRight, PanelRight } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ChevronRight, PanelRight, Loader2 } from 'lucide-react';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
 import { PipelineDAG } from '@/components/cockpit/PipelineDAG';
-
-// Helper to get paper by id
-const getPaperById = (id: string) => mockNodes.find(p => p.id === id);
-const getPaperIndex = (id: string) => mockNodes.findIndex(p => p.id === id) + 1;
+import { useEngineData } from '@/hooks/useEngineData';
+import { DataNode } from '@/types/morphik';
 
 const Index = () => {
-  const [inputValue, setInputValue] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [analysisPhase, setAnalysisPhase] = useState<'idle' | 'analyzing' | 'complete'>('idle');
-  const [currentQuery, setCurrentQuery] = useState('');
-  // Parse report into sections
+
+  // Engine data hook
+  const {
+    phase,
+    papers: enginePapers,
+    dimensions,
+    topology,
+    report,
+    error,
+    isLoading,
+    input,
+    setInput,
+    handleSubmit,
+  } = useEngineData();
+
+  // Use engine papers if available, otherwise mock data
+  const papers = enginePapers.length > 0 ? enginePapers : mockNodes;
+
+  // Helper to get paper by id
+  const getPaperById = (id: string) => papers.find(p => p.id === id);
+  const getPaperIndex = (id: string) => papers.findIndex(p => p.id === id) + 1;
+
+  // Progress dots based on phase
+  const phaseDots = useMemo(() => {
+    const phases = ['planning', 'retrieval', 'schema_design', 'extraction', 'topology', 'synthesis'];
+    const currentIndex = phases.indexOf(phase);
+    return phases.map((_, i) => i <= currentIndex || phase === 'complete');
+  }, [phase]);
+
+  // Inline paper reference component
+  const PaperReference = ({ id }: { id: string }) => {
+    const paper = getPaperById(id);
+    if (!paper) return null;
+    return <InlinePaperCard paper={paper} index={getPaperIndex(id)} />;
+  };
+
+  // Dynamic paper reference by index
+  const DynamicPaperRef = ({ index }: { index: number }) => {
+    const paper = papers[index];
+    if (!paper) return null;
+    return <InlinePaperCard paper={paper} index={index + 1} />;
+  };
+
+  // Render report content - dynamic when engine data available
   const renderReportContent = () => {
+    // If we have engine report, render it
+    if (report?.markdown) {
+      return <EngineReportRenderer markdown={report.markdown} papers={papers} />;
+    }
+
+    // Default static content (mockData)
     return (
       <>
         {/* Title */}
@@ -24,30 +68,30 @@ const Index = () => {
           Lithium Battery Research Analysis
         </h1>
 
-        {/* Lead paragraph - no citations */}
+        {/* Lead paragraph */}
         <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-          The analysis reveals significant divergence in lithium battery research between major geopolitical regions. 
-          China leads in manufacturing scalability, while the United States demonstrates 
+          The analysis reveals significant divergence in lithium battery research between major geopolitical regions.
+          China leads in manufacturing scalability, while the United States demonstrates
           advantages in fundamental materials science.
         </p>
 
-        {/* Abstract Section - no inline cards */}
+        {/* Abstract Section */}
         <SectionHeader title="ABSTRACT" />
         <p className="text-base text-foreground/90 leading-relaxed mb-6">
-          This review synthesizes findings from 165,432 scientific articles examining lithium battery technology 
-          across industrial processing, recycling, and solid-state advances. Chinese research clusters around 
-          high-efficiency extraction methods with membrane-based DLE systems achieving 95% lithium recovery. 
-          Manufacturing optimization through AI monitoring shows 25% energy reduction. The highest recovery rates 
-          emerge from hydrometallurgical processes developed in US labs, achieving 99.2% Li, 98.8% Co recovery. 
-          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 500 Wh/kg 
+          This review synthesizes findings from 165,432 scientific articles examining lithium battery technology
+          across industrial processing, recycling, and solid-state advances. Chinese research clusters around
+          high-efficiency extraction methods with membrane-based DLE systems achieving 95% lithium recovery.
+          Manufacturing optimization through AI monitoring shows 25% energy reduction. The highest recovery rates
+          emerge from hydrometallurgical processes developed in US labs, achieving 99.2% Li, 98.8% Co recovery.
+          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 500 Wh/kg
           energy density.
         </p>
 
         {/* Methods Section */}
         <CollapsibleSection title="METHODS">
           <p className="text-base text-foreground/90 leading-relaxed">
-            We analyzed 7 sources from an initial pool of 165,432, using 5 screening criteria. Each paper was 
-            reviewed for 5 key aspects that mattered most to the research question.{' '}
+            We analyzed {papers.length} sources from an initial pool of 165,432, using 5 screening criteria. Each paper was
+            reviewed for {dimensions.length || 5} key aspects that mattered most to the research question.{' '}
             <span className="text-primary cursor-pointer hover:underline">More on methods</span>
           </p>
         </CollapsibleSection>
@@ -56,16 +100,16 @@ const Index = () => {
         <SectionHeader title="RESULTS" />
         <h4 className="text-lg font-semibold text-foreground mb-2">Characteristics of Included Studies</h4>
         <p className="text-base text-foreground/90 leading-relaxed mb-6">
-          This review includes {mockNodes.length} sources examining lithium battery technology, 
+          This review includes {papers.length} sources examining lithium battery technology,
           covering industrial processing, solid-state electrolytes, and recycling methods.
         </p>
 
-        {/* Thematic Analysis - with inline paper cards */}
+        {/* Thematic Analysis */}
         <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Thematic Analysis</h4>
-        
+
         <h5 className="text-base font-semibold text-foreground mb-2">Industrial Processing and Manufacturing</h5>
         <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
+          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems
           achieving 95% lithium recovery <Citation id="paper-001" />
         </p>
         <PaperReference id="paper-001" />
@@ -76,14 +120,14 @@ const Index = () => {
         <PaperReference id="paper-002" />
 
         <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          The highest recovery rates emerge from hydrometallurgical processes developed in US labs, 
+          The highest recovery rates emerge from hydrometallurgical processes developed in US labs,
           achieving 99.2% Li, 98.8% Co recovery <Citation id="paper-003" />
         </p>
         <PaperReference id="paper-003" />
 
         <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Solid-State Battery Advances</h5>
         <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          A critical breakthrough exists in solid-state technology. Chinese protocols report 500 Wh/kg 
+          A critical breakthrough exists in solid-state technology. Chinese protocols report 500 Wh/kg
           energy density <Citation id="paper-007" />
         </p>
         <PaperReference id="paper-007" />
@@ -100,19 +144,12 @@ const Index = () => {
         <PaperReference id="paper-004" />
 
         <p className="text-base text-foreground/90 leading-relaxed mb-2">
-          Direct observation of dendrite nucleation mechanism at solid electrolyte interfaces provides 
+          Direct observation of dendrite nucleation mechanism at solid electrolyte interfaces provides
           crucial insights for battery safety <Citation id="paper-005" />
         </p>
         <PaperReference id="paper-005" />
       </>
     );
-  };
-
-  // Inline paper reference component
-  const PaperReference = ({ id }: { id: string }) => {
-    const paper = getPaperById(id);
-    if (!paper) return null;
-    return <InlinePaperCard paper={paper} index={getPaperIndex(id)} />;
   };
 
   return (
@@ -123,27 +160,29 @@ const Index = () => {
         <header className="h-14 flex items-center justify-between px-6 border-b border-border">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-medium text-foreground">
-              Exploring Lithium Battery Research
+              {report?.title || 'Exploring Lithium Battery Research'}
             </h2>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </div>
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
-              {[...Array(6)].map((_, i) => (
+              {phaseDots.map((active, i) => (
                 <div key={i} className={cn(
-                  "w-2 h-2 rounded-full",
-                  i < 5 ? "bg-primary" : "bg-muted"
+                  "w-2 h-2 rounded-full transition-colors",
+                  active ? "bg-primary" : "bg-muted"
                 )} />
               ))}
             </div>
-            <span className="text-sm text-muted-foreground">Research report</span>
+            <span className="text-sm text-muted-foreground">
+              {phase === 'idle' ? 'Research report' : phase === 'complete' ? 'Complete' : phase.replace('_', ' ')}
+            </span>
             <ThemeSwitcher />
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className={cn(
                 "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors",
-                isSidebarOpen 
-                  ? "bg-secondary border-border" 
+                isSidebarOpen
+                  ? "bg-secondary border-border"
                   : "bg-background border-border hover:bg-accent"
               )}
             >
@@ -154,19 +193,25 @@ const Index = () => {
 
         {/* Report Content */}
         <div className="flex-1 overflow-auto">
-          {analysisPhase === 'analyzing' ? (
-            <PipelineDAG 
-              query={currentQuery} 
-              onComplete={() => setAnalysisPhase('complete')} 
+          {isLoading && phase !== 'complete' ? (
+            <PipelineDAG
+              query={input || 'Analyzing...'}
+              onComplete={() => {}}
             />
           ) : (
             <div className="max-w-3xl mx-auto px-8 py-10">
               {/* Date */}
               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
-                December 13, 2025
+                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
               </p>
 
-              {renderReportContent()}
+              {error ? (
+                <div className="text-red-500 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+                  Error: {error}
+                </div>
+              ) : (
+                renderReportContent()
+              )}
             </div>
           )}
         </div>
@@ -174,52 +219,47 @@ const Index = () => {
         {/* Chat Input */}
         <div className="border-t border-border p-4">
           <div className="max-w-3xl mx-auto">
-            <div className="bg-muted/50 rounded-xl p-4">
-              <input
-                type="text"
-                placeholder={analysisPhase === 'idle' ? "Enter your research query..." : "Ask about scientific papers..."}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && inputValue.trim()) {
-                    if (analysisPhase === 'idle') {
-                      setCurrentQuery(inputValue);
-                      setAnalysisPhase('analyzing');
-                      setInputValue('');
-                    }
-                  }
-                }}
-                className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
-              />
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-3">
-                  <button className="px-3 py-1.5 text-xs font-medium bg-background rounded-md border border-border hover:bg-accent transition-colors">
-                    {analysisPhase === 'idle' ? 'Engine Mode' : 'Chat Mode'}
+            <form onSubmit={handleSubmit}>
+              <div className="bg-muted/50 rounded-xl p-4">
+                <input
+                  type="text"
+                  placeholder="Enter your research query..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  disabled={isLoading}
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm disabled:opacity-50"
+                />
+                <div className="flex items-center justify-between mt-3">
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 text-xs font-medium bg-background rounded-md border border-border hover:bg-accent transition-colors"
+                    >
+                      Engine Mode
+                    </button>
+                    <span className="text-xs text-muted-foreground">
+                      {isLoading ? `${phase.replace('_', ' ')}...` : 'Searching 165K papers'}
+                    </span>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={!input.trim() || isLoading}
+                    className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-50"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 text-background animate-spin" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-background rotate-[-90deg]" />
+                    )}
                   </button>
-                  <span className="text-xs text-muted-foreground">
-                    Searching 165K papers
-                  </span>
                 </div>
-                <button 
-                  onClick={() => {
-                    if (inputValue.trim() && analysisPhase === 'idle') {
-                      setCurrentQuery(inputValue);
-                      setAnalysisPhase('analyzing');
-                      setInputValue('');
-                    }
-                  }}
-                  className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center hover:opacity-80 transition-opacity"
-                >
-                  <ChevronRight className="w-4 h-4 text-background rotate-[-90deg]" />
-                </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
 
-
-      {/* Right Sidebar: Origin Papers */}
+      {/* Right Sidebar: Evidence Matrix */}
       <div className={cn(
         "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
         isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
@@ -228,7 +268,7 @@ const Index = () => {
           <h3 className="text-sm font-medium text-primary">Evidence Matrix</h3>
         </div>
         <div className="flex-1 overflow-auto min-w-[360px]">
-          {mockNodes.map((paper) => (
+          {papers.map((paper) => (
             <div
               key={paper.id}
               className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors relative"
@@ -238,8 +278,8 @@ const Index = () => {
                   {Math.round(paper.score * 100)}%
                 </span>
                 <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full" 
+                  <div
+                    className="h-full bg-primary rounded-full"
                     style={{ width: `${paper.score * 100}%` }}
                   />
                 </div>
@@ -257,6 +297,33 @@ const Index = () => {
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+// Engine Report Renderer - parses markdown with [[paper_id]] citations
+const EngineReportRenderer = ({ markdown, papers }: { markdown: string; papers: DataNode[] }) => {
+  // Parse markdown and replace [[paper_id]] with InlinePaperCard
+  const parts = markdown.split(/(\[\[\d+\]\])/g);
+
+  const getPaperById = (id: number) => papers.find(p => p.id === `paper-${id}` || p.id === String(id));
+
+  return (
+    <div className="prose prose-sm dark:prose-invert max-w-none">
+      {parts.map((part, i) => {
+        const match = part.match(/\[\[(\d+)\]\]/);
+        if (match) {
+          const paperId = parseInt(match[1], 10);
+          const paper = getPaperById(paperId);
+          if (paper) {
+            const index = papers.indexOf(paper) + 1;
+            return <InlinePaperCard key={i} paper={paper} index={index} />;
+          }
+          return <sup key={i} className="text-primary">*</sup>;
+        }
+        // Render markdown text
+        return <span key={i} dangerouslySetInnerHTML={{ __html: part.replace(/\n/g, '<br/>') }} />;
+      })}
     </div>
   );
 };
