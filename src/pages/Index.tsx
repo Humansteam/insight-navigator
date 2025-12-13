@@ -4,7 +4,7 @@ import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
-import { ChatAnalysis } from '@/components/cockpit/ChatAnalysis';
+import { PipelineDAG } from '@/components/cockpit/PipelineDAG';
 
 // Helper to get paper by id
 const getPaperById = (id: string) => mockNodes.find(p => p.id === id);
@@ -155,7 +155,7 @@ const Index = () => {
         {/* Report Content */}
         <div className="flex-1 overflow-auto">
           {analysisPhase === 'analyzing' ? (
-            <ChatAnalysis 
+            <PipelineDAG 
               query={currentQuery} 
               onComplete={() => setAnalysisPhase('complete')} 
             />
