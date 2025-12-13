@@ -1,26 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Search, FileText, Database, BarChart3, Map, FileEdit, Globe, Loader2, Check } from 'lucide-react';
 
-interface StageNode {
+interface TreeNode {
   id: string;
-  stage: number;
-  name: string;
-  icon: 'search' | 'file' | 'database' | 'chart' | 'map' | 'edit' | 'globe';
-  x: number;
-  y: number;
-  status: 'pending' | 'running' | 'complete';
-  outputs: string[];
-}
-
-interface SubNode {
-  id: string;
-  parentId: string;
   label: string;
+  type: 'query' | 'action' | 'result' | 'data';
   x: number;
   y: number;
   status: 'pending' | 'running' | 'complete';
+  children: string[];
+  value?: string;
 }
 
 interface PipelineDAGProps {
@@ -28,400 +18,260 @@ interface PipelineDAGProps {
   onComplete: () => void;
 }
 
-const iconMap = {
-  search: Search,
-  file: FileText,
-  database: Database,
-  chart: BarChart3,
-  map: Map,
-  edit: FileEdit,
-  globe: Globe,
-};
-
-// Main 6 stages + optional web search
-const mainStages: StageNode[] = [
-  { 
-    id: 'planning', 
-    stage: 1, 
-    name: 'PLANNING', 
-    icon: 'search', 
-    x: 100, y: 180, 
-    status: 'pending',
-    outputs: ['analysis_focus', 'regions', 'search_queries']
-  },
-  { 
-    id: 'retrieval', 
-    stage: 2, 
-    name: 'RETRIEVAL', 
-    icon: 'file', 
-    x: 280, y: 180, 
-    status: 'pending',
-    outputs: ['papers_15', 'umap_coords', 'clusters']
-  },
-  { 
-    id: 'schema', 
-    stage: 3, 
-    name: 'SCHEMA', 
-    icon: 'database', 
-    x: 460, y: 180, 
-    status: 'pending',
-    outputs: ['dimensions_6', 'query_type', 'rationale']
-  },
-  { 
-    id: 'extraction', 
-    stage: 4, 
-    name: 'EXTRACTION', 
-    icon: 'chart', 
-    x: 640, y: 180, 
-    status: 'pending',
-    outputs: ['facts_47', 'confidence', 'quotes']
-  },
-  { 
-    id: 'topology', 
-    stage: 5, 
-    name: 'TOPOLOGY', 
-    icon: 'map', 
-    x: 820, y: 180, 
-    status: 'pending',
-    outputs: ['divergence_0.73', 'centroids', 'clusters']
-  },
-  { 
-    id: 'synthesis', 
-    stage: 6, 
-    name: 'SYNTHESIS', 
-    icon: 'edit', 
-    x: 1000, y: 180, 
-    status: 'pending',
-    outputs: ['report_md', 'citations_12', 'sections_5']
-  },
+// Build tree structure that shows how the system thinks
+const buildQueryTree = (query: string): TreeNode[] => [
+  // Level 0: User Query
+  { id: 'q0', label: query.slice(0, 40) + (query.length > 40 ? '...' : ''), type: 'query', x: 500, y: 30, status: 'pending', children: ['p1', 'p2', 'p3'] },
+  
+  // Level 1: Planning branches
+  { id: 'p1', label: 'analyze_focus', type: 'action', x: 200, y: 100, status: 'pending', children: ['s1'] },
+  { id: 'p2', label: 'define_regions', type: 'action', x: 500, y: 100, status: 'pending', children: ['s2', 's3', 's4'] },
+  { id: 'p3', label: 'generate_queries', type: 'action', x: 800, y: 100, status: 'pending', children: ['s5', 's6'] },
+  
+  // Level 2: Sub-results
+  { id: 's1', label: 'comparative_analysis', type: 'result', x: 200, y: 170, status: 'pending', children: ['r1'] },
+  { id: 's2', label: 'China', type: 'data', x: 380, y: 170, status: 'pending', children: ['r1'] },
+  { id: 's3', label: 'USA', type: 'data', x: 500, y: 170, status: 'pending', children: ['r1'] },
+  { id: 's4', label: 'Europe', type: 'data', x: 620, y: 170, status: 'pending', children: ['r1'] },
+  { id: 's5', label: '"lithium battery efficiency"', type: 'data', x: 750, y: 170, status: 'pending', children: ['r1'] },
+  { id: 's6', label: '"solid state manufacturing"', type: 'data', x: 920, y: 170, status: 'pending', children: ['r2'] },
+  
+  // Level 3: Retrieval
+  { id: 'r1', label: 'search_papers', type: 'action', x: 400, y: 250, status: 'pending', children: ['d1', 'd2', 'd3'] },
+  { id: 'r2', label: 'web_search', type: 'action', x: 750, y: 250, status: 'pending', children: ['d4'] },
+  
+  // Level 4: Papers found
+  { id: 'd1', label: 'paper_001...004', type: 'data', x: 280, y: 320, status: 'pending', children: ['e1'], value: '4 papers' },
+  { id: 'd2', label: 'paper_005...008', type: 'data', x: 450, y: 320, status: 'pending', children: ['e1'], value: '4 papers' },
+  { id: 'd3', label: 'paper_009...012', type: 'data', x: 620, y: 320, status: 'pending', children: ['e1'], value: '4 papers' },
+  { id: 'd4', label: 'external_sources', type: 'data', x: 750, y: 320, status: 'pending', children: ['e2'], value: '3 sources' },
+  
+  // Level 5: Extraction
+  { id: 'e1', label: 'extract_dimensions', type: 'action', x: 400, y: 390, status: 'pending', children: ['f1', 'f2', 'f3'] },
+  { id: 'e2', label: 'parse_external', type: 'action', x: 750, y: 390, status: 'pending', children: ['f4'] },
+  
+  // Level 6: Facts
+  { id: 'f1', label: 'efficiency_data', type: 'result', x: 280, y: 460, status: 'pending', children: ['t1'], value: '18 facts' },
+  { id: 'f2', label: 'temperature_data', type: 'result', x: 420, y: 460, status: 'pending', children: ['t1'], value: '15 facts' },
+  { id: 'f3', label: 'cost_metrics', type: 'result', x: 560, y: 460, status: 'pending', children: ['t1'], value: '14 facts' },
+  { id: 'f4', label: 'market_data', type: 'result', x: 750, y: 460, status: 'pending', children: ['t2'] },
+  
+  // Level 7: Topology
+  { id: 't1', label: 'compute_topology', type: 'action', x: 420, y: 530, status: 'pending', children: ['div'] },
+  { id: 't2', label: 'merge_sources', type: 'action', x: 700, y: 530, status: 'pending', children: ['div'] },
+  
+  // Level 8: Divergence
+  { id: 'div', label: 'divergence: 0.73', type: 'result', x: 500, y: 600, status: 'pending', children: ['syn'] },
+  
+  // Level 9: Synthesis  
+  { id: 'syn', label: 'synthesize_report', type: 'action', x: 500, y: 670, status: 'pending', children: ['out'] },
+  
+  // Level 10: Output
+  { id: 'out', label: 'final_report.md', type: 'result', x: 500, y: 740, status: 'pending', children: [] },
 ];
 
-// Optional web search branch
-const webSearchNode: StageNode = {
-  id: 'websearch',
-  stage: 0,
-  name: 'WEB SEARCH',
-  icon: 'globe',
-  x: 280, y: 80,
-  status: 'pending',
-  outputs: ['external_data']
-};
-
-// Output sub-nodes for each stage
-const generateSubNodes = (stages: StageNode[]): SubNode[] => {
-  const subNodes: SubNode[] = [];
-  stages.forEach(stage => {
-    stage.outputs.forEach((output, idx) => {
-      subNodes.push({
-        id: `${stage.id}-${output}`,
-        parentId: stage.id,
-        label: output.replace(/_/g, ' '),
-        x: stage.x + (idx - 1) * 50,
-        y: stage.y + 70,
-        status: 'pending',
-      });
-    });
-  });
-  return subNodes;
-};
+// Execution order - groups of nodes to process together
+const executionOrder = [
+  ['q0'],
+  ['p1', 'p2', 'p3'],
+  ['s1', 's2', 's3', 's4', 's5', 's6'],
+  ['r1', 'r2'],
+  ['d1', 'd2', 'd3', 'd4'],
+  ['e1', 'e2'],
+  ['f1', 'f2', 'f3', 'f4'],
+  ['t1', 't2'],
+  ['div'],
+  ['syn'],
+  ['out'],
+];
 
 export const PipelineDAG = ({ query, onComplete }: PipelineDAGProps) => {
-  const [stages, setStages] = useState<StageNode[]>(mainStages);
-  const [subNodes, setSubNodes] = useState<SubNode[]>(generateSubNodes(mainStages));
-  const [webSearch, setWebSearch] = useState<StageNode>(webSearchNode);
-  const [currentStageIndex, setCurrentStageIndex] = useState(0);
-  const [showWebSearch] = useState(true); // Could be dynamic based on query
+  const [nodes, setNodes] = useState<TreeNode[]>(() => buildQueryTree(query));
+  const [currentStep, setCurrentStep] = useState(0);
+  const [visibleNodes, setVisibleNodes] = useState<Set<string>>(new Set());
 
-  // Process stages sequentially
+  // Process execution steps
   useEffect(() => {
-    if (currentStageIndex >= stages.length) {
-      setTimeout(onComplete, 800);
+    if (currentStep >= executionOrder.length) {
+      setTimeout(onComplete, 600);
       return;
     }
 
-    const currentStage = stages[currentStageIndex];
-
-    // Set stage to running
-    setStages(prev => prev.map((s, idx) => 
-      idx === currentStageIndex ? { ...s, status: 'running' } : s
+    const currentIds = executionOrder[currentStep];
+    
+    // Make nodes visible and set to running
+    setVisibleNodes(prev => new Set([...prev, ...currentIds]));
+    setNodes(prev => prev.map(node => 
+      currentIds.includes(node.id) ? { ...node, status: 'running' } : node
     ));
 
-    // If first stage and web search enabled, run it in parallel
-    if (currentStageIndex === 0 && showWebSearch) {
-      setWebSearch(prev => ({ ...prev, status: 'running' }));
-      setTimeout(() => {
-        setWebSearch(prev => ({ ...prev, status: 'complete' }));
-      }, 600);
-    }
-
-    // Complete stage and sub-nodes after delay
+    // Complete after delay
     const timeout = setTimeout(() => {
-      // Complete main stage
-      setStages(prev => prev.map((s, idx) => 
-        idx === currentStageIndex ? { ...s, status: 'complete' } : s
+      setNodes(prev => prev.map(node => 
+        currentIds.includes(node.id) ? { ...node, status: 'complete' } : node
       ));
-
-      // Complete sub-nodes
-      setSubNodes(prev => prev.map(sub => 
-        sub.parentId === currentStage.id ? { ...sub, status: 'complete' } : sub
-      ));
-
-      setCurrentStageIndex(prev => prev + 1);
-    }, 1000 + Math.random() * 500);
+      setCurrentStep(prev => prev + 1);
+    }, 500 + Math.random() * 300);
 
     return () => clearTimeout(timeout);
-  }, [currentStageIndex, stages.length, showWebSearch, onComplete]);
+  }, [currentStep, onComplete]);
 
-  const getStageColor = (status: string) => {
-    switch (status) {
-      case 'complete': return 'bg-primary text-primary-foreground border-primary';
-      case 'running': return 'bg-primary/20 text-primary border-primary';
-      default: return 'bg-muted text-muted-foreground border-border';
-    }
+  // Get node style based on type
+  const getNodeStyle = (node: TreeNode) => {
+    const base = "transition-all duration-200";
+    const typeStyles = {
+      query: "bg-primary text-primary-foreground font-medium",
+      action: "bg-muted border-l-2 border-l-primary",
+      result: "bg-primary/10 border border-primary/30",
+      data: "bg-muted/50 border border-dashed border-muted-foreground/30 text-muted-foreground",
+    };
+    const statusStyles = {
+      pending: "opacity-40",
+      running: "opacity-100 shadow-lg shadow-primary/20",
+      complete: "opacity-100",
+    };
+    return cn(base, typeStyles[node.type], statusStyles[node.status]);
   };
 
-  return (
-    <div className="max-w-5xl mx-auto py-6 px-4">
-      {/* Query display */}
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex justify-center mb-6"
-      >
-        <div className="px-5 py-2.5 rounded-xl border border-border bg-background text-foreground text-sm text-center max-w-xl">
-          {query}
-        </div>
-      </motion.div>
-
-      {/* DAG Container */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="relative bg-muted/10 rounded-xl border border-border p-6 overflow-x-auto"
-      >
-        <svg width="1100" height="320" className="min-w-[1100px]">
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--primary))" />
-            </marker>
-            <marker
-              id="arrowhead-muted"
-              markerWidth="10"
-              markerHeight="7"
-              refX="9"
-              refY="3.5"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3.5, 0 7" fill="hsl(var(--muted-foreground))" opacity="0.3" />
-            </marker>
-          </defs>
-
-          {/* Main pipeline connections (straight lines) */}
-          {stages.slice(0, -1).map((stage, idx) => {
-            const nextStage = stages[idx + 1];
-            const isActive = stage.status === 'complete';
-            return (
-              <g key={`conn-${stage.id}`}>
-                <motion.line
-                  x1={stage.x + 60}
-                  y1={stage.y}
-                  x2={nextStage.x - 60}
-                  y2={nextStage.y}
-                  stroke={isActive ? 'hsl(var(--primary))' : 'hsl(var(--border))'}
-                  strokeWidth={isActive ? 3 : 2}
-                  strokeDasharray={isActive ? "0" : "5,5"}
-                  markerEnd={isActive ? 'url(#arrowhead)' : 'url(#arrowhead-muted)'}
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 0.3, delay: idx * 0.1 }}
-                />
-              </g>
-            );
-          })}
-
-          {/* Web search connection to retrieval */}
-          {showWebSearch && (
+  // Draw connecting lines
+  const renderConnections = useCallback(() => {
+    const lines: JSX.Element[] = [];
+    
+    nodes.forEach(node => {
+      if (!visibleNodes.has(node.id)) return;
+      
+      node.children.forEach(childId => {
+        const child = nodes.find(n => n.id === childId);
+        if (!child || !visibleNodes.has(child.id)) return;
+        
+        const isActive = node.status === 'complete' || child.status === 'running';
+        
+        // Calculate line path (straight with right angles)
+        const midY = (node.y + 20 + child.y) / 2;
+        
+        lines.push(
+          <motion.g key={`${node.id}-${child.id}`}>
+            {/* Vertical from parent */}
             <motion.line
-              x1={webSearch.x}
-              y1={webSearch.y + 30}
-              x2={stages[1].x}
-              y2={stages[1].y - 40}
-              stroke={webSearch.status === 'complete' ? 'hsl(var(--primary))' : 'hsl(var(--border))'}
-              strokeWidth={2}
-              strokeDasharray={webSearch.status === 'complete' ? "0" : "5,5"}
+              x1={node.x}
+              y1={node.y + 20}
+              x2={node.x}
+              y2={midY}
+              stroke={isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+              strokeWidth={isActive ? 2 : 1}
+              opacity={isActive ? 1 : 0.3}
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
+              transition={{ duration: 0.2 }}
             />
-          )}
+            {/* Horizontal connector */}
+            <motion.line
+              x1={node.x}
+              y1={midY}
+              x2={child.x}
+              y2={midY}
+              stroke={isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+              strokeWidth={isActive ? 2 : 1}
+              opacity={isActive ? 1 : 0.3}
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+            />
+            {/* Vertical to child */}
+            <motion.line
+              x1={child.x}
+              y1={midY}
+              x2={child.x}
+              y2={child.y}
+              stroke={isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+              strokeWidth={isActive ? 2 : 1}
+              opacity={isActive ? 1 : 0.3}
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.2, delay: 0.2 }}
+            />
+          </motion.g>
+        );
+      });
+    });
+    
+    return lines;
+  }, [nodes, visibleNodes]);
 
-          {/* Sub-node connections (vertical lines from stages) */}
-          {subNodes.map((sub) => {
-            const parent = stages.find(s => s.id === sub.parentId);
-            if (!parent) return null;
-            return (
-              <motion.line
-                key={sub.id}
-                x1={parent.x}
-                y1={parent.y + 35}
-                x2={sub.x}
-                y2={sub.y - 10}
-                stroke={sub.status === 'complete' ? 'hsl(var(--primary))' : 'hsl(var(--border))'}
-                strokeWidth={1}
-                opacity={0.5}
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: sub.status !== 'pending' ? 1 : 0 }}
-              />
-            );
-          })}
+  return (
+    <div className="w-full py-4 px-2">
+      {/* Scrollable DAG container */}
+      <div className="overflow-auto bg-background border border-border rounded-lg" style={{ height: 'calc(100vh - 220px)' }}>
+        <div className="relative" style={{ width: 1100, height: 800, minWidth: 1100 }}>
+          {/* SVG for connections */}
+          <svg 
+            className="absolute inset-0 pointer-events-none" 
+            width={1100} 
+            height={800}
+          >
+            {renderConnections()}
+          </svg>
 
-          {/* Web Search Node */}
-          {showWebSearch && (
-            <motion.g
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <rect
-                x={webSearch.x - 55}
-                y={webSearch.y - 20}
-                width={110}
-                height={40}
-                rx={8}
-                className={cn(
-                  "stroke-2 transition-all duration-300",
-                  getStageColor(webSearch.status)
-                )}
-                fill="currentColor"
-                stroke="currentColor"
-              />
-              <foreignObject x={webSearch.x - 50} y={webSearch.y - 15} width={100} height={30}>
-                <div className="flex items-center justify-center gap-1.5 h-full">
-                  {webSearch.status === 'running' ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : webSearch.status === 'complete' ? (
-                    <Check className="w-3.5 h-3.5" />
-                  ) : (
-                    <Globe className="w-3.5 h-3.5" />
-                  )}
-                  <span className="text-[10px] font-medium">WEB SEARCH</span>
-                </div>
-              </foreignObject>
-            </motion.g>
-          )}
-
-          {/* Main Stage Nodes */}
-          {stages.map((stage, idx) => {
-            const Icon = iconMap[stage.icon];
-            return (
-              <motion.g
-                key={stage.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                {/* Stage box */}
-                <rect
-                  x={stage.x - 55}
-                  y={stage.y - 35}
-                  width={110}
-                  height={70}
-                  rx={12}
+          {/* Nodes */}
+          <AnimatePresence>
+            {nodes.map(node => (
+              visibleNodes.has(node.id) && (
+                <motion.div
+                  key={node.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   className={cn(
-                    "transition-all duration-300",
-                    stage.status === 'complete' && "fill-primary stroke-primary",
-                    stage.status === 'running' && "fill-primary/20 stroke-primary stroke-2",
-                    stage.status === 'pending' && "fill-muted stroke-border"
+                    "absolute px-2 py-1 text-[11px] font-mono whitespace-nowrap",
+                    getNodeStyle(node)
                   )}
-                />
-                
-                {/* Running pulse */}
-                {stage.status === 'running' && (
-                  <motion.rect
-                    x={stage.x - 55}
-                    y={stage.y - 35}
-                    width={110}
-                    height={70}
-                    rx={12}
-                    fill="none"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    initial={{ opacity: 1 }}
-                    animate={{ opacity: [1, 0.3, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                )}
-
-                {/* Stage content */}
-                <foreignObject x={stage.x - 50} y={stage.y - 30} width={100} height={60}>
-                  <div className={cn(
-                    "flex flex-col items-center justify-center h-full gap-1",
-                    stage.status === 'complete' && "text-primary-foreground",
-                    stage.status === 'running' && "text-primary",
-                    stage.status === 'pending' && "text-muted-foreground"
-                  )}>
-                    <div className="flex items-center gap-1">
-                      <span className="text-[10px] font-bold opacity-60">{stage.stage}.</span>
-                      {stage.status === 'running' ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : stage.status === 'complete' ? (
-                        <Check className="w-4 h-4" />
-                      ) : (
-                        <Icon className="w-4 h-4" />
-                      )}
-                    </div>
-                    <span className="text-[11px] font-bold tracking-wide">{stage.name}</span>
-                  </div>
-                </foreignObject>
-              </motion.g>
-            );
-          })}
-
-          {/* Sub-nodes (outputs) */}
-          {subNodes.map((sub, idx) => (
-            <AnimatePresence key={sub.id}>
-              {sub.status !== 'pending' && (
-                <motion.g
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
+                  style={{
+                    left: node.x,
+                    top: node.y,
+                    transform: 'translateX(-50%)',
+                  }}
                 >
-                  <rect
-                    x={sub.x - 40}
-                    y={sub.y}
-                    width={80}
-                    height={24}
-                    rx={4}
-                    className="fill-muted/50 stroke-border"
-                  />
-                  <foreignObject x={sub.x - 38} y={sub.y + 2} width={76} height={20}>
-                    <div className="text-[9px] text-muted-foreground font-mono text-center truncate px-1">
-                      {sub.label}
-                    </div>
-                  </foreignObject>
-                </motion.g>
-              )}
-            </AnimatePresence>
-          ))}
-        </svg>
-      </motion.div>
+                  {/* Running indicator */}
+                  {node.status === 'running' && (
+                    <motion.span
+                      className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full"
+                      animate={{ opacity: [1, 0.3, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity }}
+                    />
+                  )}
+                  
+                  <span className={cn(
+                    node.type === 'action' && "text-foreground",
+                    node.type === 'query' && "text-primary-foreground",
+                  )}>
+                    {node.label}
+                  </span>
+                  
+                  {/* Value badge */}
+                  {node.value && node.status === 'complete' && (
+                    <span className="ml-1.5 px-1 py-0.5 bg-primary/20 text-primary text-[9px] rounded">
+                      {node.value}
+                    </span>
+                  )}
+                </motion.div>
+              )
+            ))}
+          </AnimatePresence>
+        </div>
+      </div>
 
-      {/* Progress indicator */}
-      <div className="mt-4 flex items-center justify-center gap-2">
-        {stages.map((stage, idx) => (
+      {/* Progress */}
+      <div className="mt-3 flex items-center justify-center gap-1">
+        <span className="text-xs text-muted-foreground mr-2">
+          Step {Math.min(currentStep + 1, executionOrder.length)}/{executionOrder.length}
+        </span>
+        {executionOrder.map((_, idx) => (
           <div
-            key={stage.id}
+            key={idx}
             className={cn(
-              "w-2 h-2 rounded-full transition-all duration-300",
-              stage.status === 'complete' && "bg-primary",
-              stage.status === 'running' && "bg-primary animate-pulse w-3 h-3",
-              stage.status === 'pending' && "bg-muted-foreground/30"
+              "w-1.5 h-1.5 rounded-sm transition-all",
+              idx < currentStep && "bg-primary",
+              idx === currentStep && "bg-primary w-3",
+              idx > currentStep && "bg-muted-foreground/20"
             )}
           />
         ))}
