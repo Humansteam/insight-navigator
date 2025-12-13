@@ -3,10 +3,14 @@ import { ChevronRight, PanelRight } from 'lucide-react';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { StudiesTable } from '@/components/cockpit/StudiesTable';
 
 const Index = () => {
   const [inputValue, setInputValue] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
   // Parse report into sections
   const renderReportContent = () => {
     // Simplified content based on mockReportText
@@ -45,6 +49,38 @@ const Index = () => {
             <span className="text-primary cursor-pointer hover:underline">More on methods</span>
           </p>
         </CollapsibleSection>
+
+        {/* Results Section with Studies Table */}
+        <SectionHeader title="RESULTS" />
+        <h4 className="text-lg font-semibold text-foreground mb-2">Characteristics of Included Studies</h4>
+        <p className="text-base text-foreground/90 leading-relaxed mb-4">
+          This review includes {mockNodes.length} sources examining lithium battery technology, 
+          covering industrial processing, solid-state electrolytes, and recycling methods.
+        </p>
+
+        <StudiesTable
+          nodes={mockNodes}
+          selectedNodeId={selectedNodeId}
+          onSelectNode={setSelectedNodeId}
+          hoveredNodeId={hoveredNodeId}
+          onHoverNode={setHoveredNodeId}
+        />
+
+        {/* Thematic Analysis */}
+        <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Thematic Analysis</h4>
+        <h5 className="text-base font-semibold text-foreground mb-2">Industrial Processing and Manufacturing</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-4">
+          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
+          achieving 95% lithium recovery <Citation id="paper-001" />. Manufacturing optimization through 
+          AI monitoring shows 25% energy reduction <Citation id="paper-002" />.
+        </p>
+
+        <h5 className="text-base font-semibold text-foreground mb-2">Solid-State Battery Advances</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-4">
+          A critical breakthrough exists in solid-state technology. Chinese protocols report 500 Wh/kg 
+          energy density <Citation id="paper-007" />. European artificial SEI enables 500 cycles at 
+          99.2% efficiency <Citation id="paper-006" />.
+        </p>
       </>
     );
   };
