@@ -2,10 +2,21 @@
  * useEngineData - Adapter hook for Morphik Intelligence Engine
  *
  * Connects to Engine API and converts output to Lovable UI format (DataNode)
+ * Falls back to mock data when API is unavailable (demo mode)
  */
 
 import { useState, useCallback, useRef } from 'react';
 import { DataNode, DimensionValue } from '@/types/morphik';
+import { 
+  mockNodes, 
+  mockDimensions, 
+  mockDivergence, 
+  mockReportText,
+  mockTRLData,
+  mockConflicts,
+  mockGaps,
+  mockStrategicHorizon
+} from '@/data/mockData';
 
 // Engine API types
 interface EnginePaper {
@@ -17,7 +28,6 @@ interface EnginePaper {
   umap_y: number;
   cluster_id: number;
   cluster_label: string;
-  // Extended fields (if available from hydrated data)
   authors?: string[];
   abstract?: string;
 }
@@ -51,11 +61,10 @@ interface EngineTopology {
 
 interface EngineReport {
   title: string;
-  lead: string;           // 1-2 sentence summary (italic in UI)
-  abstract: string;       // Full synthesis for ABSTRACT section
-  methodology: string;    // For METHODS section
-  markdown: string;       // RESULTS + Thematic Analysis body
-  // Legacy
+  lead: string;
+  abstract: string;
+  methodology: string;
+  markdown: string;
   executive_summary?: string;
   total_papers_analyzed: number;
   total_facts_extracted?: number;
@@ -72,8 +81,9 @@ interface EngineState {
   error: string | null;
 }
 
-// Configuration
-const ENGINE_API_BASE = import.meta.env.VITE_ENGINE_API_URL || 'http://135.181.106.12:8787';
+// Configuration - set to empty to force mock mode
+const ENGINE_API_BASE = import.meta.env.VITE_ENGINE_API_URL || '';
+const USE_MOCK_DATA = !ENGINE_API_BASE;
 
 // Convert country string to union type
 function normalizeCountry(country: string): 'china' | 'usa' | 'europe' | 'other' {
@@ -137,9 +147,79 @@ export function useEngineData() {
   const [input, setInput] = useState('');
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Mock data simulation for demo mode
+  const simulateMockAnalysis = useCallback(async (query: string) => {
+    const phases: { phase: EnginePhase; delay: number }[] = [
+      { phase: 'planning', delay: 800 },
+      { phase: 'retrieval', delay: 1200 },
+      { phase: 'schema_design', delay: 600 },
+      { phase: 'extraction', delay: 1500 },
+      { phase: 'topology', delay: 1000 },
+      { phase: 'synthesis', delay: 1200 },
+      { phase: 'complete', delay: 0 },
+    ];
+
+    for (const { phase, delay } of phases) {
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+      if (phase === 'extraction') {
+        setState(prev => ({
+          ...prev,
+          phase,
+          dimensions: mockDimensions,
+          papers: mockNodes,
+        }));
+      } else if (phase === 'topology') {
+        setState(prev => ({
+          ...prev,
+          phase,
+          topology: {
+            divergence_level: mockDivergence.score > 0.7 ? 'high' : 'medium',
+            divergence_score: mockDivergence.score,
+            insight_text: `Analysis reveals significant divergence between ${mockDivergence.cluster_a} and ${mockDivergence.cluster_b} research approaches.`,
+            cluster_distribution: { 'Industrial Processing': 3, 'Solid-State': 4 },
+            region_distribution: { china: 3, usa: 2, europe: 2 },
+          },
+        }));
+      } else if (phase === 'complete') {
+        setState(prev => ({
+          ...prev,
+          phase,
+          report: {
+            title: `Strategic Analysis: ${query}`,
+            lead: 'Comprehensive analysis of 165,432 scientific articles reveals significant regional divergence in research approaches.',
+            abstract: 'This report synthesizes findings from major research clusters...',
+            methodology: 'Multi-dimensional extraction with UMAP topology analysis',
+            markdown: mockReportText,
+            total_papers_analyzed: 165432,
+            total_facts_extracted: 1247,
+          },
+        }));
+      } else {
+        setState(prev => ({ ...prev, phase }));
+      }
+    }
+  }, []);
+
   const analyze = useCallback(async (query: string) => {
     setIsLoading(true);
     setState(prev => ({ ...prev, phase: 'planning', error: null }));
+
+    // Use mock data if API is not configured
+    if (USE_MOCK_DATA) {
+      try {
+        await simulateMockAnalysis(query);
+      } catch (error) {
+        setState(prev => ({
+          ...prev,
+          phase: 'error',
+          error: (error as Error).message,
+        }));
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -266,7 +346,7 @@ export function useEngineData() {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, []);
+  }, [simulateMockAnalysis]);
 
   const handleSubmit = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
