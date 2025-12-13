@@ -4,15 +4,29 @@ import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
+import { AnalysisProcess } from '@/components/cockpit/AnalysisProcess';
+import { CompactTimeline } from '@/components/cockpit/CompactTimeline';
+import { AnalysisStageData } from '@/components/cockpit/AnalysisStage';
 
 // Helper to get paper by id
 const getPaperById = (id: string) => mockNodes.find(p => p.id === id);
 const getPaperIndex = (id: string) => mockNodes.findIndex(p => p.id === id) + 1;
 
+// Completed stages data for compact timeline
+const completedStages: AnalysisStageData[] = [
+  { id: 'planning', name: 'Planning', description: '', status: 'complete', icon: 'search', metrics: [{ label: 'Queries', value: 4 }] },
+  { id: 'retrieval', name: 'Retrieval', description: '', status: 'complete', icon: 'file', metrics: [{ label: 'Papers found', value: 12 }] },
+  { id: 'schema', name: 'Schema', description: '', status: 'complete', icon: 'database', metrics: [{ label: 'Dimensions', value: 6 }] },
+  { id: 'extraction', name: 'Extraction', description: '', status: 'complete', icon: 'chart', metrics: [{ label: 'Facts', value: 47 }] },
+  { id: 'topology', name: 'Topology', description: '', status: 'complete', icon: 'map', metrics: [{ label: 'Divergence', value: 'High' }] },
+  { id: 'synthesis', name: 'Synthesis', description: '', status: 'complete', icon: 'edit', metrics: [{ label: 'Sections', value: 5 }] },
+];
+
 const Index = () => {
   const [inputValue, setInputValue] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
+  const [analysisPhase, setAnalysisPhase] = useState<'idle' | 'analyzing' | 'complete'>('idle');
+  const [currentQuery, setCurrentQuery] = useState('');
   // Parse report into sections
   const renderReportContent = () => {
     return (
@@ -152,14 +166,26 @@ const Index = () => {
 
         {/* Report Content */}
         <div className="flex-1 overflow-auto">
-          <div className="max-w-3xl mx-auto px-8 py-10">
-            {/* Date */}
-            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
-              December 13, 2025
-            </p>
+          {analysisPhase === 'analyzing' ? (
+            <AnalysisProcess 
+              query={currentQuery} 
+              onComplete={() => setAnalysisPhase('complete')} 
+            />
+          ) : (
+            <div className="max-w-3xl mx-auto px-8 py-10">
+              {/* Compact timeline when complete */}
+              {analysisPhase === 'complete' && (
+                <CompactTimeline stages={completedStages} className="mb-6 -mx-8 -mt-10" />
+              )}
+              
+              {/* Date */}
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+                December 13, 2025
+              </p>
 
-            {renderReportContent()}
-          </div>
+              {renderReportContent()}
+            </div>
+          )}
         </div>
 
         {/* Chat Input */}
@@ -168,21 +194,39 @@ const Index = () => {
             <div className="bg-muted/50 rounded-xl p-4">
               <input
                 type="text"
-                placeholder="Ask about scientific papers..."
+                placeholder={analysisPhase === 'idle' ? "Enter your research query..." : "Ask about scientific papers..."}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && inputValue.trim()) {
+                    if (analysisPhase === 'idle') {
+                      setCurrentQuery(inputValue);
+                      setAnalysisPhase('analyzing');
+                      setInputValue('');
+                    }
+                  }
+                }}
                 className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
               />
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-3">
                   <button className="px-3 py-1.5 text-xs font-medium bg-background rounded-md border border-border hover:bg-accent transition-colors">
-                    Chat Mode
+                    {analysisPhase === 'idle' ? 'Engine Mode' : 'Chat Mode'}
                   </button>
                   <span className="text-xs text-muted-foreground">
                     Searching 165K papers
                   </span>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center hover:opacity-80 transition-opacity">
+                <button 
+                  onClick={() => {
+                    if (inputValue.trim() && analysisPhase === 'idle') {
+                      setCurrentQuery(inputValue);
+                      setAnalysisPhase('analyzing');
+                      setInputValue('');
+                    }
+                  }}
+                  className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <ChevronRight className="w-4 h-4 text-background rotate-[-90deg]" />
                 </button>
               </div>
