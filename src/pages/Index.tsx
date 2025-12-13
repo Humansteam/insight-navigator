@@ -198,15 +198,18 @@ const Index = () => {
         isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
       )}>
         <div className="p-4 border-b border-border min-w-[360px]">
-          <h3 className="text-sm font-medium text-primary">Origin paper</h3>
+          <h3 className="text-sm font-medium text-primary">Evidence Matrix</h3>
         </div>
         <div className="flex-1 overflow-auto min-w-[360px]">
           {mockNodes.map((paper) => (
             <div
               key={paper.id}
-              className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
+              className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors relative"
             >
-              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2">
+              <span className="absolute top-3 right-4 text-xs font-medium text-primary">
+                {Math.round(paper.score * 100)}%
+              </span>
+              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-10">
                 {paper.title}
               </h4>
               <div className="flex items-center justify-between">
