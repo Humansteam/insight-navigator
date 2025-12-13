@@ -1,4 +1,4 @@
-import { Moon, Sun, Monitor } from 'lucide-react';
+import { Moon, Sun, Sparkles } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import {
   DropdownMenu,
@@ -17,8 +17,10 @@ export const ThemeSwitcher = () => {
         return <Sun className="w-4 h-4" />;
       case 'dark':
         return <Moon className="w-4 h-4" />;
+      case 'deep-space':
+        return <Sparkles className="w-4 h-4" />;
       default:
-        return <Monitor className="w-4 h-4" />;
+        return <Moon className="w-4 h-4" />;
     }
   };
 
@@ -29,7 +31,7 @@ export const ThemeSwitcher = () => {
           {getIcon()}
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36">
+      <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem
           onClick={() => setTheme('light')}
           className={cn(theme === 'light' && 'bg-accent')}
@@ -45,11 +47,11 @@ export const ThemeSwitcher = () => {
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => setTheme('system')}
-          className={cn(theme === 'system' && 'bg-accent')}
+          onClick={() => setTheme('deep-space')}
+          className={cn(theme === 'deep-space' && 'bg-accent')}
         >
-          <Monitor className="w-4 h-4 mr-2" />
-          System
+          <Sparkles className="w-4 h-4 mr-2" />
+          Deep Space
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

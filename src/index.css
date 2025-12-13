@@ -69,8 +69,67 @@
     --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   }
 
-  /* Dark theme */
+  /* Dark theme - Morphik neutral */
   .dark {
+    --background: 240 10% 3.9%;
+    --background-deep: 240 10% 2%;
+    --background-elevated: 240 10% 6%;
+    --foreground: 0 0% 98%;
+    --foreground-muted: 240 5% 64.9%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --card-border: 240 3.7% 15.9%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --primary-glow: 0 0% 100%;
+    --primary-muted: 240 3.7% 25%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 70% 45%;
+    --warning: 45 95% 55%;
+
+    --border: 240 3.7% 15.9%;
+    --border-glow: 0 0% 50%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 0% 98%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 17%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 17%;
+    --sidebar-ring: 240 4.9% 83.9%;
+
+    --gradient-dark: linear-gradient(180deg, hsl(240 10% 3.9%) 0%, hsl(240 10% 2%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(240 10% 6%) 0%, hsl(240 10% 3.9%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(0 0% 98% / 0.1) 0%, transparent 70%);
+
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 20px hsl(0 0% 98% / 0.2);
+    --shadow-glow-sm: 0 0 8px hsl(0 0% 98% / 0.15);
+  }
+
+  /* Deep Space theme - Cyan accents */
+  .deep-space {
     --background: 222 47% 6%;
     --background-deep: 225 50% 4%;
     --background-elevated: 222 40% 10%;
