@@ -206,10 +206,18 @@ const Index = () => {
               key={paper.id}
               className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors relative"
             >
-              <span className="absolute top-3 right-4 text-xs font-medium text-primary">
-                {Math.round(paper.score * 100)}%
-              </span>
-              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-10">
+              <div className="absolute top-3 right-4 flex flex-col items-end gap-1">
+                <span className="text-xs font-medium text-primary">
+                  {Math.round(paper.score * 100)}%
+                </span>
+                <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary rounded-full" 
+                    style={{ width: `${paper.score * 100}%` }}
+                  />
+                </div>
+              </div>
+              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-14">
                 {paper.title}
               </h4>
               <div className="flex items-center justify-between">
