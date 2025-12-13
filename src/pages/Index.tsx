@@ -1,96 +1,171 @@
-import { useState, useMemo } from 'react';
-import { ChatInterface } from '@/components/cockpit/ChatInterface';
-import { ReportPanel } from '@/components/cockpit/ReportPanel';
-import { TopologyVisualization } from '@/components/cockpit/TopologyVisualization';
-import { DynamicContext } from '@/components/cockpit/DynamicContext';
-import { EvidenceGrid } from '@/components/cockpit/EvidenceGrid';
-import { mockNodes, mockEdges, mockReportText, mockDimensions } from '@/data/mockData';
+import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { mockNodes, mockReportText } from '@/data/mockData';
+import { cn } from '@/lib/utils';
 
 const Index = () => {
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [reportText, setReportText] = useState(mockReportText);
-  const [isGenerating, setIsGenerating] = useState(true);
+  const [inputValue, setInputValue] = useState('');
 
-  const selectedNode = useMemo(
-    () => mockNodes.find((n) => n.id === selectedNodeId) || null,
-    [selectedNodeId]
-  );
+  // Parse report into sections
+  const renderReportContent = () => {
+    // Simplified content based on mockReportText
+    return (
+      <>
+        {/* Title */}
+        <h1 className="text-4xl font-serif font-normal text-foreground mb-6">
+          Lithium Battery Research Analysis
+        </h1>
 
-  const handleSendMessage = (message: string) => {
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-    }, 2000);
-  };
+        {/* Lead paragraph */}
+        <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+          The analysis reveals significant divergence in lithium battery research between major geopolitical regions. 
+          China leads in manufacturing scalability <Citation id="paper-001" />, while the United States demonstrates 
+          advantages in fundamental materials science <Citation id="paper-003" /> <Citation id="paper-004" />.
+        </p>
 
-  const handleCitationHover = (paperId: string | null) => {
-    setHoveredNodeId(paperId);
-  };
+        {/* Abstract Section */}
+        <SectionHeader title="ABSTRACT" />
+        <p className="text-base text-foreground/90 leading-relaxed mb-6">
+          This review synthesizes findings from 165,432 scientific articles examining lithium battery technology 
+          across industrial processing, recycling, and solid-state advances <Citation id="paper-001" />. 
+          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
+          achieving 95% lithium recovery <Citation id="paper-002" />. Manufacturing optimization through AI monitoring 
+          shows 25% energy reduction <Citation id="paper-002" />. The highest recovery rates emerge from 
+          hydrometallurgical processes developed in US labs, achieving 99.2% Li, 98.8% Co recovery <Citation id="paper-003" />. 
+          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 500 Wh/kg 
+          energy density <Citation id="paper-007" />.
+        </p>
 
-  const handleCitationClick = (paperId: string) => {
-    setSelectedNodeId(paperId);
+        {/* Methods Section */}
+        <CollapsibleSection title="METHODS">
+          <p className="text-base text-foreground/90 leading-relaxed">
+            We analyzed 7 sources from an initial pool of 165,432, using 5 screening criteria. Each paper was 
+            reviewed for 5 key aspects that mattered most to the research question.{' '}
+            <span className="text-primary cursor-pointer hover:underline">More on methods</span>
+          </p>
+        </CollapsibleSection>
+      </>
+    );
   };
 
   return (
-    <div className="h-screen w-full flex overflow-hidden bg-background">
+    <div className="h-screen w-full flex bg-background">
       {/* Left Panel: Report + Chat */}
-      <div className="w-[560px] flex flex-col border-r border-border min-w-0 shrink-0">
-        {/* Report */}
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <ReportPanel
-            markdown={reportText}
-            isGenerating={isGenerating}
-            onCitationHover={handleCitationHover}
-            onCitationClick={handleCitationClick}
-          />
-        </div>
-
-        {/* Chat */}
-        <ChatInterface
-          onSendMessage={handleSendMessage}
-          isProcessing={isProcessing}
-        />
-      </div>
-
-      {/* Right Panel: Graph/Table + Details */}
-      <div className="flex-1 flex min-w-0 overflow-hidden">
-        {/* Left column: Graph + Table */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {/* Graph */}
-          <div className="h-[280px] shrink-0 p-3 border-b border-border">
-            <TopologyVisualization
-              nodes={mockNodes}
-              edges={mockEdges}
-              selectedNodeId={selectedNodeId}
-              onSelectNode={setSelectedNodeId}
-              hoveredNodeId={hoveredNodeId}
-              onHoverNode={setHoveredNodeId}
-            />
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header */}
+        <header className="h-14 flex items-center justify-between px-6 border-b border-border">
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-medium text-foreground">
+              Exploring Lithium Battery Research
+            </h2>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </div>
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className={cn(
+                  "w-2 h-2 rounded-full",
+                  i < 5 ? "bg-primary" : "bg-muted"
+                )} />
+              ))}
+            </div>
+            <span className="text-sm text-muted-foreground ml-2">Research report</span>
+          </div>
+        </header>
 
-          {/* Table */}
-          <div className="flex-1 min-h-0 overflow-auto">
-            <EvidenceGrid
-              nodes={mockNodes}
-              dimensions={mockDimensions}
-              selectedNodeId={selectedNodeId}
-              onSelectNode={setSelectedNodeId}
-              hoveredNodeId={hoveredNodeId}
-              onHoverNode={setHoveredNodeId}
-            />
+        {/* Report Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="max-w-3xl mx-auto px-8 py-10">
+            {/* Date */}
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+              December 13, 2025
+            </p>
+
+            {renderReportContent()}
           </div>
         </div>
 
-        {/* Right column: Details - full height */}
-        <div className="w-[320px] shrink-0 border-l border-border">
-          <DynamicContext
-            node={selectedNode}
-            onClose={() => setSelectedNodeId(null)}
-          />
+        {/* Chat Input */}
+        <div className="border-t border-border p-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-muted/50 rounded-xl p-4">
+              <input
+                type="text"
+                placeholder="Ask about scientific papers..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
+              />
+              <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center gap-3">
+                  <button className="px-3 py-1.5 text-xs font-medium bg-background rounded-md border border-border hover:bg-accent transition-colors">
+                    Chat Mode
+                  </button>
+                  <span className="text-xs text-muted-foreground">
+                    Searching 165K papers
+                  </span>
+                </div>
+                <button className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <ChevronRight className="w-4 h-4 text-background rotate-[-90deg]" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Right Sidebar: Origin Papers */}
+      <div className="w-[360px] border-l border-border flex flex-col">
+        <div className="p-4 border-b border-border">
+          <h3 className="text-sm font-medium text-primary">Origin paper</h3>
+        </div>
+        <div className="flex-1 overflow-auto">
+          {mockNodes.map((paper) => (
+            <div
+              key={paper.id}
+              className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
+            >
+              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2">
+                {paper.title}
+              </h4>
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground truncate max-w-[220px]">
+                  {paper.authors.join(', ')}
+                </p>
+                <span className="text-xs text-muted-foreground">{paper.year}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Citation component
+const Citation = ({ id }: { id: string }) => (
+  <sup className="text-primary cursor-pointer hover:underline mx-0.5">*</sup>
+);
+
+// Section Header
+const SectionHeader = ({ title }: { title: string }) => (
+  <h3 className="text-sm font-semibold text-primary tracking-wide mb-3">{title}</h3>
+);
+
+// Collapsible Section
+const CollapsibleSection = ({ title, children }: { title: string; children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="mb-6">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 text-sm font-semibold text-primary tracking-wide mb-3 hover:opacity-80 transition-opacity"
+      >
+        {title}
+        <ChevronRight className={cn("w-4 h-4 transition-transform", isOpen && "rotate-90")} />
+      </button>
+      {isOpen && children}
     </div>
   );
 };
