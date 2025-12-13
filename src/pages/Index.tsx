@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 const Index = () => {
   const [inputValue, setInputValue] = useState('');
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   // Parse report into sections
   const renderReportContent = () => {
     // Simplified content based on mockReportText
@@ -50,7 +50,7 @@ const Index = () => {
   };
 
   return (
-    <div className="h-screen w-full flex bg-background">
+    <div className="h-screen w-full flex bg-background relative">
       {/* Left Panel: Report + Chat */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
@@ -116,12 +116,28 @@ const Index = () => {
         </div>
       </div>
 
+      {/* Sidebar Toggle Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-6 h-12 bg-muted border border-border rounded-l-md flex items-center justify-center hover:bg-accent transition-colors"
+        style={{ right: isSidebarOpen ? '360px' : '0' }}
+      >
+        {isSidebarOpen ? (
+          <PanelRightClose className="w-4 h-4 text-muted-foreground" />
+        ) : (
+          <PanelRightOpen className="w-4 h-4 text-muted-foreground" />
+        )}
+      </button>
+
       {/* Right Sidebar: Origin Papers */}
-      <div className="w-[360px] border-l border-border flex flex-col">
-        <div className="p-4 border-b border-border">
+      <div className={cn(
+        "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
+        isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
+      )}>
+        <div className="p-4 border-b border-border min-w-[360px]">
           <h3 className="text-sm font-medium text-primary">Origin paper</h3>
         </div>
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto min-w-[360px]">
           {mockNodes.map((paper) => (
             <div
               key={paper.id}
