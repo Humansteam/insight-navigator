@@ -4,11 +4,73 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Morphik Intelligence Cockpit - Dark Sci-Fi Design System */
-
 @layer base {
+  /* Light theme */
   :root {
-    /* Dark mode only - enterprise sci-fi palette */
+    --background: 0 0% 100%;
+    --background-deep: 0 0% 98%;
+    --background-elevated: 0 0% 100%;
+    --foreground: 224 71% 4%;
+    --foreground-muted: 220 9% 46%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --card-border: 220 13% 91%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+
+    --primary: 173 58% 39%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 173 58% 50%;
+    --primary-muted: 173 30% 80%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 224 71% 4%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 142 70% 45%;
+    --warning: 45 95% 55%;
+
+    --border: 220 13% 91%;
+    --border-glow: 173 58% 50%;
+    --input: 220 13% 91%;
+    --ring: 173 58% 39%;
+
+    --radius: 0.375rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 224 71% 4%;
+    --sidebar-primary: 173 58% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 224 71% 4%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 173 58% 39%;
+
+    --gradient-dark: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 98%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 99%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(173 58% 39% / 0.1) 0%, transparent 70%);
+
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.05);
+    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.15);
+    --shadow-glow: 0 0 20px hsl(173 58% 39% / 0.2);
+    --shadow-glow-sm: 0 0 8px hsl(173 58% 39% / 0.15);
+
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  /* Dark theme */
+  .dark {
     --background: 222 47% 6%;
     --background-deep: 225 50% 4%;
     --background-elevated: 222 40% 10%;
@@ -22,50 +84,30 @@
     --popover: 222 40% 10%;
     --popover-foreground: 210 40% 96%;
 
-    /* Primary - Cyan/Teal accent */
     --primary: 185 75% 50%;
     --primary-foreground: 222 47% 6%;
     --primary-glow: 185 75% 60%;
     --primary-muted: 185 40% 25%;
 
-    /* Secondary - Subtle blue-gray */
     --secondary: 220 30% 18%;
     --secondary-foreground: 210 40% 90%;
 
-    /* Muted surfaces */
     --muted: 220 30% 12%;
     --muted-foreground: 215 20% 55%;
 
-    /* Accent - Electric blue */
     --accent: 210 100% 55%;
     --accent-foreground: 210 40% 98%;
 
-    /* Data visualization colors */
-    --data-china: 0 75% 55%;
-    --data-usa: 210 100% 55%;
-    --data-europe: 45 95% 55%;
-    --data-other: 280 60% 55%;
-
-    /* Confidence indicators */
-    --confidence-high: 142 70% 45%;
-    --confidence-med: 45 95% 55%;
-    --confidence-low: 0 75% 55%;
-
-    /* Status colors */
     --destructive: 0 75% 55%;
     --destructive-foreground: 210 40% 98%;
     --success: 142 70% 45%;
     --warning: 45 95% 55%;
 
-    /* Borders and inputs */
     --border: 220 40% 15%;
     --border-glow: 185 75% 40%;
     --input: 220 30% 12%;
     --ring: 185 75% 50%;
 
-    --radius: 0.375rem;
-
-    /* Sidebar - darker variant */
     --sidebar-background: 225 50% 5%;
     --sidebar-foreground: 215 20% 65%;
     --sidebar-primary: 185 75% 50%;
@@ -75,24 +117,15 @@
     --sidebar-border: 220 40% 12%;
     --sidebar-ring: 185 75% 50%;
 
-    /* Custom gradients */
     --gradient-dark: linear-gradient(180deg, hsl(222 47% 6%) 0%, hsl(225 50% 4%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(222 40% 10%) 0%, hsl(222 40% 8%) 100%);
     --gradient-glow: radial-gradient(ellipse at center, hsl(185 75% 50% / 0.15) 0%, transparent 70%);
-    --gradient-china: linear-gradient(135deg, hsl(0 75% 55% / 0.8) 0%, hsl(0 75% 45% / 0.6) 100%);
-    --gradient-usa: linear-gradient(135deg, hsl(210 100% 55% / 0.8) 0%, hsl(210 100% 45% / 0.6) 100%);
-    --gradient-europe: linear-gradient(135deg, hsl(45 95% 55% / 0.8) 0%, hsl(45 95% 45% / 0.6) 100%);
 
-    /* Shadows */
     --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.3);
     --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.4);
     --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.5);
     --shadow-glow: 0 0 20px hsl(185 75% 50% / 0.3);
     --shadow-glow-sm: 0 0 8px hsl(185 75% 50% / 0.2);
-
-    /* Typography */
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   }
 
   * {
@@ -105,7 +138,6 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    background: var(--gradient-dark);
     font-feature-settings: 'cv11', 'ss01';
   }
 
@@ -143,26 +175,6 @@
     text-shadow: 0 0 10px hsl(var(--primary) / 0.5);
   }
 
-  /* Data point styles */
-  .data-point {
-    @apply rounded-full transition-all duration-200;
-  }
-
-  .data-point-china {
-    background: hsl(var(--data-china));
-    box-shadow: 0 0 8px hsl(var(--data-china) / 0.5);
-  }
-
-  .data-point-usa {
-    background: hsl(var(--data-usa));
-    box-shadow: 0 0 8px hsl(var(--data-usa) / 0.5);
-  }
-
-  .data-point-europe {
-    background: hsl(var(--data-europe));
-    box-shadow: 0 0 8px hsl(var(--data-europe) / 0.5);
-  }
-
   /* Card variants */
   .card-elevated {
     background: var(--gradient-card);
@@ -175,25 +187,6 @@
     font-feature-settings: 'tnum';
   }
 
-  /* Pipeline progress animation */
-  @keyframes pulse-glow {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 1; }
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  @keyframes scan-line {
-    0% { transform: translateY(-100%); }
-    100% { transform: translateY(100vh); }
-  }
-
-  .scan-line {
-    animation: scan-line 3s linear infinite;
-  }
-
   /* Typewriter effect */
   @keyframes blink-caret {
     0%, 100% { opacity: 1; }
@@ -204,14 +197,6 @@
     content: '▋';
     animation: blink-caret 1s step-end infinite;
     color: hsl(var(--primary));
-  }
-
-  /* Grid patterns */
-  .grid-pattern {
-    background-image: 
-      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
-    background-size: 20px 20px;
   }
 }
 

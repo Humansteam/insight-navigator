@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { mockNodes, mockReportText } from '@/data/mockData';
+import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 const Index = () => {
   const [inputValue, setInputValue] = useState('');
@@ -60,7 +61,7 @@ const Index = () => {
             </h2>
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <div className="flex gap-1">
               {[...Array(6)].map((_, i) => (
                 <div key={i} className={cn(
@@ -69,7 +70,8 @@ const Index = () => {
                 )} />
               ))}
             </div>
-            <span className="text-sm text-muted-foreground ml-2">Research report</span>
+            <span className="text-sm text-muted-foreground">Research report</span>
+            <ThemeSwitcher />
           </div>
         </header>
 
