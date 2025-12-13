@@ -3,17 +3,18 @@ import { ChevronRight, PanelRight } from 'lucide-react';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
-import { StudiesTable } from '@/components/cockpit/StudiesTable';
+import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
+
+// Helper to get paper by id
+const getPaperById = (id: string) => mockNodes.find(p => p.id === id);
+const getPaperIndex = (id: string) => mockNodes.findIndex(p => p.id === id) + 1;
 
 const Index = () => {
   const [inputValue, setInputValue] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
   // Parse report into sections
   const renderReportContent = () => {
-    // Simplified content based on mockReportText
     return (
       <>
         {/* Title */}
@@ -22,24 +23,46 @@ const Index = () => {
         </h1>
 
         {/* Lead paragraph */}
-        <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+        <p className="text-lg text-muted-foreground leading-relaxed mb-2">
           The analysis reveals significant divergence in lithium battery research between major geopolitical regions. 
-          China leads in manufacturing scalability <Citation id="paper-001" />, while the United States demonstrates 
-          advantages in fundamental materials science <Citation id="paper-003" /> <Citation id="paper-004" />.
+          China leads in manufacturing scalability <Citation id="paper-001" />
         </p>
+        <PaperReference id="paper-001" />
+
+        <p className="text-lg text-muted-foreground leading-relaxed mb-2">
+          While the United States demonstrates advantages in fundamental materials science <Citation id="paper-003" />
+        </p>
+        <PaperReference id="paper-003" />
 
         {/* Abstract Section */}
         <SectionHeader title="ABSTRACT" />
-        <p className="text-base text-foreground/90 leading-relaxed mb-6">
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
           This review synthesizes findings from 165,432 scientific articles examining lithium battery technology 
-          across industrial processing, recycling, and solid-state advances <Citation id="paper-001" />. 
-          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
-          achieving 95% lithium recovery <Citation id="paper-002" />. Manufacturing optimization through AI monitoring 
-          shows 25% energy reduction <Citation id="paper-002" />. The highest recovery rates emerge from 
-          hydrometallurgical processes developed in US labs, achieving 99.2% Li, 98.8% Co recovery <Citation id="paper-003" />. 
-          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 500 Wh/kg 
-          energy density <Citation id="paper-007" />.
+          across industrial processing, recycling, and solid-state advances.
         </p>
+
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
+          achieving 95% lithium recovery <Citation id="paper-001" />
+        </p>
+        <PaperReference id="paper-001" />
+
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Manufacturing optimization through AI monitoring shows 25% energy reduction <Citation id="paper-002" />
+        </p>
+        <PaperReference id="paper-002" />
+
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          The highest recovery rates emerge from hydrometallurgical processes developed in US labs, 
+          achieving 99.2% Li, 98.8% Co recovery <Citation id="paper-003" />
+        </p>
+        <PaperReference id="paper-003" />
+
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 
+          500 Wh/kg energy density <Citation id="paper-007" />
+        </p>
+        <PaperReference id="paper-007" />
 
         {/* Methods Section */}
         <CollapsibleSection title="METHODS">
@@ -50,7 +73,7 @@ const Index = () => {
           </p>
         </CollapsibleSection>
 
-        {/* Results Section with Studies Table */}
+        {/* Results Section */}
         <SectionHeader title="RESULTS" />
         <h4 className="text-lg font-semibold text-foreground mb-2">Characteristics of Included Studies</h4>
         <p className="text-base text-foreground/90 leading-relaxed mb-4">
@@ -58,31 +81,53 @@ const Index = () => {
           covering industrial processing, solid-state electrolytes, and recycling methods.
         </p>
 
-        <StudiesTable
-          nodes={mockNodes}
-          selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
-          hoveredNodeId={hoveredNodeId}
-          onHoverNode={setHoveredNodeId}
-        />
-
         {/* Thematic Analysis */}
         <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Thematic Analysis</h4>
+        
         <h5 className="text-base font-semibold text-foreground mb-2">Industrial Processing and Manufacturing</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
           Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems 
-          achieving 95% lithium recovery <Citation id="paper-001" />. Manufacturing optimization through 
-          AI monitoring shows 25% energy reduction <Citation id="paper-002" />.
+          achieving 95% lithium recovery <Citation id="paper-001" />
         </p>
+        <PaperReference id="paper-001" />
 
-        <h5 className="text-base font-semibold text-foreground mb-2">Solid-State Battery Advances</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          A critical breakthrough exists in solid-state technology. Chinese protocols report 500 Wh/kg 
-          energy density <Citation id="paper-007" />. European artificial SEI enables 500 cycles at 
-          99.2% efficiency <Citation id="paper-006" />.
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Manufacturing optimization through AI monitoring shows 25% energy reduction <Citation id="paper-002" />
         </p>
+        <PaperReference id="paper-002" />
+
+        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Solid-State Battery Advances</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          A critical breakthrough exists in solid-state technology. Chinese protocols report 500 Wh/kg 
+          energy density <Citation id="paper-007" />
+        </p>
+        <PaperReference id="paper-007" />
+
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          European artificial SEI enables 500 cycles at 99.2% efficiency <Citation id="paper-006" />
+        </p>
+        <PaperReference id="paper-006" />
+
+        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Novel Materials Discovery</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          ML screening identifies 12 novel sulfide electrolytes with ionic conductivity exceeding 10 mS/cm <Citation id="paper-004" />
+        </p>
+        <PaperReference id="paper-004" />
+
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Direct observation of dendrite nucleation mechanism at solid electrolyte interfaces provides 
+          crucial insights for battery safety <Citation id="paper-005" />
+        </p>
+        <PaperReference id="paper-005" />
       </>
     );
+  };
+
+  // Inline paper reference component
+  const PaperReference = ({ id }: { id: string }) => {
+    const paper = getPaperById(id);
+    if (!paper) return null;
+    return <InlinePaperCard paper={paper} index={getPaperIndex(id)} />;
   };
 
   return (
