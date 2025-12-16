@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 const workspaceItems = [
   { id: 'translate', icon: Languages, label: 'Translate AI', description: 'Переводчик текста', active: true },
@@ -84,10 +85,10 @@ export default function Translate() {
   };
 
   return (
-    <div className="flex h-screen bg-background text-foreground deep-space">
+    <div className="flex h-screen bg-background text-foreground">
       {/* Left Sidebar */}
-      <aside className="w-60 border-r border-border/50 bg-card/30 backdrop-blur-sm flex flex-col">
-        <div className="p-4 border-b border-border/50">
+      <aside className="w-60 border-r border-border bg-sidebar flex flex-col">
+        <div className="p-4 border-b border-border">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Default Organization</p>
         </div>
         
@@ -107,8 +108,8 @@ export default function Translate() {
                 whileHover={{ x: 2 }}
                 className={`w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${
                   item.active 
-                    ? 'bg-muted/40 text-foreground border border-border/30' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-muted text-foreground border border-border' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >
                 <item.icon className={`h-4 w-4 mt-0.5 ${item.active ? 'text-primary' : ''}`} />
@@ -121,7 +122,7 @@ export default function Translate() {
           </nav>
         </div>
 
-        <div className="mt-auto p-4 border-t border-border/50">
+        <div className="mt-auto p-4 border-t border-border">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium text-sm">
               M
@@ -138,7 +139,7 @@ export default function Translate() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Breadcrumb Header */}
-        <header className="h-14 border-b border-border/50 flex items-center justify-between px-6 bg-card/20">
+        <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-card/50">
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground hover:text-foreground cursor-pointer">Home</span>
             <span className="text-muted-foreground">&gt;</span>
@@ -146,23 +147,26 @@ export default function Translate() {
             <span className="text-muted-foreground">&gt;</span>
             <span className="text-foreground font-medium">Translate</span>
           </div>
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
-            <Sparkles className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+              <Sparkles className="h-5 w-5" />
+            </Button>
+          </div>
         </header>
 
         {/* Translation Panels */}
-        <div className="flex-1 p-6 flex gap-4 overflow-hidden">
+        <div className="flex-1 p-6 flex gap-4 overflow-hidden bg-background">
           {/* Source Panel */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex-1 flex flex-col bg-card/40 border border-border/50 rounded-xl overflow-hidden backdrop-blur-sm"
+            className="flex-1 flex flex-col bg-card border border-border rounded-xl overflow-hidden"
           >
-            <div className="p-4 border-b border-border/50 flex items-center justify-between">
+            <div className="p-4 border-b border-border flex items-center justify-between">
               <h3 className="font-medium text-foreground">Original</h3>
               <Select value={sourceLang} onValueChange={setSourceLang}>
-                <SelectTrigger className="w-36 bg-muted/50 border-border/50">
+                <SelectTrigger className="w-36 bg-muted border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -175,12 +179,12 @@ export default function Translate() {
             <div className="flex-1 p-4">
               <Textarea 
                 placeholder="Enter or paste your text here..."
-                className="h-full resize-none bg-transparent border-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50"
+                className="h-full resize-none bg-transparent border-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground"
                 value={sourceText}
                 onChange={(e) => setSourceText(e.target.value)}
               />
             </div>
-            <div className="p-3 border-t border-border/50 flex items-center justify-end gap-2">
+            <div className="p-3 border-t border-border flex items-center justify-end gap-2">
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                 <Copy className="h-4 w-4" />
               </Button>
@@ -196,7 +200,7 @@ export default function Translate() {
               variant="ghost" 
               size="icon"
               onClick={handleSwapLanguages}
-              className="h-10 w-10 rounded-full border border-border/50 bg-card/40 text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors"
+              className="h-10 w-10 rounded-full border border-border bg-card text-muted-foreground hover:text-primary hover:border-primary transition-colors"
             >
               <ArrowRightLeft className="h-4 w-4" />
             </Button>
@@ -206,12 +210,12 @@ export default function Translate() {
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex-1 flex flex-col bg-card/40 border border-border/50 rounded-xl overflow-hidden backdrop-blur-sm"
+            className="flex-1 flex flex-col bg-card border border-border rounded-xl overflow-hidden"
           >
-            <div className="p-4 border-b border-border/50 flex items-center justify-between">
+            <div className="p-4 border-b border-border flex items-center justify-between">
               <h3 className="font-medium text-foreground">Translation</h3>
               <Select value={targetLang} onValueChange={setTargetLang}>
-                <SelectTrigger className="w-36 bg-muted/50 border-border/50">
+                <SelectTrigger className="w-36 bg-muted border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,11 +240,11 @@ export default function Translate() {
                 ) : translatedText ? (
                   <p className="text-foreground whitespace-pre-wrap">{translatedText}</p>
                 ) : (
-                  <p className="text-muted-foreground/50">Translation will appear here...</p>
+                  <p className="text-muted-foreground">Translation will appear here...</p>
                 )}
               </ScrollArea>
             </div>
-            <div className="p-3 border-t border-border/50 flex items-center justify-end gap-2">
+            <div className="p-3 border-t border-border flex items-center justify-end gap-2">
               <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                 <Copy className="h-4 w-4" />
               </Button>
@@ -253,8 +257,8 @@ export default function Translate() {
       </main>
 
       {/* Right Settings Panel */}
-      <aside className="w-72 border-l border-border/50 bg-card/30 backdrop-blur-sm flex flex-col">
-        <div className="p-4 border-b border-border/50 flex items-center justify-between">
+      <aside className="w-72 border-l border-border bg-sidebar flex flex-col">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Settings className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">Settings</span>
@@ -269,7 +273,7 @@ export default function Translate() {
           <div className="space-y-2">
             <label className="text-xs text-muted-foreground uppercase tracking-wider">LLM</label>
             <Select value={selectedModel} onValueChange={setSelectedModel}>
-              <SelectTrigger className="w-full bg-muted/50 border-border/50">
+              <SelectTrigger className="w-full bg-muted border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -289,7 +293,7 @@ export default function Translate() {
           <div className="space-y-2">
             <label className="text-xs text-muted-foreground uppercase tracking-wider">Style</label>
             <Select value={selectedStyle} onValueChange={setSelectedStyle}>
-              <SelectTrigger className="w-full bg-muted/50 border-border/50">
+              <SelectTrigger className="w-full bg-muted border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -304,7 +308,7 @@ export default function Translate() {
           <div className="space-y-2">
             <label className="text-xs text-muted-foreground uppercase tracking-wider">Glossary</label>
             <Select defaultValue="none">
-              <SelectTrigger className="w-full bg-muted/50 border-border/50">
+              <SelectTrigger className="w-full bg-muted border-border">
                 <SelectValue placeholder="No glossary" />
               </SelectTrigger>
               <SelectContent>
@@ -321,14 +325,14 @@ export default function Translate() {
           <Button 
             onClick={handleTranslate}
             disabled={!sourceText.trim() || isTranslating}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {isTranslating ? 'Translating...' : 'Translate'}
           </Button>
           <Button 
             variant="outline" 
             onClick={handleClear}
-            className="w-full border-border/50 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            className="w-full border-border text-muted-foreground hover:text-foreground hover:bg-muted"
           >
             Clear
           </Button>
