@@ -108,7 +108,7 @@ export default function Translate() {
                 className={`w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${
                   item.active 
                     ? 'bg-primary/20 text-primary border border-primary/30' 
-                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <item.icon className={`h-4 w-4 mt-0.5 ${item.active ? 'text-primary' : ''}`} />
