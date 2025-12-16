@@ -236,25 +236,25 @@ const Index = () => {
         </div>
 
         {/* Chat Input */}
-        <div className="border-t border-border p-4 bg-background-deep">
+        <div className="p-4 bg-background">
           <div className="max-w-3xl mx-auto">
             <form onSubmit={handleSubmit}>
-              <div className="bg-card rounded-2xl p-4 border border-border shadow-[var(--shadow-input)] dark:bg-muted/50 dark:border-border dark:shadow-none">
+              <div className="bg-card rounded-xl border border-border overflow-hidden">
                 <input
                   type="text"
                   placeholder="Enter your research query..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   disabled={isLoading}
-                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base disabled:opacity-50"
                 />
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center justify-between px-4 py-2 border-t border-border/50">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      className="px-3 py-1.5 text-xs font-medium bg-muted/80 dark:bg-background rounded-md border border-border hover:bg-accent transition-colors"
+                      className="px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Engine Mode
+                      + 
                     </button>
                     <span className="text-xs text-muted-foreground">
                       {isLoading ? `${phase.replace('_', ' ')}...` : 'Searching 165K papers'}
@@ -263,12 +263,12 @@ const Index = () => {
                   <button
                     type="submit"
                     disabled={!input.trim() || isLoading}
-                    className="w-8 h-8 rounded-full bg-foreground flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-50"
+                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors disabled:opacity-50"
                   >
                     {isLoading ? (
-                      <Loader2 className="w-4 h-4 text-background animate-spin" />
+                      <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
                     ) : (
-                      <ChevronRight className="w-4 h-4 text-background rotate-[-90deg]" />
+                      <ChevronRight className="w-4 h-4 text-muted-foreground rotate-[-90deg]" />
                     )}
                   </button>
                 </div>
