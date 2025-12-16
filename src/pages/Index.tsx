@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
-import { ChevronRight, PanelRight, Loader2 } from 'lucide-react';
+import { ChevronRight, PanelRight, Loader2, Languages } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
@@ -187,6 +188,13 @@ const Index = () => {
             <span className="text-sm text-muted-foreground">
               {phase === 'idle' ? 'Research report' : phase === 'complete' ? 'Complete' : phase.replace('_', ' ')}
             </span>
+            <Link
+              to="/translate"
+              className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+              title="Translate"
+            >
+              <Languages className="w-4 h-4" />
+            </Link>
             <ThemeSwitcher />
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
