@@ -236,23 +236,23 @@ const Index = () => {
         </div>
 
         {/* Chat Input */}
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 bg-background-deep">
           <div className="max-w-3xl mx-auto">
             <form onSubmit={handleSubmit}>
-              <div className="bg-muted/50 rounded-xl p-4">
+              <div className="bg-card rounded-2xl p-4 border border-border shadow-[var(--shadow-input)] dark:bg-muted/50 dark:border-border dark:shadow-none">
                 <input
                   type="text"
                   placeholder="Enter your research query..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   disabled={isLoading}
-                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm disabled:opacity-50"
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base disabled:opacity-50"
                 />
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      className="px-3 py-1.5 text-xs font-medium bg-background rounded-md border border-border hover:bg-accent transition-colors"
+                      className="px-3 py-1.5 text-xs font-medium bg-muted/80 dark:bg-background rounded-md border border-border hover:bg-accent transition-colors"
                     >
                       Engine Mode
                     </button>
