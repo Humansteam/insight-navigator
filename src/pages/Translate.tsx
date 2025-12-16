@@ -107,7 +107,7 @@ export default function Translate() {
                 whileHover={{ x: 2 }}
                 className={`w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${
                   item.active 
-                    ? 'bg-primary/20 text-primary border border-primary/30' 
+                    ? 'bg-muted/40 text-foreground border border-border/30' 
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
