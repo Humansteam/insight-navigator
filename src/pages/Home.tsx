@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Cable, Mic, X, FileText, LayoutGrid, Smartphone, Bell, ChevronDown } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import { ProjectsSection } from '@/components/ProjectsSection';
 
 const Home = () => {
   const [input, setInput] = useState('');
@@ -18,7 +19,7 @@ const Home = () => {
   const isDisabled = !input.trim();
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] dark:bg-background flex flex-col">
+    <div className="min-h-screen bg-[#fafaf9] dark:bg-background flex flex-col overflow-auto">
       {/* Header */}
       <header className="h-14 flex items-center justify-between px-6">
         <div className="flex items-center gap-2 cursor-pointer">
@@ -44,7 +45,7 @@ const Home = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 -mt-10">
+      <main className="flex-1 flex flex-col items-center px-6 pt-20 md:pt-32">
         {/* Title */}
         <h1 className="text-4xl md:text-5xl font-serif text-foreground text-center mb-10 tracking-[-0.02em]">
           Let's dive into your knowledge
@@ -181,6 +182,11 @@ const Home = () => {
               <span className="text-sm font-medium text-foreground">Agent Mode</span>
             </Link>
           </div>
+        </div>
+
+        {/* Projects Section */}
+        <div className="w-full max-w-6xl mt-16">
+          <ProjectsSection />
         </div>
       </main>
     </div>
