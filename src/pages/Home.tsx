@@ -47,7 +47,7 @@ const Home = () => {
       {/* Main Content - takes up viewport height */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 min-h-[calc(100vh-56px)]">
         {/* Title */}
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground text-center mb-8 tracking-[-0.02em]">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-slate-800 dark:text-foreground text-center mb-8 tracking-[-0.02em]">
           Let's dive into your knowledge
         </h1>
 
@@ -63,7 +63,7 @@ const Home = () => {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Assign a task or ask anything"
                   rows={1}
-                  className="flex rounded-md focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden flex-1 bg-transparent p-0 border-0 focus-visible:ring-0 w-full placeholder:text-muted-foreground text-base shadow-none resize-none leading-[24px] min-h-[28px] text-foreground"
+                  className="flex rounded-md focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden flex-1 bg-transparent p-0 border-0 focus-visible:ring-0 w-full placeholder:text-slate-400 dark:placeholder:text-muted-foreground text-base shadow-none resize-none leading-[24px] min-h-[28px] text-slate-800 dark:text-foreground"
                 />
               </div>
 
