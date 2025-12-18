@@ -56,13 +56,55 @@ const mockProjects: Project[] = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user6',
     viewedAt: '6 days ago',
   },
+  {
+    id: '7',
+    name: 'Research Dashboard',
+    screenshot: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user7',
+    viewedAt: '1 week ago',
+  },
+  {
+    id: '8',
+    name: 'Data Analytics Hub',
+    screenshot: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user8',
+    viewedAt: '1 week ago',
+  },
+  {
+    id: '9',
+    name: 'AI Assistant Pro',
+    screenshot: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=450&fit=crop',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user9',
+    viewedAt: '2 weeks ago',
+  },
+  {
+    id: '10',
+    name: 'Document Manager',
+    screenshot: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user10',
+    viewedAt: '2 weeks ago',
+  },
+  {
+    id: '11',
+    name: 'Knowledge Base',
+    screenshot: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=800&h=450&fit=crop',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user11',
+    viewedAt: '3 weeks ago',
+  },
+  {
+    id: '12',
+    name: 'API Explorer',
+    screenshot: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=user12',
+    viewedAt: '1 month ago',
+  },
 ];
 
 const ProjectCard = ({ project }: { project: Project }) => {
   const [isFavorite, setIsFavorite] = useState(project.isFavorite || false);
 
   return (
-    <div className="group relative flex flex-col w-full max-w-[420px]">
+    <div className="group relative flex flex-col w-full">
       {/* Thumbnail */}
       <div className="relative mb-3 flex flex-col">
         <Link
@@ -161,7 +203,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
 export const ProjectsSection = () => {
   return (
-    <div className="mx-0 md:mx-8 lg:mx-16 mb-12 rounded-3xl bg-card/95 pt-4">
+    <div className="mx-4 md:mx-12 lg:mx-20 mt-16 mb-12 rounded-3xl bg-card/95 pt-6">
       <Tabs defaultValue="recently" className="relative">
         {/* Header with tabs */}
         <div className="relative mb-5 flex items-center justify-between gap-2 px-6 md:px-12">
@@ -209,9 +251,9 @@ export const ProjectsSection = () => {
 
         {/* Recently viewed content */}
         <TabsContent value="recently" className="relative -mt-2">
-          <div className="px-6 md:px-12 pb-8">
-            <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(300px,1fr))] justify-items-center gap-5">
-              {mockProjects.map((project) => (
+          <div className="px-6 md:px-10 pb-8">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {mockProjects.slice(0, 12).map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </div>
@@ -220,9 +262,9 @@ export const ProjectsSection = () => {
 
         {/* My projects content */}
         <TabsContent value="projects" className="relative -mt-2">
-          <div className="px-6 md:px-12 pb-8">
-            <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(300px,1fr))] justify-items-center gap-5">
-              {mockProjects.slice(0, 3).map((project) => (
+          <div className="px-6 md:px-10 pb-8">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {mockProjects.slice(0, 4).map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
             </div>
