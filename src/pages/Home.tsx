@@ -186,8 +186,8 @@ const Home = () => {
       </main>
 
       {/* Projects Section - separate scrollable section with huge spacing */}
-      <div className="w-full px-6 pb-12">
-        <div className="max-w-7xl mx-auto">
+      <div className="w-full px-8 md:px-16 lg:px-24 pb-12">
+        <div className="max-w-[1600px] mx-auto">
           <ProjectsSection />
         </div>
       </div>
