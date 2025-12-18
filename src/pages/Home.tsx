@@ -47,24 +47,23 @@ const Home = () => {
       {/* Main Content - takes up viewport height */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 min-h-[calc(100vh-56px)]">
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-serif text-foreground text-center mb-10 tracking-[-0.02em]">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-foreground text-center mb-8 tracking-[-0.02em]">
           Let's dive into your knowledge
         </h1>
 
-        {/* Chat Input Container */}
-        <div className="w-full max-w-2xl flex flex-col isolate items-center">
+        {/* Chat Input Container - wider like Lovable */}
+        <div className="w-full max-w-3xl flex flex-col isolate items-center">
           {/* Main Input Box */}
           <form onSubmit={handleSubmit} className="w-full">
-            <div className="flex flex-col gap-3 rounded-[22px] transition-all relative bg-white dark:bg-card py-3 max-h-[312px] w-full z-[2] shadow-[0px_12px_32px_0px_rgba(0,0,0,0.02)] border border-black/8 dark:border-border">
+            <div className="flex flex-col gap-3 rounded-2xl transition-all relative bg-white dark:bg-card py-4 w-full z-[2] shadow-lg border border-black/8 dark:border-border">
               {/* Textarea */}
-              <div className="overflow-y-auto pl-4 pr-2">
+              <div className="overflow-y-auto px-5">
                 <textarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Assign a task or ask anything"
-                  rows={2}
-                  className="flex rounded-md focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden flex-1 bg-transparent p-0 pt-[1px] border-0 focus-visible:ring-0 w-full placeholder:text-muted-foreground text-[15px] shadow-none resize-none leading-[24px] min-h-[40px] text-foreground"
-                  style={{ height: '49px' }}
+                  rows={1}
+                  className="flex rounded-md focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden flex-1 bg-transparent p-0 border-0 focus-visible:ring-0 w-full placeholder:text-muted-foreground text-base shadow-none resize-none leading-[24px] min-h-[28px] text-foreground"
                 />
               </div>
 
@@ -185,9 +184,9 @@ const Home = () => {
         </div>
       </main>
 
-      {/* Projects Section - separate scrollable section with huge spacing */}
-      <div className="w-full px-8 md:px-16 lg:px-24 pb-12">
-        <div className="max-w-[1600px] mx-auto">
+      {/* Projects Section - edge to edge like Lovable */}
+      <div className="w-full px-4 md:px-8 lg:px-16 pb-12">
+        <div className="mx-auto">
           <ProjectsSection />
         </div>
       </div>

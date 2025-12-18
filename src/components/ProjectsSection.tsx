@@ -203,10 +203,10 @@ const ProjectCard = ({ project }: { project: Project }) => {
 
 export const ProjectsSection = () => {
   return (
-    <div className="mx-4 md:mx-12 lg:mx-20 mt-16 mb-12 rounded-3xl bg-card/95 pt-6">
+    <div className="mb-12 rounded-3xl bg-card/95 pt-6">
       <Tabs defaultValue="recently" className="relative">
         {/* Header with tabs */}
-        <div className="relative mb-5 flex items-center justify-between gap-2 px-6 md:px-12">
+        <div className="relative mb-5 flex items-center justify-between gap-2 px-4 md:px-8">
           {/* Left arrow (hidden by default) */}
           <div className="absolute top-1/2 z-10 flex h-6 w-6 -translate-y-1/2 items-center justify-center transition-opacity duration-200 -left-0.5 md:left-1 opacity-0">
             <ChevronLeft className="w-4 h-4 text-muted-foreground" />
@@ -251,8 +251,8 @@ export const ProjectsSection = () => {
 
         {/* Recently viewed content */}
         <TabsContent value="recently" className="relative -mt-2">
-          <div className="px-6 md:px-10 pb-8">
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="px-4 md:px-8 pb-8">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
               {mockProjects.slice(0, 12).map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
@@ -262,8 +262,8 @@ export const ProjectsSection = () => {
 
         {/* My projects content */}
         <TabsContent value="projects" className="relative -mt-2">
-          <div className="px-6 md:px-10 pb-8">
-            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="px-4 md:px-8 pb-8">
+            <div className="grid w-full grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
               {mockProjects.slice(0, 4).map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}
