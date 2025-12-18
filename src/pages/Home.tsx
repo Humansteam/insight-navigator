@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Settings2, Mic, ArrowUp, FileText, LayoutGrid, Smartphone, Bell, X, ChevronDown } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 
 const Home = () => {
   const [input, setInput] = useState('');
   const [showIntegrations, setShowIntegrations] = useState(true);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
-      // Navigate to research page or handle query
-      console.log('Query:', input);
+      navigate('/research');
     }
   };
 
