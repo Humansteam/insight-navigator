@@ -280,22 +280,23 @@ const Home = () => {
           </motion.div>
         </motion.div>
 
-        {/* Projects Section - hidden when typing */}
-        <AnimatePresence>
-          {!isTyping && (
-            <motion.div 
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="w-full px-4 md:px-8 lg:px-16 pb-12"
-            >
-              <div className="mx-auto">
-                <ProjectsSection />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </main>
+
+      {/* Projects Section - fixed at bottom */}
+      <AnimatePresence>
+        {!isTyping && (
+          <motion.div 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-0 left-0 right-0 px-4 md:px-8 lg:px-16 pb-6 bg-gradient-to-t from-[#fafaf9] dark:from-background to-transparent pt-8"
+          >
+            <div className="mx-auto">
+              <ProjectsSection />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
