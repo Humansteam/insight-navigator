@@ -201,10 +201,18 @@ const ProjectCard = ({ project }: { project: Project }) => {
   );
 };
 
-export const ProjectsSection = () => {
+export const ProjectsSection = ({ variant = 'page' }: { variant?: 'page' | 'dock' }) => {
+  const isDock = variant === 'dock';
+
   return (
-    <div className="mb-12 rounded-3xl bg-card/95 pt-6">
-      <Tabs defaultValue="recently" className="relative">
+    <div
+      className={
+        isDock
+          ? "rounded-3xl bg-card/95 border border-border shadow-lg"
+          : "mb-12 rounded-3xl bg-card/95 pt-6"
+      }
+    >
+      <Tabs defaultValue="recently" className={isDock ? "relative max-h-[38vh] overflow-auto" : "relative"}>
         {/* Header with tabs */}
         <div className="relative mb-5 flex items-center justify-between gap-2 px-4 md:px-8">
           {/* Left arrow (hidden by default) */}

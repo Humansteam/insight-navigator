@@ -282,17 +282,19 @@ const Home = () => {
 
       </main>
 
-      {/* Projects Section - fixed at bottom */}
+      {/* Projects Section - fixed dock at bottom */}
       <AnimatePresence>
         {!isTyping && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-0 left-0 right-0 px-4 md:px-8 lg:px-16 pb-6 bg-gradient-to-t from-[#fafaf9] dark:from-background to-transparent pt-8"
+            className="fixed bottom-0 left-0 right-0 px-4 md:px-8 lg:px-16 pb-4"
           >
-            <div className="mx-auto">
-              <ProjectsSection />
+            <div className="mx-auto max-w-7xl pointer-events-auto">
+              <div className="max-h-[38vh]">
+                <ProjectsSection variant="dock" />
+              </div>
             </div>
           </motion.div>
         )}
