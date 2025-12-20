@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { DataNode } from '@/types/morphik';
-import { ExternalLink, ArrowLeft, Star, BarChart3, Clock, Sparkles } from 'lucide-react';
+import { ExternalLink, ArrowLeft, Star, BarChart3, Clock, Sparkles, FileText, Globe, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -111,6 +111,51 @@ export const EvidenceMatrixPanel = ({ papers }: EvidenceMatrixPanelProps) => {
               <p className="text-sm text-foreground/80 leading-relaxed">
                 {node.abstract}
               </p>
+            </div>
+
+            {/* Summary / Full Text */}
+            <div className="space-y-2">
+              <div className="text-xs text-muted-foreground">Summary</div>
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                This research contributes to the understanding of {node.cluster_label.toLowerCase()} by presenting novel findings in {node.title.split(' ').slice(0, 4).join(' ').toLowerCase()}. 
+                The study employs rigorous methodology and provides quantitative evidence supporting the main conclusions. 
+                Key implications include potential applications in industrial settings and future research directions in related areas.
+              </p>
+            </div>
+
+            {/* Open in / Links */}
+            <div className="space-y-2">
+              <div className="text-xs text-muted-foreground">Open in</div>
+              <div className="flex flex-wrap gap-2">
+                <a 
+                  href="#" 
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  PDF
+                </a>
+                <a 
+                  href="#" 
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                >
+                  <BookOpen className="w-3.5 h-3.5" />
+                  DOI
+                </a>
+                <a 
+                  href="#" 
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  Publisher
+                </a>
+                <a 
+                  href="#" 
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Google Scholar
+                </a>
+              </div>
             </div>
 
             {/* Dimensions Evaluation */}
