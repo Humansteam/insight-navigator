@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ChevronRight, PanelRight, Loader2, Languages, FileText, FileSearch, Network, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { mockNodes } from '@/data/mockData';
+import { mockNodes, mockEdges } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
@@ -9,6 +9,7 @@ import { PipelineDAG } from '@/components/cockpit/PipelineDAG';
 import { useEngineData } from '@/hooks/useEngineData';
 import { DataNode } from '@/types/morphik';
 import { PapersScreeningMain } from '@/components/papers-screening';
+import { TopologyMain } from '@/components/topology';
 import { ReportView } from '@/components/papers-screening/types';
 
 const Index = () => {
@@ -251,12 +252,7 @@ const Index = () => {
               onPaperSelect={(id) => console.log('Selected paper:', id)} 
             />
           ) : activeView === 'topology' ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              <div className="text-center">
-                <Network className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Topology view coming soon</p>
-              </div>
-            </div>
+            <TopologyMain nodes={papers} edges={mockEdges} />
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
@@ -325,8 +321,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Sidebar: Evidence Matrix - hidden when Papers view is active */}
-      {activeView !== 'papers' && (
+      {/* Right Sidebar: Evidence Matrix - hidden when Papers or Topology view is active */}
+      {activeView !== 'papers' && activeView !== 'topology' && (
         <div className={cn(
           "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
           isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
