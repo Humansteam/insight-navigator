@@ -1,13 +1,13 @@
 import { cn } from '@/lib/utils';
-import { ScreeningCriteria } from './types';
+import { DynamicDimension } from './types';
 
 interface CriteriaTagsProps {
-  criteria: ScreeningCriteria[];
+  dimensions: DynamicDimension[];
   className?: string;
 }
 
-export const CriteriaTags = ({ criteria, className }: CriteriaTagsProps) => {
-  const getStatusStyles = (status: ScreeningCriteria['status']) => {
+export const CriteriaTags = ({ dimensions, className }: CriteriaTagsProps) => {
+  const getStatusStyles = (status: DynamicDimension['status']) => {
     switch (status) {
       case 'pass':
         return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
@@ -20,15 +20,15 @@ export const CriteriaTags = ({ criteria, className }: CriteriaTagsProps) => {
 
   return (
     <div className={cn('flex flex-wrap gap-1.5', className)}>
-      {criteria.map((criterion, index) => (
+      {dimensions.map((dimension, index) => (
         <span
           key={index}
           className={cn(
             'inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border',
-            getStatusStyles(criterion.status)
+            getStatusStyles(dimension.status)
           )}
         >
-          {criterion.name}
+          {dimension.name}
         </span>
       ))}
     </div>

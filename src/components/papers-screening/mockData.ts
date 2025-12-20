@@ -11,9 +11,17 @@ export const mockScreeningData: PaperWithScreening[] = [
     country: 'china',
     screening: {
       verdict: 'include',
-      score: 4.2,
+      combinedScore: 94,
+      relevanceScore: 'high',
+      aspectTag: 'Membrane Technology',
       rationale: 'The abstract describes a membrane-based DLE system with specific performance metrics (94% recovery). Directly relevant to systematic review on lithium extraction technologies.',
-      criteria: [
+      metrics: {
+        similarity: 0.92,
+        citations: 45,
+        fwci: 2.3,
+        recency: 0.95
+      },
+      dimensions: [
         { name: 'Extraction Efficiency', status: 'pass' },
         { name: 'Industrial Scalability', status: 'pass' },
         { name: 'Methodology Quality', status: 'pass' },
@@ -32,9 +40,17 @@ export const mockScreeningData: PaperWithScreening[] = [
     country: 'usa',
     screening: {
       verdict: 'include',
-      score: 3.8,
+      combinedScore: 76,
+      relevanceScore: 'medium',
+      aspectTag: 'Battery Recycling',
       rationale: 'Relevant comparative study on lithium recovery methods. Good methodology description but focuses on battery recycling rather than primary extraction.',
-      criteria: [
+      metrics: {
+        similarity: 0.78,
+        citations: 32,
+        fwci: 1.8,
+        recency: 0.85
+      },
+      dimensions: [
         { name: 'Extraction Efficiency', status: 'partial' },
         { name: 'Industrial Scalability', status: 'pass' },
         { name: 'Methodology Quality', status: 'pass' },
@@ -53,9 +69,17 @@ export const mockScreeningData: PaperWithScreening[] = [
     country: 'europe',
     screening: {
       verdict: 'exclude',
-      score: 2.1,
+      combinedScore: 42,
+      relevanceScore: 'low',
+      aspectTag: 'Computational',
       rationale: 'Focuses on computational modeling rather than experimental results. No empirical data on actual lithium extraction performance.',
-      criteria: [
+      metrics: {
+        similarity: 0.45,
+        citations: 18,
+        fwci: 0.9,
+        recency: 0.95
+      },
+      dimensions: [
         { name: 'Extraction Efficiency', status: 'fail' },
         { name: 'Industrial Scalability', status: 'fail' },
         { name: 'Methodology Quality', status: 'partial' },
@@ -74,9 +98,17 @@ export const mockScreeningData: PaperWithScreening[] = [
     country: 'europe',
     screening: {
       verdict: 'include',
-      score: 3.5,
+      combinedScore: 70,
+      relevanceScore: 'medium',
+      aspectTag: 'Environmental',
       rationale: 'Valuable environmental perspective on lithium extraction. High citation count indicates field relevance.',
-      criteria: [
+      metrics: {
+        similarity: 0.65,
+        citations: 56,
+        fwci: 2.1,
+        recency: 0.85
+      },
+      dimensions: [
         { name: 'Extraction Efficiency', status: 'fail' },
         { name: 'Industrial Scalability', status: 'pass' },
         { name: 'Methodology Quality', status: 'pass' },
@@ -95,9 +127,17 @@ export const mockScreeningData: PaperWithScreening[] = [
     country: 'other',
     screening: {
       verdict: 'exclude',
-      score: 1.8,
+      combinedScore: 36,
+      relevanceScore: 'low',
+      aspectTag: 'Fundamental',
       rationale: 'Too focused on fundamental chemistry. Lacks practical extraction performance data.',
-      criteria: [
+      metrics: {
+        similarity: 0.38,
+        citations: 12,
+        fwci: 0.6,
+        recency: 0.95
+      },
+      dimensions: [
         { name: 'Extraction Efficiency', status: 'fail' },
         { name: 'Industrial Scalability', status: 'fail' },
         { name: 'Methodology Quality', status: 'pass' },
@@ -112,13 +152,21 @@ export const mockScreeningData: PaperWithScreening[] = [
     authors: ['Zhang, Y.', 'Li, W.'],
     year: 2024,
     abstract: 'Novel hybrid system combining electrodialysis with selective membranes achieves 99.2% lithium purity. Pilot-scale testing demonstrates commercial viability.',
-    citations: 28,
+    citations: 142,
     country: 'china',
     screening: {
       verdict: 'include',
-      score: 4.7,
+      combinedScore: 97,
+      relevanceScore: 'high',
+      aspectTag: 'Manufacturing',
       rationale: 'Excellent pilot-scale results with high purity metrics. Directly applicable to industrial lithium extraction.',
-      criteria: [
+      metrics: {
+        similarity: 0.96,
+        citations: 142,
+        fwci: 3.1,
+        recency: 0.95
+      },
+      dimensions: [
         { name: 'Extraction Efficiency', status: 'pass' },
         { name: 'Industrial Scalability', status: 'pass' },
         { name: 'Methodology Quality', status: 'pass' },
