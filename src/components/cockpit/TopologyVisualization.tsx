@@ -12,6 +12,8 @@ interface TopologyVisualizationProps {
   onSelectNode: (id: string | null) => void;
   hoveredNodeId: string | null;
   onHoverNode: (id: string | null) => void;
+  selectedNodeIds: Set<string>;
+  onToggleNodeSelection: (id: string, addToSelection: boolean) => void;
 }
 
 type ViewMode = 'map' | 'network';
@@ -53,6 +55,8 @@ export const TopologyVisualization = ({
   onSelectNode,
   hoveredNodeId,
   onHoverNode,
+  selectedNodeIds,
+  onToggleNodeSelection,
 }: TopologyVisualizationProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -343,6 +347,7 @@ export const TopologyVisualization = ({
       if (!pos) return;
 
       const isSelected = selectedNodeId === node.id;
+      const isMultiSelected = selectedNodeIds.has(node.id);
       const isHovered = hoveredNodeId === node.id;
       const isDragging = draggingNodeId === node.id;
       const isMajor = isMajorNode(node);
@@ -359,14 +364,14 @@ export const TopologyVisualization = ({
         radius = 1.5 + node.score * 3; // 1.5-3px for satellites
       }
       
-      if (isSelected || isHovered || isDragging) {
+      if (isSelected || isHovered || isDragging || isMultiSelected) {
         radius += isMajor ? 3 : 2;
       }
 
       const color = getNodeColor(node.id);
 
       // Outer glow (synapse effect) - intensity based on score
-      if ((isMajor || isHovered || isSelected) && node.score > 0.4) {
+      if ((isMajor || isHovered || isSelected || isMultiSelected) && node.score > 0.4) {
         const glowRadius = radius * (isMajor ? 4 : 3);
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, glowRadius, 0, Math.PI * 2);
@@ -408,7 +413,18 @@ export const TopologyVisualization = ({
         ctx.fill();
       }
 
-      // Selection ring
+      // Multi-selection ring (cyan)
+      if (isMultiSelected) {
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius + 6, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(100, 200, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 2]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Selection ring (primary selection)
       if (isSelected || isDragging) {
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, radius + 4, 0, Math.PI * 2);
@@ -459,7 +475,7 @@ export const TopologyVisualization = ({
     });
 
     ctx.restore();
-  }, [positions, edges, nodes, selectedNodeId, hoveredNodeId, draggingNodeId, zoom, pan]);
+  }, [positions, edges, nodes, selectedNodeId, selectedNodeIds, hoveredNodeId, draggingNodeId, zoom, pan]);
 
   // Find node at position
   const findNodeAtPosition = useCallback((clientX: number, clientY: number): string | null => {
@@ -496,11 +512,16 @@ export const TopologyVisualization = ({
     const nodeId = findNodeAtPosition(e.clientX, e.clientY);
     if (nodeId) {
       setDraggingNodeId(nodeId);
-      onSelectNode(nodeId);
+      // Shift+click for multi-select, regular click for single select
+      if (e.shiftKey) {
+        onToggleNodeSelection(nodeId, true);
+      } else {
+        onSelectNode(nodeId);
+      }
     } else {
       setIsDraggingCanvas(true);
     }
-  }, [findNodeAtPosition, onSelectNode]);
+  }, [findNodeAtPosition, onSelectNode, onToggleNodeSelection]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const dx = e.clientX - lastMousePos.current.x;
@@ -589,29 +610,6 @@ export const TopologyVisualization = ({
           onWheel={handleWheel}
         />
         
-        {/* Hover tooltip */}
-        {hoveredNodeId && (() => {
-          const hoveredNode = nodes.find(n => n.id === hoveredNodeId);
-          if (!hoveredNode) return null;
-          
-          return (
-            <div 
-              className="absolute pointer-events-none bg-card/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 max-w-xs shadow-lg z-10 animate-fade-in"
-              style={{ 
-                left: Math.min(mousePos.x + 12, 280),
-                top: mousePos.y - 10,
-              }}
-            >
-              <p className="text-sm font-medium text-foreground line-clamp-2">{hoveredNode.title}</p>
-              <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
-                <span>{hoveredNode.year}</span>
-                <span>•</span>
-                <span className="text-primary font-medium">{Math.round(hoveredNode.score * 100)}%</span>
-              </div>
-            </div>
-          );
-        })()}
-        
         {/* Legend */}
         <div className="absolute bottom-3 left-3 flex items-center gap-2 pointer-events-none">
           {['Pink', 'Orange', 'Yellow', 'Cyan', 'Blue'].map((name, idx) => (
@@ -624,6 +622,13 @@ export const TopologyVisualization = ({
             </div>
           ))}
         </div>
+
+        {/* Selection hint */}
+        {selectedNodeIds.size === 0 && (
+          <div className="absolute top-3 left-3 text-xs text-muted-foreground bg-card/80 backdrop-blur-sm px-2 py-1 rounded pointer-events-none">
+            Shift+Click to multi-select
+          </div>
+        )}
       </div>
     </div>
   );

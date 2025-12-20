@@ -2,6 +2,16 @@ import { DataNode } from '@/types/morphik';
 import { ExternalLink, ArrowLeft, FileText, Star, BarChart3, Clock, Sparkles, Globe, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getClusterIndex } from '@/data/topologyGenerator';
+
+// 5 cluster colors matching TopologyVisualization
+const clusterColors = [
+  { name: 'Biological Mechanisms', color: '#FF5A7F' },
+  { name: 'Clinical Applications', color: '#D97B3D' },
+  { name: 'Drug Discovery', color: '#E8C547' },
+  { name: 'Molecular Research', color: '#4DC4C4' },
+  { name: 'Data Analysis', color: '#6BA8DC' },
+];
 
 interface TopologyRightPanelProps {
   nodes: DataNode[];
@@ -10,6 +20,7 @@ interface TopologyRightPanelProps {
   hoveredNodeId: string | null;
   onSelectNode: (id: string | null) => void;
   onHoverNode: (id: string | null) => void;
+  onHighlightCluster?: (clusterIndex: number | null) => void;
 }
 
 export const TopologyRightPanel = ({
@@ -19,6 +30,7 @@ export const TopologyRightPanel = ({
   hoveredNodeId,
   onSelectNode,
   onHoverNode,
+  onHighlightCluster,
 }: TopologyRightPanelProps) => {
   // If a paper is selected, show Details view
   if (selectedNode) {
@@ -187,7 +199,7 @@ export const TopologyRightPanel = ({
     );
   }
 
-  // Default: Show Papers list
+  // Default: Show Papers list with cluster legend
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
@@ -196,10 +208,34 @@ export const TopologyRightPanel = ({
         <span className="text-xs text-muted-foreground ml-2">({nodes.length})</span>
       </div>
 
+      {/* Cluster Legend */}
+      <div className="px-4 py-3 border-b border-border/50 space-y-2">
+        <div className="text-xs text-muted-foreground font-medium">Clusters</div>
+        <div className="flex flex-wrap gap-2">
+          {clusterColors.map((cluster, idx) => (
+            <button
+              key={idx}
+              onClick={() => onHighlightCluster?.(idx)}
+              onMouseEnter={() => onHighlightCluster?.(idx)}
+              onMouseLeave={() => onHighlightCluster?.(null)}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md text-xs hover:bg-muted/50 transition-colors cursor-pointer"
+            >
+              <div 
+                className="w-2.5 h-2.5 rounded-full shrink-0" 
+                style={{ backgroundColor: cluster.color }}
+              />
+              <span className="text-muted-foreground">{cluster.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <ScrollArea className="flex-1">
         {nodes.map((paper) => {
           const isSelected = selectedNodeId === paper.id;
           const isHovered = hoveredNodeId === paper.id;
+          const clusterIdx = getClusterIndex(paper.id);
+          const clusterColor = clusterColors[clusterIdx]?.color;
           
           return (
             <div
@@ -212,6 +248,12 @@ export const TopologyRightPanel = ({
                 isSelected ? "bg-primary/10" : isHovered ? "bg-muted/50" : "hover:bg-muted/30"
               )}
             >
+              {/* Cluster indicator */}
+              <div 
+                className="absolute left-0 top-0 bottom-0 w-1"
+                style={{ backgroundColor: clusterColor }}
+              />
+              
               {/* Score with progress bar - top right */}
               <div className="absolute top-3 right-4 flex flex-col items-end gap-1">
                 <span className="text-xs font-medium text-primary">
@@ -226,12 +268,12 @@ export const TopologyRightPanel = ({
               </div>
               
               {/* Title */}
-              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-16">
+              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-16 pl-2">
                 {paper.title}
               </h4>
               
               {/* Authors and Year */}
-              <div className="flex items-center justify-between pr-16">
+              <div className="flex items-center justify-between pr-16 pl-2">
                 <p className="text-xs text-muted-foreground truncate max-w-[180px]">
                   {paper.authors.join(', ')}
                 </p>
