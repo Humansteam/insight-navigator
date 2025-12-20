@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronRight, PanelRight, Loader2, Languages, Info } from 'lucide-react';
+import { ChevronRight, PanelRight, Loader2, Languages } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
@@ -77,97 +77,89 @@ const Index = () => {
       <>
         {/* Title */}
         <h1 className="text-4xl font-serif font-normal text-foreground mb-6">
-          STRATA RESEARCH
+          Lithium Battery Research Analysis
         </h1>
 
         {/* Lead paragraph */}
         <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-          В условиях ограниченного доступа к западным базам (Scopus/WoS), Strata Research выступает как единая точка доступа к глобальной науке. Мы легально агрегируем метаданные и полные тексты ведущих мировых издательств (Elsevier, Springer, IEEE, ACS) и российской науки (партнерство с изд. «Наука» РАН + 300 журналов).
+          The analysis reveals significant divergence in lithium battery research between major geopolitical regions.
+          China leads in manufacturing scalability, while the United States demonstrates
+          advantages in fundamental materials science.
         </p>
 
         {/* Abstract Section */}
-        <SectionHeader title="ПРОБЛЕМА И РЕШЕНИЕ" />
+        <SectionHeader title="ABSTRACT" />
         <p className="text-base text-foreground/90 leading-relaxed mb-6">
-          Наш AI-движок превращает хаос неструктурированных данных в готовый аналитический продукт. Платформа обеспечивает единую точку доступа к глобальной научной информации, преодолевая барьеры ограниченного доступа к международным базам данных.
+          This review synthesizes findings from 165,432 scientific articles examining lithium battery technology
+          across industrial processing, recycling, and solid-state advances. Chinese research clusters around
+          high-efficiency extraction methods with membrane-based DLE systems achieving 95% lithium recovery.
+          Manufacturing optimization through AI monitoring shows 25% energy reduction. The highest recovery rates
+          emerge from hydrometallurgical processes developed in US labs, achieving 99.2% Li, 98.8% Co recovery.
+          A critical breakthrough exists in solid-state technology with Chinese protocols reporting 500 Wh/kg
+          energy density.
         </p>
 
         {/* Methods Section */}
-        <CollapsibleSection title="ТЕХНОЛОГИЧЕСКОЕ ЯДРО (THE ENGINE)">
-          <div className="space-y-3">
-            <p className="text-base text-foreground/90 leading-relaxed">
-              <span className="font-semibold text-primary">RAG + Visual RAG:</span> Гибридный поиск по текстам, диаграммам и таблицам.
-            </p>
-            <p className="text-base text-foreground/90 leading-relaxed">
-              <span className="font-semibold text-primary">Graph RAG:</span> Выявление скрытых связей и цитирований.
-            </p>
-            <p className="text-base text-foreground/90 leading-relaxed">
-              <span className="font-semibold text-primary">UMAP + KNN:</span> Топологическое моделирование ландшафта (вид "сверху").
-            </p>
-            <p className="text-base text-foreground/90 leading-relaxed">
-              <span className="font-semibold text-primary">Agentic Reasoning:</span> Агентный синтез финальных выводов и гипотез.
-            </p>
-          </div>
+        <CollapsibleSection title="METHODS">
+          <p className="text-base text-foreground/90 leading-relaxed">
+            We analyzed {papers.length} sources from an initial pool of 165,432, using 5 screening criteria. Each paper was
+            reviewed for {dimensions.length || 5} key aspects that mattered most to the research question.{' '}
+            <span className="text-primary cursor-pointer hover:underline">More on methods</span>
+          </p>
         </CollapsibleSection>
 
         {/* Results Section */}
-        <SectionHeader title="ПИЛОТНЫЙ КЕЙС: ADVANCED MATERIALS (2024–2025)" />
-        <h4 className="text-lg font-semibold text-foreground mb-2">Масштаб исследования</h4>
+        <SectionHeader title="RESULTS" />
+        <h4 className="text-lg font-semibold text-foreground mb-2">Characteristics of Included Studies</h4>
         <p className="text-base text-foreground/90 leading-relaxed mb-6">
-          Мы доказали эффективность на реальных данных. Обработано <span className="font-semibold text-primary">75 000</span> статей, из которых AI отобрал <span className="font-semibold text-primary">20 000</span> высокорелевантных исследований (США, Китай, РФ) по ключевым направлениям.
+          This review includes {papers.length} sources examining lithium battery technology,
+          covering industrial processing, solid-state electrolytes, and recycling methods.
         </p>
 
         {/* Thematic Analysis */}
-        <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Ключевые направления</h4>
+        <h4 className="text-lg font-semibold text-foreground mt-8 mb-4">Thematic Analysis</h4>
 
-        <h5 className="text-base font-semibold text-foreground mb-2">Композиты</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          Углеволокно, прекурсоры, современные эпоксидные связующие. Анализ патентного ландшафта и выявление технологических лидеров в области высокопрочных материалов.
+        <h5 className="text-base font-semibold text-foreground mb-2">Industrial Processing and Manufacturing</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Chinese research clusters around high-efficiency extraction methods with membrane-based DLE systems
+          achieving 95% lithium recovery <Citation id="paper-001" />
         </p>
+        <PaperReference id="paper-001" />
 
-        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Аддитивные технологии</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          SLM-печать, металлопорошки, AI-дефектоскопия. Картирование исследовательских кластеров и определение точек технологического прорыва.
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Manufacturing optimization through AI monitoring shows 25% energy reduction <Citation id="paper-002" />
         </p>
+        <PaperReference id="paper-002" />
 
-        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Накопители энергии</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          Li-ion катоды, твердотельные электролиты, технологии рециклинга. Систематический обзор с выделением наиболее перспективных направлений развития.
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          The highest recovery rates emerge from hydrometallurgical processes developed in US labs,
+          achieving 99.2% Li, 98.8% Co recovery <Citation id="paper-003" />
         </p>
+        <PaperReference id="paper-003" />
 
-        {/* Result highlight */}
-        <div className="mt-8 p-4 rounded-lg bg-primary/5 border border-primary/20">
-          <p className="text-base text-foreground/90 leading-relaxed">
-            <span className="font-semibold text-primary">Результат:</span> Заказчик получил не список ссылок, а интерактивную 3D-карту технологий и структурированный отчет с выявленными трендами.
-          </p>
-        </div>
-
-        {/* Key Advantages */}
-        <SectionHeader title="КЛЮЧЕВЫЕ ПРЕИМУЩЕСТВА" />
-        
-        <h5 className="text-base font-semibold text-foreground mb-2">Безопасность (On-premise)</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          Решение класса Enterprise, которое можно развернуть локально в закрытом контуре заказчика (на open-source моделях Qwen/Llama/Saiga). Полная конфиденциальность запросов.
+        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Solid-State Battery Advances</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          A critical breakthrough exists in solid-state technology. Chinese protocols report 500 Wh/kg
+          energy density <Citation id="paper-007" />
         </p>
+        <PaperReference id="paper-007" />
 
-        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Глубокая структуризация</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          Многостадийный Reasoning Pipeline извлекает факты, которые пропускает обычный поиск.
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          European artificial SEI enables 500 cycles at 99.2% efficiency <Citation id="paper-006" />
         </p>
+        <PaperReference id="paper-006" />
 
-        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Визуальная навигация</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          В отличие от текстовых списков (Elicit, Consensus), мы даем 3D-обзор поля (UMAP), позволяя мгновенно видеть кластеры и белые пятна.
+        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Novel Materials Discovery</h5>
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          ML screening identifies 12 novel sulfide electrolytes with ionic conductivity exceeding 10 mS/cm <Citation id="paper-004" />
         </p>
+        <PaperReference id="paper-004" />
 
-        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Междисциплинарный поиск (Discovery)</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          Находит неочевидные пересечения (например, методы из «Физики плазмы» применимые в «Обработке материалов»).
+        <p className="text-base text-foreground/90 leading-relaxed mb-2">
+          Direct observation of dendrite nucleation mechanism at solid electrolyte interfaces provides
+          crucial insights for battery safety <Citation id="paper-005" />
         </p>
-
-        <h5 className="text-base font-semibold text-foreground mb-2 mt-6">Мультиязычность</h5>
-        <p className="text-base text-foreground/90 leading-relaxed mb-4">
-          Мгновенный перевод и анализ материалов на 40+ языках (стираем языковой барьер с Китаем и Азией).
-        </p>
+        <PaperReference id="paper-005" />
       </>
     );
   };
@@ -196,13 +188,6 @@ const Index = () => {
             <span className="text-sm text-muted-foreground">
               {phase === 'idle' ? 'Research report' : phase === 'complete' ? 'Complete' : phase.replace('_', ' ')}
             </span>
-            <Link
-              to="/about"
-              className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-              title="About Strata"
-            >
-              <Info className="w-4 h-4" />
-            </Link>
             <Link
               to="/translate"
               className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
