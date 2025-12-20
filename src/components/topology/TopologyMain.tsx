@@ -27,7 +27,7 @@ export const TopologyMain = ({
   return (
     <div className={cn('flex h-full', className)}>
       {/* Left Panel - Chat */}
-      <div className="w-72 border-r border-border bg-background">
+      <div className="w-96 border-r border-border bg-background">
         <TopologyChatPanel />
       </div>
 
