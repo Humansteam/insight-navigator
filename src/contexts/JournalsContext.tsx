@@ -1,42 +1,27 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
-export interface JournalEntry {
-  id: string;
-  journalId: string;
-  content: string;
-  source: 'report' | 'chat' | 'topology' | 'papers' | 'manual';
-  sourceLabel?: string;
-  paperIds?: string[];
-  createdAt: Date;
-}
-
 export interface Journal {
   id: string;
   title: string;
-  description?: string;
   icon: string; // emoji
+  content: string; // markdown content
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface JournalsContextType {
   journals: Journal[];
-  entries: JournalEntry[];
-  createJournal: (journal: Omit<Journal, 'id' | 'createdAt' | 'updatedAt'>) => Journal;
+  createJournal: (journal: Omit<Journal, 'id' | 'createdAt' | 'updatedAt' | 'content'> & { content?: string }) => Journal;
   updateJournal: (id: string, updates: Partial<Omit<Journal, 'id' | 'createdAt'>>) => void;
   deleteJournal: (id: string) => void;
-  addEntry: (entry: Omit<JournalEntry, 'id' | 'createdAt'>) => JournalEntry;
-  updateEntry: (id: string, updates: Partial<Omit<JournalEntry, 'id' | 'journalId' | 'createdAt'>>) => void;
-  deleteEntry: (id: string) => void;
-  getJournalEntries: (journalId: string) => JournalEntry[];
+  appendToJournal: (id: string, content: string, sourceLabel?: string) => void;
   getJournalById: (id: string) => Journal | undefined;
   recentJournals: Journal[];
 }
 
 const JournalsContext = createContext<JournalsContextType | null>(null);
 
-const JOURNALS_STORAGE_KEY = 'research-journals';
-const ENTRIES_STORAGE_KEY = 'research-journal-entries';
+const JOURNALS_STORAGE_KEY = 'research-journals-v2';
 
 export const JournalsProvider = ({ children }: { children: React.ReactNode }) => {
   const [journals, setJournals] = useState<Journal[]>(() => {
@@ -56,35 +41,17 @@ export const JournalsProvider = ({ children }: { children: React.ReactNode }) =>
     return [];
   });
 
-  const [entries, setEntries] = useState<JournalEntry[]>(() => {
-    try {
-      const stored = localStorage.getItem(ENTRIES_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        return parsed.map((e: JournalEntry) => ({
-          ...e,
-          createdAt: new Date(e.createdAt),
-        }));
-      }
-    } catch (e) {
-      console.error('Failed to parse stored entries:', e);
-    }
-    return [];
-  });
-
   // Persist to localStorage
   useEffect(() => {
     localStorage.setItem(JOURNALS_STORAGE_KEY, JSON.stringify(journals));
   }, [journals]);
 
-  useEffect(() => {
-    localStorage.setItem(ENTRIES_STORAGE_KEY, JSON.stringify(entries));
-  }, [entries]);
-
-  const createJournal = useCallback((journalData: Omit<Journal, 'id' | 'createdAt' | 'updatedAt'>): Journal => {
+  const createJournal = useCallback((journalData: Omit<Journal, 'id' | 'createdAt' | 'updatedAt' | 'content'> & { content?: string }): Journal => {
     const now = new Date();
     const newJournal: Journal = {
-      ...journalData,
+      title: journalData.title,
+      icon: journalData.icon,
+      content: journalData.content || '',
       id: `journal-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: now,
       updatedAt: now,
@@ -103,42 +70,27 @@ export const JournalsProvider = ({ children }: { children: React.ReactNode }) =>
 
   const deleteJournal = useCallback((id: string) => {
     setJournals(prev => prev.filter(j => j.id !== id));
-    setEntries(prev => prev.filter(e => e.journalId !== id));
   }, []);
 
-  const addEntry = useCallback((entryData: Omit<JournalEntry, 'id' | 'createdAt'>): JournalEntry => {
-    const newEntry: JournalEntry = {
-      ...entryData,
-      id: `entry-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      createdAt: new Date(),
-    };
-    setEntries(prev => [...prev, newEntry]);
-    // Update journal's updatedAt
-    setJournals(prev => prev.map(j => 
-      j.id === entryData.journalId 
-        ? { ...j, updatedAt: new Date() }
-        : j
-    ));
-    return newEntry;
-  }, []);
-
-  const updateEntry = useCallback((id: string, updates: Partial<Omit<JournalEntry, 'id' | 'journalId' | 'createdAt'>>) => {
-    setEntries(prev => prev.map(entry => 
-      entry.id === id 
-        ? { ...entry, ...updates }
-        : entry
+  const appendToJournal = useCallback((id: string, content: string, sourceLabel?: string) => {
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    const separator = sourceLabel 
+      ? `\n\n---\n\n**From ${sourceLabel}** · ${dateStr} ${timeStr}\n\n`
+      : '\n\n';
+    
+    setJournals(prev => prev.map(journal => 
+      journal.id === id 
+        ? { 
+            ...journal, 
+            content: journal.content + separator + content,
+            updatedAt: now 
+          }
+        : journal
     ));
   }, []);
-
-  const deleteEntry = useCallback((id: string) => {
-    setEntries(prev => prev.filter(e => e.id !== id));
-  }, []);
-
-  const getJournalEntries = useCallback((journalId: string) => {
-    return entries
-      .filter(e => e.journalId === journalId)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-  }, [entries]);
 
   const getJournalById = useCallback((id: string) => {
     return journals.find(j => j.id === id);
@@ -154,14 +106,10 @@ export const JournalsProvider = ({ children }: { children: React.ReactNode }) =>
   return (
     <JournalsContext.Provider value={{
       journals,
-      entries,
       createJournal,
       updateJournal,
       deleteJournal,
-      addEntry,
-      updateEntry,
-      deleteEntry,
-      getJournalEntries,
+      appendToJournal,
       getJournalById,
       recentJournals,
     }}>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, BookOpen, Sparkles, FlaskConical, Brain, Lightbulb, Target, Microscope } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useJournals } from '@/contexts/JournalsContext';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -15,7 +15,6 @@ const emojiSuggestions = ['📓', '🔬', '💡', '🧬', '⚡', '🎯', '📊',
 export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJournalDialogProps) => {
   const { createJournal } = useJournals();
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [icon, setIcon] = useState('📓');
 
   if (!isOpen) return null;
@@ -24,12 +23,10 @@ export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJourna
     if (!title.trim()) return;
     const journal = createJournal({
       title: title.trim(),
-      description: description.trim() || undefined,
       icon,
     });
     onCreated?.(journal.id);
     setTitle('');
-    setDescription('');
     setIcon('📓');
     onClose();
   };
@@ -87,20 +84,7 @@ export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJourna
               placeholder="e.g., CRISPR Gene Therapy Research"
               className="w-full px-3 py-2.5 rounded-xl bg-muted border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
               autoFocus
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">
-              Description <span className="text-muted-foreground font-normal">(optional)</span>
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of your research focus..."
-              rows={2}
-              className="w-full px-3 py-2.5 rounded-xl bg-muted border border-border text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/50"
+              onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
             />
           </div>
         </div>
