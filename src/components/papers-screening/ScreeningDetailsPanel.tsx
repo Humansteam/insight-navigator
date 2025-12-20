@@ -1,18 +1,57 @@
 import { PaperWithScreening } from './types';
-import { ExternalLink, ArrowLeft, Star, BarChart3, Clock, Sparkles } from 'lucide-react';
+import { ExternalLink, ArrowLeft, Star, BarChart3, Clock, Sparkles, FileText, CheckCircle, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ScreeningDetailsPanelProps {
   paper: PaperWithScreening | null;
+  papers?: PaperWithScreening[];
   onBack?: () => void;
 }
 
-export const ScreeningDetailsPanel = ({ paper, onBack }: ScreeningDetailsPanelProps) => {
+export const ScreeningDetailsPanel = ({ paper, papers = [], onBack }: ScreeningDetailsPanelProps) => {
+  // Calculate overview stats
+  const totalPapers = papers.length;
+  const includedCount = papers.filter(p => p.screening.combinedScore >= 70).length;
+  const excludedCount = totalPapers - includedCount;
+
+  // Show Overview when no paper selected
   if (!paper) {
     return (
-      <div className="h-full flex items-center justify-center text-sm text-muted-foreground p-6">
-        Select a paper to view details
+      <div className="h-full flex flex-col">
+        {/* Header */}
+        <div className="px-4 py-3 border-b border-border">
+          <span className="text-sm font-medium">Screening results</span>
+        </div>
+
+        <div className="p-4 space-y-6">
+          {/* Overview Title */}
+          <div className="text-xs text-muted-foreground">Overview</div>
+          
+          {/* Stats */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <FileText className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-foreground">
+                <span className="font-medium">{totalPapers}</span> abstracts evaluated
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-4 h-4 text-emerald-500" />
+              <span className="text-sm text-foreground">
+                <span className="font-medium">{includedCount}</span> abstract{includedCount !== 1 ? 's' : ''} included
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <XCircle className="w-4 h-4 text-red-400" />
+              <span className="text-sm text-foreground">
+                <span className="font-medium">{excludedCount}</span> abstract{excludedCount !== 1 ? 's' : ''} excluded
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -35,19 +74,14 @@ export const ScreeningDetailsPanel = ({ paper, onBack }: ScreeningDetailsPanelPr
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-5">
-          {/* Combined Score */}
+          {/* Paper Title */}
           <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Match Score</div>
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-semibold text-primary">
-                {screening.combinedScore}%
+            <div className="text-xs text-muted-foreground">Paper</div>
+            <div className="flex items-start gap-1">
+              <span className="text-sm font-medium text-foreground leading-snug">
+                {paper.title}
               </span>
-              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full"
-                  style={{ width: `${screening.combinedScore}%` }}
-                />
-              </div>
+              <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0 mt-1" />
             </div>
           </div>
 
@@ -86,23 +120,12 @@ export const ScreeningDetailsPanel = ({ paper, onBack }: ScreeningDetailsPanelPr
             </div>
           </div>
 
-          {/* Aspect Tag */}
+          {/* Category */}
           <div className="space-y-2">
             <div className="text-xs text-muted-foreground">Category</div>
             <span className="px-2 py-0.5 bg-muted/50 text-muted-foreground rounded text-xs inline-block">
               {screening.aspectTag}
             </span>
-          </div>
-
-          {/* Paper Title */}
-          <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Paper</div>
-            <div className="flex items-start gap-1">
-              <span className="text-sm font-medium text-foreground leading-snug">
-                {paper.title}
-              </span>
-              <ExternalLink className="w-3 h-3 text-muted-foreground shrink-0 mt-1" />
-            </div>
           </div>
 
           {/* Abstract */}

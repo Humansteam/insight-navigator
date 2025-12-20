@@ -87,6 +87,7 @@ export const PapersScreeningMain = ({
       <div className="w-72 border-l border-border bg-background">
         <ScreeningDetailsPanel
           paper={selectedPaper}
+          papers={papers}
           onBack={() => setSelectedPaperId(null)}
         />
       </div>
