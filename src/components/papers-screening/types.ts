@@ -35,4 +35,4 @@ export interface PaperWithScreening {
   screening: PaperScreening;
 }
 
-export type ReportView = 'report' | 'papers' | 'topology' | 'timeline';
+export type ReportView = 'report' | 'papers' | 'topology' | 'timeline' | 'notes';
