@@ -275,7 +275,6 @@ export const TopologyVisualization = ({
       const targetPos = positions.get(edge.target_id);
       if (!sourcePos || !targetPos) return;
 
-      // Color based on source cluster
       const sourceColor = getNodeColor(edge.source_id);
       const targetColor = getNodeColor(edge.target_id);
       const sameCluster = getClusterIndex(edge.source_id) === getClusterIndex(edge.target_id);
@@ -289,8 +288,11 @@ export const TopologyVisualization = ({
         ctx.strokeStyle = sourceColor + '15';
         ctx.lineWidth = 0.3;
       } else {
-        // Bridge edges - slightly more visible
-        ctx.strokeStyle = sourceColor + '25';
+        // Bridge edges - gradient from source to target color
+        const gradient = ctx.createLinearGradient(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y);
+        gradient.addColorStop(0, sourceColor + '30');
+        gradient.addColorStop(1, targetColor + '30');
+        ctx.strokeStyle = gradient;
         ctx.lineWidth = 0.5;
       }
       ctx.stroke();
@@ -305,14 +307,22 @@ export const TopologyVisualization = ({
       if (!sourcePos || !targetPos) return;
 
       const sourceColor = getNodeColor(edge.source_id);
+      const targetColor = getNodeColor(edge.target_id);
       const sameCluster = getClusterIndex(edge.source_id) === getClusterIndex(edge.target_id);
 
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
       ctx.lineTo(targetPos.x, targetPos.y);
       
-      // Same line width as inactive, just 100% brighter (full opacity)
-      ctx.strokeStyle = sourceColor + 'FF';
+      if (sameCluster) {
+        ctx.strokeStyle = sourceColor + 'FF';
+      } else {
+        // Bright gradient for highlighted bridges
+        const gradient = ctx.createLinearGradient(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y);
+        gradient.addColorStop(0, sourceColor + 'FF');
+        gradient.addColorStop(1, targetColor + 'FF');
+        ctx.strokeStyle = gradient;
+      }
       ctx.lineWidth = sameCluster ? 0.3 : 0.5;
       ctx.stroke();
     });

@@ -90,6 +90,15 @@ export function generateIntraClusterEdges(nodes: DataNode[]): DataEdge[] {
   return edges;
 }
 
+// Cluster centers for boundary node selection
+const CLUSTER_CENTERS: Record<number, { x: number; y: number }> = {
+  0: { x: 0.15, y: 0.25 },  // pink - top left
+  1: { x: 0.75, y: 0.15 },  // orange - top right
+  2: { x: 0.50, y: 0.50 },  // yellow - center
+  3: { x: 0.20, y: 0.75 },  // cyan - bottom left
+  4: { x: 0.80, y: 0.75 },  // blue - bottom right
+};
+
 // Generate inter-cluster bridges (bundles of connections between clusters)
 export function generateInterClusterEdges(nodes: DataNode[]): DataEdge[] {
   const edges: DataEdge[] = [];
@@ -117,12 +126,36 @@ export function generateInterClusterEdges(nodes: DataNode[]): DataEdge[] {
     const nodesA = clusters.get(clusterA) || [];
     const nodesB = clusters.get(clusterB) || [];
     
-    // Create 5-12 bridge connections
-    const numBridges = 5 + Math.floor(Math.random() * 8);
+    if (nodesA.length === 0 || nodesB.length === 0) return;
+
+    const centerA = CLUSTER_CENTERS[clusterA];
+    const centerB = CLUSTER_CENTERS[clusterB];
+
+    // Sort nodes by distance to the OTHER cluster's center (boundary nodes first)
+    const sortedA = [...nodesA].sort((a, b) => {
+      const distA = Math.hypot(centerB.x - (a.umap_x || 0), centerB.y - (a.umap_y || 0));
+      const distB = Math.hypot(centerB.x - (b.umap_x || 0), centerB.y - (b.umap_y || 0));
+      return distA - distB;
+    });
+
+    const sortedB = [...nodesB].sort((a, b) => {
+      const distA = Math.hypot(centerA.x - (a.umap_x || 0), centerA.y - (a.umap_y || 0));
+      const distB = Math.hypot(centerA.x - (b.umap_x || 0), centerA.y - (b.umap_y || 0));
+      return distA - distB;
+    });
+
+    // Take top 30% of boundary nodes from each cluster
+    const boundaryCountA = Math.max(5, Math.floor(sortedA.length * 0.3));
+    const boundaryCountB = Math.max(5, Math.floor(sortedB.length * 0.3));
+    const boundaryA = sortedA.slice(0, boundaryCountA);
+    const boundaryB = sortedB.slice(0, boundaryCountB);
+    
+    // Create 20-35 bridge connections from boundary nodes
+    const numBridges = 20 + Math.floor(Math.random() * 16);
     
     for (let i = 0; i < numBridges; i++) {
-      const nodeA = nodesA[Math.floor(Math.random() * nodesA.length)];
-      const nodeB = nodesB[Math.floor(Math.random() * nodesB.length)];
+      const nodeA = boundaryA[Math.floor(Math.random() * boundaryA.length)];
+      const nodeB = boundaryB[Math.floor(Math.random() * boundaryB.length)];
       
       if (nodeA && nodeB) {
         edges.push({
