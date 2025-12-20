@@ -83,8 +83,8 @@ export const PapersScreeningMain = ({
         </ScrollArea>
       </div>
 
-      {/* Details Panel - Right */}
-      <div className="w-72 border-l border-border bg-background">
+      {/* Details Panel - Right (same width as Report/Topology sidebar) */}
+      <div className="w-[360px] border-l border-border bg-background">
         <ScreeningDetailsPanel
           paper={selectedPaper}
           papers={papers}
