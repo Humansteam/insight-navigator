@@ -325,44 +325,46 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Sidebar: Evidence Matrix */}
-      <div className={cn(
-        "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
-        isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
-      )}>
-        <div className="p-4 border-b border-border min-w-[360px]">
-          <h3 className="text-sm font-medium text-primary">Evidence Matrix</h3>
-        </div>
-        <div className="flex-1 overflow-auto min-w-[360px]">
-          {papers.map((paper) => (
-            <div
-              key={paper.id}
-              className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors relative"
-            >
-              <div className="absolute top-3 right-4 flex flex-col items-end gap-1">
-                <span className="text-xs font-medium text-primary">
-                  {Math.round(paper.score * 100)}%
-                </span>
-                <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full"
-                    style={{ width: `${paper.score * 100}%` }}
-                  />
+      {/* Right Sidebar: Evidence Matrix - hidden when Papers view is active */}
+      {activeView !== 'papers' && (
+        <div className={cn(
+          "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
+          isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
+        )}>
+          <div className="p-4 border-b border-border min-w-[360px]">
+            <h3 className="text-sm font-medium text-primary">Evidence Matrix</h3>
+          </div>
+          <div className="flex-1 overflow-auto min-w-[360px]">
+            {papers.map((paper) => (
+              <div
+                key={paper.id}
+                className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors relative"
+              >
+                <div className="absolute top-3 right-4 flex flex-col items-end gap-1">
+                  <span className="text-xs font-medium text-primary">
+                    {Math.round(paper.score * 100)}%
+                  </span>
+                  <div className="w-10 h-1 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full"
+                      style={{ width: `${paper.score * 100}%` }}
+                    />
+                  </div>
+                </div>
+                <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-14">
+                  {paper.title}
+                </h4>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground truncate max-w-[220px]">
+                    {paper.authors.join(', ')}
+                  </p>
+                  <span className="text-xs text-muted-foreground">{paper.year}</span>
                 </div>
               </div>
-              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-14">
-                {paper.title}
-              </h4>
-              <div className="flex items-center justify-between">
-                <p className="text-xs text-muted-foreground truncate max-w-[220px]">
-                  {paper.authors.join(', ')}
-                </p>
-                <span className="text-xs text-muted-foreground">{paper.year}</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
