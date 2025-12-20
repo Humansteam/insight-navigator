@@ -12,9 +12,8 @@ import { DataNode } from '@/types/morphik';
 import { PapersScreeningMain } from '@/components/papers-screening';
 import { TopologyMain } from '@/components/topology';
 import { ReportView } from '@/components/papers-screening/types';
-import { useChat } from '@/contexts/ChatContext';
 import { ReportChatPanel } from '@/components/report';
-import { JournalsWorkspace, TextSelectionTooltip } from '@/components/journals';
+import { JournalsWorkspaceProvider, JournalsLeftPanel, JournalsMainPanel, TextSelectionTooltip } from '@/components/journals';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -219,12 +218,18 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full flex bg-background relative">
-      {/* Left Chat Panel - visible in Report and Topology views */}
-      {(activeView === 'report' || activeView === 'topology') && (
-        <div className="w-96 border-r border-border bg-background">
+      {/* Left Panel - fixed width to prevent header jumping */}
+      <div className="w-96 border-r border-border bg-background">
+        {activeView === 'report' || activeView === 'topology' ? (
           <ReportChatPanel />
-        </div>
-      )}
+        ) : activeView === 'notes' ? (
+          <JournalsWorkspaceProvider>
+            <JournalsLeftPanel />
+          </JournalsWorkspaceProvider>
+        ) : (
+          <div className="h-full" />
+        )}
+      </div>
 
       {/* Main Content Panel */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -257,14 +262,21 @@ const Index = () => {
             </div>
             <div className="flex gap-1">
               {phaseDots.map((active, i) => (
-                <div key={i} className={cn(
-                  "w-2 h-2 rounded-full transition-colors",
-                  active ? "bg-primary" : "bg-muted"
-                )} />
+                <div
+                  key={i}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-colors",
+                    active ? "bg-primary" : "bg-muted"
+                  )}
+                />
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              {phase === 'idle' ? 'Research report' : phase === 'complete' ? 'Complete' : phase.replace('_', ' ')}
+              {phase === 'idle'
+                ? 'Research report'
+                : phase === 'complete'
+                  ? 'Complete'
+                  : phase.replace('_', ' ')}
             </span>
             <Link
               to="/translate"
@@ -291,23 +303,20 @@ const Index = () => {
         {/* Main Content Area */}
         <div className="flex-1 overflow-auto lovable-scrollbar">
           {isLoading && phase !== 'complete' ? (
-            <PipelineDAG
-              query={input || 'Analyzing...'}
-              onComplete={() => {}}
-            />
+            <PipelineDAG query={input || 'Analyzing...'} onComplete={() => {}} />
           ) : activeView === 'papers' ? (
-            <PapersScreeningMain 
-              onPaperSelect={(id) => console.log('Selected paper:', id)} 
-            />
+            <PapersScreeningMain onPaperSelect={(id) => console.log('Selected paper:', id)} />
           ) : activeView === 'topology' ? (
-            <TopologyMain 
-              nodes={papers} 
-              edges={mockEdges} 
+            <TopologyMain
+              nodes={papers}
+              edges={mockEdges}
               externalHoveredNodeId={listHoveredPaperId || graphHighlightId}
               onExternalHoverNode={handleGraphNodeHover}
             />
           ) : activeView === 'notes' ? (
-            <JournalsWorkspace />
+            <JournalsWorkspaceProvider>
+              <JournalsMainPanel />
+            </JournalsWorkspaceProvider>
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
@@ -317,16 +326,19 @@ const Index = () => {
             </div>
           ) : (
             <div ref={reportContentRef} className="max-w-3xl mx-auto px-8 py-10 relative">
-              {/* Text selection tooltip for adding notes */}
-              <TextSelectionTooltip 
-                containerRef={reportContentRef} 
-                source="report" 
-                sourceLabel="Research Report" 
+              <TextSelectionTooltip
+                containerRef={reportContentRef}
+                source="report"
+                sourceLabel="Research Report"
               />
-              
-              {/* Date */}
               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
-                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                {new Date()
+                  .toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
+                  .toUpperCase()}
               </p>
 
               {error ? (
@@ -341,19 +353,23 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Sidebar: Evidence Matrix - visible in Report and Topology views */}
-      {(activeView === 'report' || activeView === 'topology') && (
-        <div className={cn(
+      {/* Right Sidebar - fixed width to prevent header jumping */}
+      <div
+        className={cn(
           "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
           isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
-        )}>
-          <EvidenceMatrixPanel 
-            papers={papers} 
+        )}
+      >
+        {activeView === 'report' || activeView === 'topology' ? (
+          <EvidenceMatrixPanel
+            papers={papers}
             hoveredPaperId={graphHoveredPaperId}
             onHoverPaper={setListHoveredPaperId}
           />
-        </div>
-      )}
+        ) : (
+          <div className="h-full" />
+        )}
+      </div>
     </div>
   );
 };
