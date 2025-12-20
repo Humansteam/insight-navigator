@@ -22,18 +22,20 @@ interface NodePosition {
   vy: number;
 }
 
-// Soft pastel color palette like in reference image
+// Soft pastel color palette matching reference
 const nodeColors = [
-  '#E8A87C', // Coral/Peach
-  '#85DCBA', // Mint Green
+  '#E8967A', // Coral/Salmon
+  '#85DCBA', // Mint Green  
   '#7FBBE9', // Sky Blue
-  '#C9A7C7', // Lavender
+  '#C9A7C7', // Lavender/Pink
   '#F5D76E', // Soft Yellow
-  '#F1948A', // Salmon
+  '#D4A5A5', // Dusty Rose
   '#B8B8B8', // Warm Grey
   '#9FD5D1', // Teal
-  '#D4A5A5', // Dusty Rose
+  '#E8C49A', // Peach
   '#A3C4BC', // Sage
+  '#F1948A', // Light Coral
+  '#AED6F1', // Light Blue
 ];
 
 // Generate consistent color based on node id
@@ -64,30 +66,32 @@ export const TopologyVisualization = ({
   const animationRef = useRef<number>();
   const lastMousePos = useRef({ x: 0, y: 0 });
 
-  // Initialize positions
+  // Determine if a node is "major" (high score = larger, with label)
+  const isMajorNode = (node: DataNode) => node.score >= 0.8;
+
+  // Initialize positions in organic clusters
   useEffect(() => {
     const newPositions = new Map<string, NodePosition>();
-    const centerX = 280;
-    const centerY = 200;
+    const centerX = 300;
+    const centerY = 220;
     
     nodes.forEach((node, i) => {
       if (viewMode === 'map') {
-        const baseX = 80 + node.umap_x * 400;
-        const baseY = 60 + node.umap_y * 300;
-        const offsetX = (i % 5 - 2) * 20;
-        const offsetY = (Math.floor(i / 5) % 5 - 2) * 20;
+        const baseX = 80 + node.umap_x * 440;
+        const baseY = 60 + node.umap_y * 320;
         newPositions.set(node.id, {
-          x: baseX + offsetX,
-          y: baseY + offsetY,
+          x: baseX + (Math.random() - 0.5) * 30,
+          y: baseY + (Math.random() - 0.5) * 30,
           vx: 0,
           vy: 0,
         });
       } else {
-        const angle = (i / nodes.length) * Math.PI * 2 + Math.random() * 0.5;
-        const radius = 80 + Math.random() * 120;
+        // Organic scattered placement
+        const angle = (i / nodes.length) * Math.PI * 2 + (Math.random() - 0.5) * 1.2;
+        const radius = 60 + Math.random() * 160;
         newPositions.set(node.id, {
-          x: centerX + Math.cos(angle) * radius,
-          y: centerY + Math.sin(angle) * radius,
+          x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 40,
+          y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 40,
           vx: 0,
           vy: 0,
         });
@@ -96,18 +100,18 @@ export const TopologyVisualization = ({
     setPositions(newPositions);
   }, [nodes, viewMode]);
 
-  // Force simulation for network mode
+  // Force simulation
   useEffect(() => {
     if (viewMode !== 'network' || positions.size === 0 || draggingNodeId) return;
 
     const simulate = () => {
       const newPositions = new Map(positions);
-      const centerX = 280;
-      const centerY = 200;
-      const repulsion = 3000;
-      const attraction = 0.015;
-      const damping = 0.75;
-      const centerForce = 0.003;
+      const centerX = 300;
+      const centerY = 220;
+      const repulsion = 2000;
+      const attraction = 0.02;
+      const damping = 0.7;
+      const centerForce = 0.002;
 
       nodes.forEach((node) => {
         const pos = newPositions.get(node.id);
@@ -116,11 +120,9 @@ export const TopologyVisualization = ({
         let fx = 0;
         let fy = 0;
 
-        // Center force
         fx += (centerX - pos.x) * centerForce;
         fy += (centerY - pos.y) * centerForce;
 
-        // Repulsion between all nodes
         nodes.forEach((other) => {
           if (node.id === other.id) return;
           const otherPos = newPositions.get(other.id);
@@ -129,12 +131,18 @@ export const TopologyVisualization = ({
           const dx = pos.x - otherPos.x;
           const dy = pos.y - otherPos.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const force = repulsion / (dist * dist);
-          fx += (dx / dist) * force;
-          fy += (dy / dist) * force;
+          const minDist = isMajorNode(node) || isMajorNode(other) ? 80 : 40;
+          if (dist < minDist) {
+            const force = (minDist - dist) * 0.5;
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
+          } else {
+            const force = repulsion / (dist * dist);
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
+          }
         });
 
-        // Attraction along edges
         edges.forEach((edge) => {
           let otherNode: DataNode | undefined;
           if (edge.source_id === node.id) {
@@ -163,7 +171,7 @@ export const TopologyVisualization = ({
     };
 
     let iterations = 0;
-    const maxIterations = 80;
+    const maxIterations = 100;
 
     const tick = () => {
       if (iterations < maxIterations) {
@@ -201,7 +209,7 @@ export const TopologyVisualization = ({
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
 
-    // Draw edges - thin curved lines
+    // Draw all edges - thin curved lines like reference
     edges.forEach((edge) => {
       const sourcePos = positions.get(edge.source_id);
       const targetPos = positions.get(edge.target_id);
@@ -210,121 +218,149 @@ export const TopologyVisualization = ({
       const sourceColor = getNodeColor(edge.source_id);
       const targetColor = getNodeColor(edge.target_id);
 
-      // Calculate midpoint with slight curve
+      // Curved line with bezier
       const midX = (sourcePos.x + targetPos.x) / 2;
       const midY = (sourcePos.y + targetPos.y) / 2;
       const dx = targetPos.x - sourcePos.x;
       const dy = targetPos.y - sourcePos.y;
-      const perpX = -dy * 0.1;
-      const perpY = dx * 0.1;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const curvature = Math.min(dist * 0.15, 30);
+      const perpX = (-dy / dist) * curvature;
+      const perpY = (dx / dist) * curvature;
 
-      // Create gradient
+      // Gradient edge
       const gradient = ctx.createLinearGradient(
         sourcePos.x, sourcePos.y,
         targetPos.x, targetPos.y
       );
-      gradient.addColorStop(0, sourceColor + '40');
-      gradient.addColorStop(0.5, 'rgba(180, 180, 180, 0.25)');
-      gradient.addColorStop(1, targetColor + '40');
+      gradient.addColorStop(0, sourceColor + '35');
+      gradient.addColorStop(0.5, 'rgba(160, 160, 160, 0.2)');
+      gradient.addColorStop(1, targetColor + '35');
 
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
       ctx.quadraticCurveTo(midX + perpX, midY + perpY, targetPos.x, targetPos.y);
       ctx.strokeStyle = gradient;
-      ctx.lineWidth = 0.8;
+      ctx.lineWidth = 0.6;
       ctx.stroke();
     });
 
-    // Draw nodes
-    nodes.forEach((node) => {
+    // Draw nodes - minor nodes first, then major nodes on top
+    const sortedNodes = [...nodes].sort((a, b) => a.score - b.score);
+
+    sortedNodes.forEach((node) => {
       const pos = positions.get(node.id);
       if (!pos) return;
 
       const isSelected = selectedNodeId === node.id;
       const isHovered = hoveredNodeId === node.id;
       const isDragging = draggingNodeId === node.id;
-      const baseRadius = 6 + (node.score * 14);
-      const radius = isSelected || isHovered || isDragging ? baseRadius + 4 : baseRadius;
+      const isMajor = isMajorNode(node);
+      
+      // Size based on score - major nodes are much larger
+      let radius: number;
+      if (isMajor) {
+        radius = 25 + (node.score - 0.8) * 80; // 25-45px for major
+      } else {
+        radius = 4 + node.score * 12; // 4-14px for minor
+      }
+      
+      if (isSelected || isHovered || isDragging) {
+        radius += isMajor ? 5 : 2;
+      }
+
       const color = getNodeColor(node.id);
 
-      // Soft outer glow for all nodes
+      // Soft outer glow
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, radius + 8, 0, Math.PI * 2);
-      const outerGlow = ctx.createRadialGradient(pos.x, pos.y, radius * 0.5, pos.x, pos.y, radius + 8);
-      outerGlow.addColorStop(0, color + '30');
+      ctx.arc(pos.x, pos.y, radius + (isMajor ? 12 : 6), 0, Math.PI * 2);
+      const outerGlow = ctx.createRadialGradient(pos.x, pos.y, radius * 0.3, pos.x, pos.y, radius + (isMajor ? 12 : 6));
+      outerGlow.addColorStop(0, color + '40');
       outerGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = outerGlow;
       ctx.fill();
 
-      // Enhanced glow for interactive states
-      if (isSelected || isHovered || isDragging) {
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, radius + 20, 0, Math.PI * 2);
-        const glowGradient = ctx.createRadialGradient(pos.x, pos.y, radius, pos.x, pos.y, radius + 20);
-        glowGradient.addColorStop(0, color + '50');
-        glowGradient.addColorStop(0.5, color + '20');
-        glowGradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = glowGradient;
-        ctx.fill();
-      }
-
-      // Main node circle with subtle gradient
+      // Main node
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
       const nodeGradient = ctx.createRadialGradient(
-        pos.x - radius * 0.3, pos.y - radius * 0.3, 0,
-        pos.x, pos.y, radius * 1.2
+        pos.x - radius * 0.25, pos.y - radius * 0.25, 0,
+        pos.x, pos.y, radius * 1.1
       );
       nodeGradient.addColorStop(0, color);
-      nodeGradient.addColorStop(0.6, color);
-      nodeGradient.addColorStop(1, color + 'CC');
+      nodeGradient.addColorStop(0.7, color);
+      nodeGradient.addColorStop(1, color + 'BB');
       ctx.fillStyle = nodeGradient;
       ctx.fill();
 
-      // Inner dot (center marker)
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 2.5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-      ctx.fill();
-
-      // Subtle ring pattern
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, radius * 0.7, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-
-      // Outer border
-      if (isSelected || isDragging) {
+      // Inner dot for major nodes (like reference)
+      if (isMajor) {
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, radius + 2, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.lineWidth = 2;
+        ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+        ctx.fill();
+
+        // Subtle inner ring
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius * 0.65, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.lineWidth = 1;
         ctx.stroke();
       }
 
-      // Label for selected/hovered nodes
-      if (isSelected || isHovered) {
-        const authors = node.authors[0]?.split(',')[0] || 'Unknown';
-        const label = `${authors}, ${node.year}`;
-        ctx.font = '10px Inter, sans-serif';
-        
-        // Label background
-        const textWidth = ctx.measureText(label).width;
-        const labelX = pos.x - textWidth / 2 - 6;
-        const labelY = pos.y + radius + 10;
-        
-        ctx.fillStyle = 'rgba(40, 40, 40, 0.85)';
+      // Selection ring
+      if (isSelected || isDragging) {
         ctx.beginPath();
-        ctx.roundRect(labelX, labelY, textWidth + 12, 18, 4);
+        ctx.arc(pos.x, pos.y, radius + 3, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    });
+
+    // Draw labels for major nodes AFTER all nodes (on top)
+    sortedNodes.forEach((node) => {
+      const pos = positions.get(node.id);
+      if (!pos) return;
+
+      const isMajor = isMajorNode(node);
+      const isSelected = selectedNodeId === node.id;
+      const isHovered = hoveredNodeId === node.id;
+      
+      // Labels for major nodes or hovered/selected nodes
+      if (isMajor || isSelected || isHovered) {
+        let radius = isMajor ? 25 + (node.score - 0.8) * 80 : 4 + node.score * 12;
+        
+        // Create short label
+        const title = node.title.length > 30 ? node.title.substring(0, 30) + '...' : node.title;
+        ctx.font = '10px Inter, sans-serif';
+        const textMetrics = ctx.measureText(title);
+        const textWidth = textMetrics.width;
+        
+        // Label position
+        const labelX = pos.x;
+        const labelY = pos.y + radius + 16;
+        
+        // Draw label box (like reference)
+        const padding = 6;
+        const boxWidth = textWidth + padding * 2;
+        const boxHeight = 18;
+        
+        ctx.fillStyle = 'rgba(35, 35, 35, 0.92)';
+        ctx.beginPath();
+        ctx.roundRect(labelX - boxWidth / 2, labelY - boxHeight / 2, boxWidth, boxHeight, 3);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        
+        // Box border
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
         ctx.lineWidth = 1;
         ctx.stroke();
         
+        // Text
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.fillText(label, pos.x, labelY + 13);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(title, labelX, labelY);
       }
     });
 
@@ -340,13 +376,17 @@ export const TopologyVisualization = ({
     const x = (clientX - rect.left - pan.x) / zoom;
     const y = (clientY - rect.top - pan.y) / zoom;
 
-    // Check nodes in reverse order (top nodes first)
-    for (let i = nodes.length - 1; i >= 0; i--) {
-      const node = nodes[i];
+    // Check major nodes first (they're on top visually)
+    const sortedNodes = [...nodes].sort((a, b) => b.score - a.score);
+    
+    for (const node of sortedNodes) {
       const pos = positions.get(node.id);
       if (!pos) continue;
 
-      const radius = 6 + (node.score * 14) + 8;
+      const isMajor = isMajorNode(node);
+      let radius = isMajor ? 25 + (node.score - 0.8) * 80 : 4 + node.score * 12;
+      radius += 8; // Hit area padding
+
       const dist = Math.sqrt((x - pos.x) ** 2 + (y - pos.y) ** 2);
 
       if (dist < radius) {
@@ -374,7 +414,6 @@ export const TopologyVisualization = ({
     lastMousePos.current = { x: e.clientX, y: e.clientY };
 
     if (draggingNodeId) {
-      // Move the dragged node
       setPositions(prev => {
         const newPositions = new Map(prev);
         const pos = newPositions.get(draggingNodeId);
@@ -397,7 +436,6 @@ export const TopologyVisualization = ({
       return;
     }
 
-    // Hover detection
     const nodeId = findNodeAtPosition(e.clientX, e.clientY);
     onHoverNode(nodeId);
   }, [draggingNodeId, isDraggingCanvas, findNodeAtPosition, onHoverNode, zoom]);
@@ -413,6 +451,12 @@ export const TopologyVisualization = ({
     onHoverNode(null);
   }, [onHoverNode]);
 
+  const handleWheel = useCallback((e: React.WheelEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoom(z => Math.max(0.3, Math.min(3, z + delta)));
+  }, []);
+
   const resetView = () => {
     setZoom(1);
     setPan({ x: 0, y: 0 });
@@ -423,7 +467,7 @@ export const TopologyVisualization = ({
       {/* Header */}
       <div className="p-2 border-b border-border flex items-center justify-between shrink-0 bg-muted/30">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground px-1">
-          Topology Visualization
+          Topology
         </span>
         <div className="flex items-center gap-2">
           <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
@@ -434,7 +478,7 @@ export const TopologyVisualization = ({
           </Tabs>
           
           <div className="flex items-center gap-0.5 ml-2">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(z => Math.max(0.5, z - 0.2))}>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(z => Math.max(0.3, z - 0.2))}>
               <ZoomOut className="w-3.5 h-3.5" />
             </Button>
             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setZoom(z => Math.min(3, z + 0.2))}>
@@ -456,11 +500,12 @@ export const TopologyVisualization = ({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
+          onWheel={handleWheel}
         />
         
         {/* Hint */}
-        <div className="absolute bottom-3 left-3 text-xs text-muted-foreground bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-border/50">
-          Drag nodes to reposition • Scroll to pan
+        <div className="absolute bottom-3 left-3 text-[10px] text-muted-foreground/70 bg-background/70 backdrop-blur-sm px-2 py-1 rounded border border-border/30">
+          Drag nodes • Scroll to zoom
         </div>
       </div>
     </div>
