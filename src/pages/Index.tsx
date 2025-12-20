@@ -289,8 +289,8 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Sidebar: Evidence Matrix - hidden when Papers or Topology view is active */}
-      {activeView !== 'papers' && activeView !== 'topology' && (
+      {/* Right Sidebar: Evidence Matrix - visible in Report and Topology views */}
+      {(activeView === 'report' || activeView === 'topology') && (
         <div className={cn(
           "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
           isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
