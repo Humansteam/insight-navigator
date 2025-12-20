@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Loader2, Sparkles, Bot, User } from 'lucide-react';
+import { ArrowUp, Loader2, Plus, Bot, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -100,32 +100,51 @@ export const TopologyChatPanel = () => {
         </div>
       </ScrollArea>
 
-      {/* Input */}
+      {/* Input - Lovable style */}
       <form onSubmit={handleSubmit} className="p-3 border-t border-border">
-        <div className="flex items-center gap-2">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Спросите о топологии..."
-              disabled={isProcessing}
-              className="w-full px-3 py-2 pr-10 rounded-md bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
-            />
-            <Sparkles className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="flex flex-col gap-2">
+          {/* Text input */}
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e);
+              }
+            }}
+            placeholder="Ask Lovable..."
+            disabled={isProcessing}
+            rows={1}
+            className="w-full px-3 py-3 rounded-lg bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none min-h-[44px]"
+          />
+          
+          {/* Bottom controls */}
+          <div className="flex items-center justify-between">
+            {/* Left: Plus button */}
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-md border border-border bg-background hover:bg-muted"
+            >
+              <Plus className="w-4 h-4 text-muted-foreground" />
+            </Button>
+            
+            {/* Right: Send button */}
+            <Button
+              type="submit"
+              size="icon"
+              disabled={!input.trim() || isProcessing}
+              className="h-8 w-8 rounded-full bg-foreground hover:bg-foreground/90 text-background"
+            >
+              {isProcessing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <ArrowUp className="w-4 h-4" />
+              )}
+            </Button>
           </div>
-          <Button
-            type="submit"
-            size="icon"
-            disabled={!input.trim() || isProcessing}
-            className="shrink-0"
-          >
-            {isProcessing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-          </Button>
         </div>
       </form>
     </div>
