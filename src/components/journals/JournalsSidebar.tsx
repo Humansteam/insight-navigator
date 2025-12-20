@@ -26,7 +26,7 @@ export const JournalsSidebar = ({
   );
 
   return (
-    <div className="w-64 border-r border-border bg-muted/20 flex flex-col h-full">
+    <div className="w-96 border-r border-border bg-muted/20 flex flex-col h-full">
       {/* Header with icons */}
       <div className="h-9 flex items-center justify-between px-2 border-b border-border">
         <div className="flex items-center gap-1">

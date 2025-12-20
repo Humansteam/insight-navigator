@@ -48,19 +48,19 @@ export const JournalEditor = ({
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-background">
       {/* Title bar */}
-      <div className="px-12 pt-8 pb-2">
-        <div className="text-xs text-muted-foreground mb-2">{journal.icon} {journal.title}</div>
-        <h1 className="text-3xl font-semibold text-foreground">{journal.title}</h1>
+      <div className="px-8 pt-6 pb-2">
+        <div className="text-xs text-muted-foreground mb-1">{journal.icon} {journal.title}</div>
+        <h1 className="text-2xl font-semibold text-foreground">{journal.title}</h1>
       </div>
       
       {/* Editor area */}
-      <div className="flex-1 px-12 pb-8">
+      <div className="flex-1 px-8 pb-6">
         <textarea
           ref={ref}
           defaultValue={content}
           onInput={handleInput}
           placeholder="Start writing..."
-          className="w-full h-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-base leading-relaxed"
+          className="w-full h-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm leading-relaxed"
           spellCheck={false}
         />
       </div>

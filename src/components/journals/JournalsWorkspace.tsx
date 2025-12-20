@@ -138,56 +138,58 @@ export const JournalsWorkspace = () => {
     : 0;
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Tabs */}
-      <JournalTabs
-        openTabs={openTabs}
-        activeTabId={activeTabId}
-        onSelectTab={setActiveTabId}
-        onCloseTab={handleCloseTab}
+    <div className="h-full flex bg-background">
+      {/* Left Sidebar - same width as chat panel (w-96) */}
+      <JournalsSidebar
+        journals={journals}
+        activeJournalId={activeTabId}
+        onSelectJournal={handleSelectJournal}
+        onCreateNew={handleCreateNew}
       />
 
-      <div className="flex-1 flex min-h-0">
-        {/* Left Sidebar */}
-        <JournalsSidebar
-          journals={journals}
-          activeJournalId={activeTabId}
-          onSelectJournal={handleSelectJournal}
-          onCreateNew={handleCreateNew}
+      {/* Right content area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Tabs - starts after sidebar */}
+        <JournalTabs
+          openTabs={openTabs}
+          activeTabId={activeTabId}
+          onSelectTab={setActiveTabId}
+          onCloseTab={handleCloseTab}
         />
 
-        {/* Main Content */}
-        {activeJournal ? (
-          <>
-            {isPreview ? (
-              <JournalPreview content={contents[activeJournal.id] || ''} />
-            ) : (
-              <JournalEditor
-                journal={activeJournal}
-                content={contents[activeJournal.id] || ''}
-                onChange={handleContentChange}
-                textareaRef={textareaRef}
-              />
-            )}
+        {/* Editor + Toolbar */}
+        <div className="flex-1 flex min-h-0">
+          {activeJournal ? (
+            <>
+              {isPreview ? (
+                <JournalPreview content={contents[activeJournal.id] || ''} />
+              ) : (
+                <JournalEditor
+                  journal={activeJournal}
+                  content={contents[activeJournal.id] || ''}
+                  onChange={handleContentChange}
+                  textareaRef={textareaRef}
+                />
+              )}
 
-            {/* Right Toolbar */}
-            <FormatToolbar
-              textareaRef={textareaRef}
-              onInsertFormat={insertFormatting}
-              isPreview={isPreview}
-              onTogglePreview={() => setIsPreview(prev => !prev)}
-              wordCount={wordCount}
-              onExport={handleExport}
-            />
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-muted-foreground">
-            <div className="text-center space-y-2">
-              <FileText className="h-12 w-12 mx-auto opacity-50" />
-              <p className="text-sm">Select a journal or create a new one</p>
+              <FormatToolbar
+                textareaRef={textareaRef}
+                onInsertFormat={insertFormatting}
+                isPreview={isPreview}
+                onTogglePreview={() => setIsPreview(prev => !prev)}
+                wordCount={wordCount}
+                onExport={handleExport}
+              />
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-muted-foreground">
+              <div className="text-center space-y-2">
+                <FileText className="h-12 w-12 mx-auto opacity-50" />
+                <p className="text-sm">Select a journal or create a new one</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <CreateJournalDialog
