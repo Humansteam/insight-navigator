@@ -321,24 +321,54 @@ export const mockNodes: DataNode[] = [
 ];
 
 export const mockEdges: DataEdge[] = [
+  // Core cluster 1: Industrial Lithium
   { source_id: 'paper-001', target_id: 'paper-002', weight: 0.85 },
   { source_id: 'paper-001', target_id: 'paper-007', weight: 0.62 },
   { source_id: 'paper-002', target_id: 'paper-007', weight: 0.71 },
+  { source_id: 'paper-001', target_id: 'paper-003', weight: 0.55 },
+  
+  // Core cluster 2: Solid-State
   { source_id: 'paper-003', target_id: 'paper-004', weight: 0.78 },
   { source_id: 'paper-003', target_id: 'paper-006', weight: 0.65 },
   { source_id: 'paper-004', target_id: 'paper-005', weight: 0.55 },
   { source_id: 'paper-005', target_id: 'paper-006', weight: 0.82 },
   { source_id: 'paper-006', target_id: 'paper-003', weight: 0.68 },
-  { source_id: 'paper-007', target_id: 'paper-001', weight: 0.59 },
+  { source_id: 'paper-004', target_id: 'paper-006', weight: 0.72 },
+  
+  // Core cluster 3: Recycling
   { source_id: 'paper-008', target_id: 'paper-009', weight: 0.88 },
   { source_id: 'paper-008', target_id: 'paper-010', weight: 0.75 },
   { source_id: 'paper-009', target_id: 'paper-011', weight: 0.82 },
   { source_id: 'paper-010', target_id: 'paper-011', weight: 0.69 },
+  { source_id: 'paper-008', target_id: 'paper-011', weight: 0.58 },
+  { source_id: 'paper-009', target_id: 'paper-010', weight: 0.63 },
+  
+  // Core cluster 4: Novel approaches
   { source_id: 'paper-011', target_id: 'paper-012', weight: 0.73 },
   { source_id: 'paper-012', target_id: 'paper-014', weight: 0.81 },
   { source_id: 'paper-013', target_id: 'paper-015', weight: 0.77 },
   { source_id: 'paper-014', target_id: 'paper-015', weight: 0.64 },
+  { source_id: 'paper-012', target_id: 'paper-013', weight: 0.52 },
+  
+  // Cross-cluster connections (creates web-like structure)
+  { source_id: 'paper-007', target_id: 'paper-001', weight: 0.59 },
   { source_id: 'paper-008', target_id: 'paper-014', weight: 0.72 },
+  { source_id: 'paper-002', target_id: 'paper-008', weight: 0.45 },
+  { source_id: 'paper-003', target_id: 'paper-009', weight: 0.38 },
+  { source_id: 'paper-005', target_id: 'paper-012', weight: 0.42 },
+  { source_id: 'paper-006', target_id: 'paper-014', weight: 0.35 },
+  { source_id: 'paper-007', target_id: 'paper-010', weight: 0.48 },
+  { source_id: 'paper-001', target_id: 'paper-013', weight: 0.33 },
+  { source_id: 'paper-004', target_id: 'paper-011', weight: 0.40 },
+  { source_id: 'paper-002', target_id: 'paper-015', weight: 0.36 },
+  { source_id: 'paper-006', target_id: 'paper-008', weight: 0.44 },
+  { source_id: 'paper-005', target_id: 'paper-009', weight: 0.39 },
+  { source_id: 'paper-007', target_id: 'paper-012', weight: 0.41 },
+  { source_id: 'paper-001', target_id: 'paper-011', weight: 0.37 },
+  { source_id: 'paper-003', target_id: 'paper-015', weight: 0.32 },
+  { source_id: 'paper-004', target_id: 'paper-013', weight: 0.29 },
+  { source_id: 'paper-002', target_id: 'paper-012', weight: 0.34 },
+  { source_id: 'paper-006', target_id: 'paper-010', weight: 0.31 },
 ];
 
 export const mockSessions: AnalysisSession[] = [
