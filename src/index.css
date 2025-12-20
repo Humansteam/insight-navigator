@@ -202,7 +202,7 @@
     font-feature-settings: 'cv11', 'ss01';
   }
 
-  /* Scrollbar styling */
+  /* Default scrollbar styling */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -219,6 +219,46 @@
 
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--primary-muted));
+  }
+
+  /* Lovable-style scrollbar for report */
+  .lovable-scrollbar::-webkit-scrollbar {
+    width: 14px;
+  }
+
+  .lovable-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+    position: relative;
+  }
+
+  .lovable-scrollbar::-webkit-scrollbar-track::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: hsl(var(--border) / 0.5);
+  }
+
+  .lovable-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.6);
+    border-radius: 10px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
+    min-height: 40px;
+  }
+
+  .lovable-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground) / 0.8);
+    border: 4px solid transparent;
+    background-clip: padding-box;
+  }
+
+  /* Firefox scrollbar */
+  .lovable-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.6) transparent;
   }
 }
 
