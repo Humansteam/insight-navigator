@@ -20,11 +20,6 @@ export const TopologyRightPanel = ({
   onSelectNode,
   onHoverNode,
 }: TopologyRightPanelProps) => {
-  // Find origin paper (highest score)
-  const originPaper = nodes.reduce((best, node) => 
-    node.score > best.score ? node : best
-  , nodes[0]);
-
   // If a paper is selected, show Details view
   if (selectedNode) {
     const node = selectedNode;
@@ -152,13 +147,12 @@ export const TopologyRightPanel = ({
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border">
-        <span className="text-sm font-medium">Papers</span>
+        <span className="text-sm font-medium text-primary">Papers</span>
         <span className="text-xs text-muted-foreground ml-2">({nodes.length})</span>
       </div>
 
       <ScrollArea className="flex-1">
         {nodes.map((paper) => {
-          const isOrigin = paper.id === originPaper?.id;
           const isSelected = selectedNodeId === paper.id;
           const isHovered = hoveredNodeId === paper.id;
           
@@ -169,37 +163,34 @@ export const TopologyRightPanel = ({
               onMouseEnter={() => onHoverNode(paper.id)}
               onMouseLeave={() => onHoverNode(null)}
               className={cn(
-                "px-4 py-3 border-b border-border/50 cursor-pointer transition-colors",
+                "px-4 py-3 border-b border-border/50 cursor-pointer transition-colors relative",
                 isSelected ? "bg-primary/10" : isHovered ? "bg-muted/50" : "hover:bg-muted/30"
               )}
             >
-              {isOrigin && (
-                <div className="text-xs text-red-500 font-medium mb-1">
-                  Origin paper
-                </div>
-              )}
-              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2">
-                {paper.title}
-              </h4>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-muted-foreground truncate max-w-[180px]">
-                  {paper.authors.join(', ')}
-                </p>
-                <span className="text-xs text-muted-foreground">{paper.year}</span>
-              </div>
-              {/* Score with progress bar */}
-              <div className="space-y-1">
-                <div className="text-right">
-                  <span className="text-xs font-medium text-primary">
-                    {Math.round(paper.score * 100)}%
-                  </span>
-                </div>
-                <div className="h-1 bg-muted rounded-full overflow-hidden">
+              {/* Score with progress bar - top right */}
+              <div className="absolute top-3 right-4 flex flex-col items-end gap-1">
+                <span className="text-xs font-medium text-primary">
+                  {Math.round(paper.score * 100)}%
+                </span>
+                <div className="w-12 h-1 bg-muted rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-primary rounded-full transition-all"
                     style={{ width: `${paper.score * 100}%` }}
                   />
                 </div>
+              </div>
+              
+              {/* Title */}
+              <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2 pr-16">
+                {paper.title}
+              </h4>
+              
+              {/* Authors and Year */}
+              <div className="flex items-center justify-between pr-16">
+                <p className="text-xs text-muted-foreground truncate max-w-[180px]">
+                  {paper.authors.join(', ')}
+                </p>
+                <span className="text-xs text-muted-foreground">{paper.year}</span>
               </div>
             </div>
           );
