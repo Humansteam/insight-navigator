@@ -1,14 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  Heading1, Heading2, Heading3, 
-  Bold, Italic, Strikethrough,
-  List, ListOrdered, Quote, Code,
-  Link, Minus, Eye, EyeOff,
-  Download, FileText
+  Bold, Italic, Strikethrough, Underline, Highlighter,
+  Code, Link, Image, ListOrdered, List, CheckSquare,
+  ChevronDown, Download, FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface FormatToolbarProps {
   textareaRef: React.RefObject<HTMLTextAreaElement>;
@@ -20,31 +18,40 @@ interface FormatToolbarProps {
 }
 
 interface ToolButton {
-  icon: React.ElementType;
+  icon?: React.ElementType;
   label: string;
   before: string;
   after?: string;
+  text?: string;
 }
 
-const formatButtons: ToolButton[] = [
-  { icon: Heading1, label: 'Heading 1', before: '# ' },
-  { icon: Heading2, label: 'Heading 2', before: '## ' },
-  { icon: Heading3, label: 'Heading 3', before: '### ' },
+const headingButtons: ToolButton[] = [
+  { label: 'H1', before: '# ', text: 'H1' },
+  { label: 'H2', before: '## ', text: 'H2' },
+  { label: 'H3', before: '### ', text: 'H3' },
+  { label: 'H4', before: '#### ', text: 'H4' },
+  { label: 'H5', before: '##### ', text: 'H5' },
+  { label: 'H6', before: '###### ', text: 'H6' },
 ];
 
 const textButtons: ToolButton[] = [
   { icon: Bold, label: 'Bold', before: '**', after: '**' },
   { icon: Italic, label: 'Italic', before: '_', after: '_' },
   { icon: Strikethrough, label: 'Strikethrough', before: '~~', after: '~~' },
-  { icon: Code, label: 'Code', before: '`', after: '`' },
+  { icon: Underline, label: 'Underline', before: '<u>', after: '</u>' },
+  { icon: Highlighter, label: 'Highlight', before: '==', after: '==' },
 ];
 
-const blockButtons: ToolButton[] = [
-  { icon: List, label: 'Bullet List', before: '- ' },
-  { icon: ListOrdered, label: 'Numbered List', before: '1. ' },
-  { icon: Quote, label: 'Quote', before: '> ' },
+const codeButtons: ToolButton[] = [
+  { icon: Code, label: 'Code', before: '`', after: '`' },
   { icon: Link, label: 'Link', before: '[', after: '](url)' },
-  { icon: Minus, label: 'Divider', before: '\n---\n' },
+  { icon: Image, label: 'Image', before: '![alt](', after: ')' },
+];
+
+const listButtons: ToolButton[] = [
+  { icon: List, label: 'Bullet List', before: '- ' },
+  { icon: ListOrdered, label: 'Numbered', before: '1. ' },
+  { icon: CheckSquare, label: 'Checkbox', before: '- [ ] ' },
 ];
 
 export const FormatToolbar = ({
@@ -54,73 +61,153 @@ export const FormatToolbar = ({
   wordCount,
   onExport,
 }: FormatToolbarProps) => {
-  const renderButtonGroup = (buttons: ToolButton[], title: string) => (
-    <div className="space-y-1">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground px-1">
-        {title}
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {buttons.map((btn) => (
-          <Button
-            key={btn.label}
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onInsertFormat(btn.before, btn.after)}
-            title={btn.label}
-            disabled={isPreview}
-          >
-            <btn.icon className="h-4 w-4" />
-          </Button>
-        ))}
-      </div>
-    </div>
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    text: true,
+  });
+
+  const toggleSection = (key: string) => {
+    setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const renderIconButton = (btn: ToolButton) => (
+    <Button
+      key={btn.label}
+      variant="ghost"
+      size="icon"
+      className="h-7 w-7"
+      onClick={() => onInsertFormat(btn.before, btn.after)}
+      title={btn.label}
+      disabled={isPreview}
+    >
+      {btn.icon && <btn.icon className="h-4 w-4" />}
+    </Button>
+  );
+
+  const renderTextButton = (btn: ToolButton) => (
+    <Button
+      key={btn.label}
+      variant="ghost"
+      size="sm"
+      className="h-7 px-2 text-xs font-semibold"
+      onClick={() => onInsertFormat(btn.before, btn.after)}
+      title={btn.label}
+      disabled={isPreview}
+    >
+      {btn.text}
+    </Button>
+  );
+
+  const Section = ({ title, id, children }: { title: string; id: string; children: React.ReactNode }) => (
+    <Collapsible open={openSections[id] ?? false} onOpenChange={() => toggleSection(id)}>
+      <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/30 transition-colors">
+        <span className="text-sm font-medium">{title}</span>
+        <ChevronDown className={cn(
+          "h-4 w-4 transition-transform",
+          openSections[id] && "rotate-180"
+        )} />
+      </CollapsibleTrigger>
+      <CollapsibleContent className="px-3 pb-2">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 
   return (
-    <div className="w-44 border-l border-border bg-muted/30 flex flex-col h-full">
-      <div className="p-3 space-y-4 flex-1">
-        {/* Preview Toggle */}
-        <Button
-          variant={isPreview ? "secondary" : "ghost"}
-          size="sm"
-          className="w-full justify-start gap-2"
-          onClick={onTogglePreview}
-        >
-          {isPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          <span className="text-xs">{isPreview ? 'Edit' : 'Preview'}</span>
-        </Button>
+    <div className="w-52 border-l border-border bg-muted/20 flex flex-col h-full">
+      {/* Sections */}
+      <div className="flex-1 overflow-auto">
+        <Section title="Text Edit" id="text">
+          {/* Headings */}
+          <div className="flex gap-0.5 mb-2">
+            {headingButtons.map(renderTextButton)}
+          </div>
+          
+          {/* Text formatting */}
+          <div className="flex gap-0.5 mb-2">
+            {textButtons.map(renderIconButton)}
+          </div>
+          
+          {/* Code, link, image */}
+          <div className="flex gap-0.5 mb-2">
+            {codeButtons.map(renderIconButton)}
+          </div>
+          
+          {/* Lists */}
+          <div className="flex gap-0.5">
+            {listButtons.map(renderIconButton)}
+          </div>
+        </Section>
 
-        <Separator />
+        <Section title="Tables" id="tables">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-xs"
+            onClick={() => onInsertFormat('\n| Col1 | Col2 |\n|------|------|\n| A    | B    |\n')}
+            disabled={isPreview}
+          >
+            Insert Table
+          </Button>
+        </Section>
 
-        {/* Formatting Buttons */}
-        {renderButtonGroup(formatButtons, 'Headings')}
-        
-        <Separator />
-        
-        {renderButtonGroup(textButtons, 'Text')}
-        
-        <Separator />
-        
-        {renderButtonGroup(blockButtons, 'Blocks')}
+        <Section title="More" id="more">
+          <div className="space-y-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs"
+              onClick={() => onInsertFormat('\n---\n')}
+              disabled={isPreview}
+            >
+              Horizontal Rule
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs"
+              onClick={() => onInsertFormat('> ')}
+              disabled={isPreview}
+            >
+              Blockquote
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-xs"
+              onClick={() => onInsertFormat('```\n', '\n```')}
+              disabled={isPreview}
+            >
+              Code Block
+            </Button>
+          </div>
+        </Section>
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-border space-y-2">
+      <div className="border-t border-border p-2 space-y-2">
+        <Button
+          variant={isPreview ? "secondary" : "ghost"}
+          size="sm"
+          className="w-full justify-start gap-2 text-xs"
+          onClick={onTogglePreview}
+        >
+          {isPreview ? 'Edit Mode' : 'Preview'}
+        </Button>
+        
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-start gap-2"
+          className="w-full justify-start gap-2 text-xs"
           onClick={onExport}
         >
-          <Download className="h-4 w-4" />
-          <span className="text-xs">Export .md</span>
+          <Download className="h-3.5 w-3.5" />
+          Export .md
         </Button>
-        
-        <div className="flex items-center gap-2 text-xs text-muted-foreground px-1">
-          <FileText className="h-3 w-3" />
-          <span>{wordCount} words</span>
-        </div>
+      </div>
+      
+      {/* Status bar */}
+      <div className="h-7 flex items-center justify-end gap-3 px-3 border-t border-border text-[10px] text-muted-foreground">
+        <span>Words: {wordCount}</span>
       </div>
     </div>
   );
