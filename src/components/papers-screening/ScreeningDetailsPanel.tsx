@@ -18,15 +18,6 @@ export const ScreeningDetailsPanel = ({ paper, onBack }: ScreeningDetailsPanelPr
   }
 
   const { screening } = paper;
-  const isInclude = screening.verdict === 'include';
-
-  const getRelevanceColor = (score: 'high' | 'medium' | 'low') => {
-    switch (score) {
-      case 'high': return 'text-emerald-500';
-      case 'medium': return 'text-amber-500';
-      case 'low': return 'text-red-400';
-    }
-  };
 
   return (
     <div className="h-full flex flex-col">
@@ -44,27 +35,19 @@ export const ScreeningDetailsPanel = ({ paper, onBack }: ScreeningDetailsPanelPr
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-5">
-          {/* Screening Recommendation */}
+          {/* Combined Score */}
           <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Screening recommendation</div>
+            <div className="text-xs text-muted-foreground">Match Score</div>
             <div className="flex items-center gap-3">
-              <div
-                className={cn(
-                  'inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-sm font-medium',
-                  isInclude 
-                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                    : 'bg-red-500/10 text-red-600 dark:text-red-400'
-                )}
-              >
-                <div className={cn(
-                  'w-2 h-2 rounded-full',
-                  isInclude ? 'bg-emerald-500' : 'bg-red-500'
-                )} />
-                {isInclude ? 'Include' : 'Exclude'}
-              </div>
-              <span className="text-sm font-medium text-primary">
-                {screening.combinedScore}% match
+              <span className="text-2xl font-semibold text-primary">
+                {screening.combinedScore}%
               </span>
+              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full"
+                  style={{ width: `${screening.combinedScore}%` }}
+                />
+              </div>
             </div>
           </div>
 
@@ -103,17 +86,12 @@ export const ScreeningDetailsPanel = ({ paper, onBack }: ScreeningDetailsPanelPr
             </div>
           </div>
 
-          {/* Relevance & Aspect */}
+          {/* Aspect Tag */}
           <div className="space-y-2">
-            <div className="text-xs text-muted-foreground">Classification</div>
-            <div className="flex flex-wrap gap-2">
-              <span className={cn('text-sm font-medium capitalize', getRelevanceColor(screening.relevanceScore))}>
-                {screening.relevanceScore} relevance
-              </span>
-              <span className="px-2 py-0.5 bg-accent/50 text-accent-foreground rounded text-xs">
-                {screening.aspectTag}
-              </span>
-            </div>
+            <div className="text-xs text-muted-foreground">Category</div>
+            <span className="px-2 py-0.5 bg-muted/50 text-muted-foreground rounded text-xs inline-block">
+              {screening.aspectTag}
+            </span>
           </div>
 
           {/* Paper Title */}
