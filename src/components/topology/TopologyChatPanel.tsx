@@ -101,10 +101,10 @@ export const TopologyChatPanel = () => {
       </ScrollArea>
 
       {/* Floating Input Container - Lovable style */}
-      <div className="absolute bottom-4 left-3 right-3">
+      <div className="absolute bottom-3 left-3 right-3">
         <form 
           onSubmit={handleSubmit} 
-          className="rounded-2xl bg-card border border-border shadow-lg shadow-black/20 overflow-hidden"
+          className="rounded-xl bg-card border border-border shadow-lg shadow-black/25 overflow-hidden"
         >
           {/* Text input */}
           <textarea
@@ -116,32 +116,32 @@ export const TopologyChatPanel = () => {
                 handleSubmit(e);
               }
             }}
-            placeholder="Ask Lovable..."
+            placeholder="Ask Strata..."
             disabled={isProcessing}
-            rows={2}
-            className="w-full px-4 py-3 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none border-none"
+            rows={1}
+            className="w-full px-3 py-2.5 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none border-none min-h-[36px]"
           />
           
           {/* Bottom controls */}
-          <div className="flex items-center justify-between px-3 py-2 border-t border-border/50">
+          <div className="flex items-center justify-between px-2 py-1.5">
             {/* Left: Plus button */}
             <button
               type="button"
-              className="h-8 w-8 rounded-full border border-border/60 bg-transparent hover:bg-muted/50 flex items-center justify-center transition-colors"
+              className="h-7 w-7 rounded-full border border-border/60 bg-transparent hover:bg-muted/50 flex items-center justify-center transition-colors"
             >
-              <Plus className="w-4 h-4 text-muted-foreground" />
+              <Plus className="w-3.5 h-3.5 text-muted-foreground" />
             </button>
             
             {/* Right: Send button */}
             <button
               type="submit"
               disabled={!input.trim() || isProcessing}
-              className="h-8 w-8 rounded-full border border-border/60 bg-transparent hover:bg-muted/50 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="h-7 w-7 rounded-full border border-border/60 bg-transparent hover:bg-muted/50 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isProcessing ? (
-                <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />
               ) : (
-                <ArrowUp className="w-4 h-4 text-muted-foreground" />
+                <ArrowUp className="w-3.5 h-3.5 text-muted-foreground" />
               )}
             </button>
           </div>
