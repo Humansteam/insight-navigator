@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUp, Loader2, Plus, Lightbulb, ChevronRight, Bookmark, CornerDownLeft, ThumbsUp, ThumbsDown, Copy, MoreHorizontal, ArrowDown, Pencil } from 'lucide-react';
+import { ArrowUp, Loader2, Plus, Lightbulb, ChevronRight, Bookmark, CornerDownLeft, ThumbsUp, ThumbsDown, Copy, MoreHorizontal, ArrowDown, Pencil, StickyNote } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useChat } from '@/contexts/ChatContext';
+import { AddNotePopover } from '@/components/notebook/AddNotePopover';
 
 export const ReportChatPanel = () => {
   const [input, setInput] = useState('');
@@ -100,6 +101,16 @@ export const ReportChatPanel = () => {
                       <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                         <CornerDownLeft className="w-4 h-4" />
                       </button>
+                      <AddNotePopover
+                        trigger={
+                          <button className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Save to notebook">
+                            <StickyNote className="w-4 h-4" />
+                          </button>
+                        }
+                        defaultContent={msg.content}
+                        source="chat"
+                        sourceLabel="AI Insight"
+                      />
                       <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                         <ThumbsUp className="w-4 h-4" />
                       </button>

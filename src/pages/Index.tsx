@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { ChevronRight, PanelRight, Loader2, Languages, FileText, FileSearch, Network, Clock } from 'lucide-react';
+import { ChevronRight, PanelRight, Loader2, Languages, FileText, FileSearch, Network, Clock, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { mockNodes, mockEdges } from '@/data/mockData';
 import { cn } from '@/lib/utils';
@@ -14,12 +14,17 @@ import { TopologyMain } from '@/components/topology';
 import { ReportView } from '@/components/papers-screening/types';
 import { useChat } from '@/contexts/ChatContext';
 import { ReportChatPanel } from '@/components/report';
+import { NotebookPanel } from '@/components/notebook';
+import { TextSelectionTooltip } from '@/components/notebook/TextSelectionTooltip';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState<ReportView>('report');
   const [graphHoveredPaperId, setGraphHoveredPaperId] = useState<string | null>(null);
   const [listHoveredPaperId, setListHoveredPaperId] = useState<string | null>(null);
+  
+  // Ref for report content - used for text selection
+  const reportContentRef = useRef<HTMLDivElement>(null);
   
   // Debounce timer for graph hover (only show details after 300ms)
   const graphHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -209,6 +214,7 @@ const Index = () => {
     { id: 'report', label: 'Report', icon: <FileText className="w-3.5 h-3.5" /> },
     { id: 'topology', label: 'Topology', icon: <Network className="w-3.5 h-3.5" /> },
     { id: 'papers', label: 'Papers', icon: <FileSearch className="w-3.5 h-3.5" /> },
+    { id: 'notes', label: 'Notes', icon: <BookOpen className="w-3.5 h-3.5" /> },
     { id: 'timeline', label: 'Timeline', icon: <Clock className="w-3.5 h-3.5" /> },
   ];
 
@@ -301,6 +307,8 @@ const Index = () => {
               externalHoveredNodeId={listHoveredPaperId || graphHighlightId}
               onExternalHoverNode={handleGraphNodeHover}
             />
+          ) : activeView === 'notes' ? (
+            <NotebookPanel />
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
@@ -309,7 +317,14 @@ const Index = () => {
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto px-8 py-10">
+            <div ref={reportContentRef} className="max-w-3xl mx-auto px-8 py-10 relative">
+              {/* Text selection tooltip for adding notes */}
+              <TextSelectionTooltip 
+                containerRef={reportContentRef} 
+                source="report" 
+                sourceLabel="Research Report" 
+              />
+              
               {/* Date */}
               <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
                 {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()}
