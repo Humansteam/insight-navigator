@@ -251,7 +251,7 @@ const Index = () => {
         </header>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto lovable-scrollbar">
           {isLoading && phase !== 'complete' ? (
             <PipelineDAG
               query={input || 'Analyzing...'}
