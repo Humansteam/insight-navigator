@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { ChevronRight, PanelRight, Loader2, Languages, FileText, FileSearch, Network, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { mockNodes, mockEdges } from '@/data/mockData';
@@ -19,6 +19,38 @@ const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState<ReportView>('report');
   const [graphHoveredPaperId, setGraphHoveredPaperId] = useState<string | null>(null);
+  const [listHoveredPaperId, setListHoveredPaperId] = useState<string | null>(null);
+  
+  // Debounce timer for graph hover (only show details after 300ms)
+  const graphHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const handleGraphHover = useCallback((id: string | null) => {
+    // Clear any pending timer
+    if (graphHoverTimerRef.current) {
+      clearTimeout(graphHoverTimerRef.current);
+      graphHoverTimerRef.current = null;
+    }
+    
+    if (id === null) {
+      // Immediate clear when leaving
+      setGraphHoveredPaperId(null);
+    } else {
+      // Delay showing details by 300ms
+      graphHoverTimerRef.current = setTimeout(() => {
+        setGraphHoveredPaperId(id);
+      }, 300);
+    }
+  }, []);
+  
+  // Combined hover for graph highlighting (immediate) vs panel details (debounced)
+  const [graphHighlightId, setGraphHighlightId] = useState<string | null>(null);
+  
+  const handleGraphNodeHover = useCallback((id: string | null) => {
+    // Immediate highlight on graph
+    setGraphHighlightId(id);
+    // Debounced detail view
+    handleGraphHover(id);
+  }, [handleGraphHover]);
 
   // Engine data hook
   const {
@@ -266,8 +298,8 @@ const Index = () => {
             <TopologyMain 
               nodes={papers} 
               edges={mockEdges} 
-              externalHoveredNodeId={graphHoveredPaperId}
-              onExternalHoverNode={setGraphHoveredPaperId}
+              externalHoveredNodeId={listHoveredPaperId || graphHighlightId}
+              onExternalHoverNode={handleGraphNodeHover}
             />
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -304,7 +336,7 @@ const Index = () => {
           <EvidenceMatrixPanel 
             papers={papers} 
             hoveredPaperId={graphHoveredPaperId}
-            onHoverPaper={setGraphHoveredPaperId}
+            onHoverPaper={setListHoveredPaperId}
           />
         </div>
       )}
