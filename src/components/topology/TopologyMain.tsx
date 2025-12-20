@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { DataNode, DataEdge } from '@/types/morphik';
 import { mockNodes, mockEdges } from '@/data/mockData';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { TopologyVisualization } from '@/components/cockpit/TopologyVisualization';
 import { TopologyRightPanel } from './TopologyRightPanel';
+import { TopologyChatPanel } from './TopologyChatPanel';
 
 interface TopologyMainProps {
   nodes?: DataNode[];
@@ -26,7 +26,12 @@ export const TopologyMain = ({
 
   return (
     <div className={cn('flex h-full', className)}>
-      {/* Left/Center - Graph Visualization */}
+      {/* Left Panel - Chat */}
+      <div className="w-72 border-r border-border bg-background">
+        <TopologyChatPanel />
+      </div>
+
+      {/* Center - Graph Visualization */}
       <div className="flex-1 min-w-0">
         <TopologyVisualization
           nodes={nodes}
