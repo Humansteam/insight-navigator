@@ -35,31 +35,38 @@ export const PaperRowCard = ({ paper, isSelected, onSelect }: PaperRowCardProps)
       </div>
       
       {/* Screening Judgement Column - Flex 1 */}
-      <div className="py-4 px-5 border-l border-border/40 space-y-3">
-        {/* Verdict and Score */}
-        <div className="flex items-center justify-between">
-          <div
-            className={cn(
-              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium',
-              isInclude 
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                : 'bg-red-500/10 text-red-600 dark:text-red-400'
-            )}
-          >
-            <div className={cn(
-              'w-2 h-2 rounded-full',
-              isInclude ? 'bg-emerald-500' : 'bg-red-500'
-            )} />
-            {isInclude ? 'Include' : 'Exclude'}
-          </div>
-          
-          <span className="text-xs text-muted-foreground">
-            {screening.score.toFixed(1)} / 5
+      <div className="py-4 px-5 border-l border-border/40 space-y-3 relative">
+        {/* Score - Top Right */}
+        <div className="absolute top-4 right-5 flex flex-col items-end gap-1">
+          <span className="text-sm font-medium text-primary">
+            {Math.round((screening.score / 5) * 100)}%
           </span>
+          <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full"
+              style={{ width: `${(screening.score / 5) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Verdict */}
+        <div
+          className={cn(
+            'inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium',
+            isInclude 
+              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+              : 'bg-red-500/10 text-red-600 dark:text-red-400'
+          )}
+        >
+          <div className={cn(
+            'w-2 h-2 rounded-full',
+            isInclude ? 'bg-emerald-500' : 'bg-red-500'
+          )} />
+          {isInclude ? 'Include' : 'Exclude'}
         </div>
         
         {/* Rationale */}
-        <p className="text-sm text-foreground/80 leading-relaxed">
+        <p className="text-sm text-foreground/80 leading-relaxed pr-20">
           {screening.rationale}
         </p>
         
