@@ -12,6 +12,7 @@ import { DataNode } from '@/types/morphik';
 import { PapersScreeningMain } from '@/components/papers-screening';
 import { TopologyMain } from '@/components/topology';
 import { ReportView } from '@/components/papers-screening/types';
+import { useChat } from '@/contexts/ChatContext';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -279,47 +280,49 @@ const Index = () => {
           )}
         </div>
 
-        {/* Chat Input */}
-        <div className="p-4 bg-background">
-          <div className="max-w-3xl mx-auto">
-            <form onSubmit={handleSubmit}>
-              <div className="bg-card rounded-xl border border-border overflow-hidden">
-                <input
-                  type="text"
-                  placeholder="Enter your research query..."
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={isLoading}
-                  className="w-full px-4 py-3 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base disabled:opacity-50"
-                />
-                <div className="flex items-center justify-between px-4 py-2 border-t border-border/50">
-                  <div className="flex items-center gap-3">
+        {/* Chat Input - hidden when Topology view is active (chat moves to left panel) */}
+        {activeView !== 'topology' && (
+          <div className="p-4 bg-background">
+            <div className="max-w-3xl mx-auto">
+              <form onSubmit={handleSubmit}>
+                <div className="bg-card rounded-xl border border-border overflow-hidden">
+                  <input
+                    type="text"
+                    placeholder="Enter your research query..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    disabled={isLoading}
+                    className="w-full px-4 py-3 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base disabled:opacity-50"
+                  />
+                  <div className="flex items-center justify-between px-4 py-2 border-t border-border/50">
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        className="px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        + 
+                      </button>
+                      <span className="text-xs text-muted-foreground">
+                        {isLoading ? `${phase.replace('_', ' ')}...` : 'Searching 165K papers'}
+                      </span>
+                    </div>
                     <button
-                      type="button"
-                      className="px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      type="submit"
+                      disabled={!input.trim() || isLoading}
+                      className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors disabled:opacity-50"
                     >
-                      + 
+                      {isLoading ? (
+                        <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-muted-foreground rotate-[-90deg]" />
+                      )}
                     </button>
-                    <span className="text-xs text-muted-foreground">
-                      {isLoading ? `${phase.replace('_', ' ')}...` : 'Searching 165K papers'}
-                    </span>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={!input.trim() || isLoading}
-                    className="w-7 h-7 rounded-full bg-muted flex items-center justify-center hover:bg-muted-foreground/20 transition-colors disabled:opacity-50"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 text-muted-foreground rotate-[-90deg]" />
-                    )}
-                  </button>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Right Sidebar: Evidence Matrix - hidden when Papers or Topology view is active */}

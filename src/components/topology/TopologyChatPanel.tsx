@@ -1,65 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Loader2, Sparkles, Bot, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-const mockResponses = [
-  'Анализирую топологию связей между статьями. Найдено 3 кластера с высокой плотностью цитирований.',
-  'Центральный узел графа — статья "Deep Learning in Medical Imaging" с 847 цитированиями.',
-  'Обнаружена сильная корреляция между статьями 2023 года в области трансформеров.',
-  'Рекомендую обратить внимание на кластер справа — там находятся работы по мультимодальному обучению.',
-  'Выделенные статьи имеют средний FWCI 2.4, что значительно выше среднего по области.',
-];
+import { useChat } from '@/contexts/ChatContext';
 
 export const TopologyChatPanel = () => {
   const [input, setInput] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Готов помочь с анализом топологии. Задайте вопрос о связях между статьями или кластерах.',
-      timestamp: new Date(),
-    },
-  ]);
+  const { messages, isProcessing, sendMessage } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isProcessing) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input,
-      timestamp: new Date(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    sendMessage(input);
     setInput('');
-    setIsProcessing(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: randomResponse,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsProcessing(false);
-    }, 1000 + Math.random() * 1000);
   };
 
   useEffect(() => {
