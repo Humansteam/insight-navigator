@@ -102,21 +102,26 @@ export const JournalsWorkspace = () => {
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const currentContent = contents[activeTabId] || '';
+    // Get content directly from textarea (source of truth)
+    const currentContent = textarea.value;
     const selectedText = currentContent.substring(start, end);
     
     const newText = before + selectedText + (after || '');
     const newContent = currentContent.substring(0, start) + newText + currentContent.substring(end);
     
+    // Update textarea directly
+    textarea.value = newContent;
+    
+    // Then sync to state
     handleContentChange(newContent);
     
-    // Restore focus and selection
+    // Restore focus and set cursor position
     setTimeout(() => {
       textarea.focus();
       const newCursorPos = start + before.length + selectedText.length + (after?.length || 0);
       textarea.setSelectionRange(newCursorPos, newCursorPos);
     }, 0);
-  }, [activeTabId, contents, handleContentChange]);
+  }, [activeTabId, handleContentChange]);
 
   const handleExport = useCallback(() => {
     if (!activeJournal) return;
