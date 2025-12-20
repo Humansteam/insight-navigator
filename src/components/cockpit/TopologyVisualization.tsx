@@ -67,51 +67,75 @@ export const TopologyVisualization = ({
   const lastMousePos = useRef({ x: 0, y: 0 });
 
   // Determine if a node is "major" (high score = larger, with label)
-  const isMajorNode = (node: DataNode) => node.score >= 0.8;
+  const isMajorNode = (node: DataNode) => node.score >= 0.85;
 
-  // Initialize positions in organic clusters
+  // Initialize positions - spread major nodes far apart
   useEffect(() => {
     const newPositions = new Map<string, NodePosition>();
-    const centerX = 300;
-    const centerY = 220;
+    const centerX = 320;
+    const centerY = 260;
     
-    nodes.forEach((node, i) => {
+    // First, position major nodes in a wide spread
+    const majorNodes = nodes.filter(isMajorNode);
+    const minorNodes = nodes.filter(n => !isMajorNode(n));
+    
+    majorNodes.forEach((node, i) => {
       if (viewMode === 'map') {
-        const baseX = 80 + node.umap_x * 440;
-        const baseY = 60 + node.umap_y * 320;
-        newPositions.set(node.id, {
-          x: baseX + (Math.random() - 0.5) * 30,
-          y: baseY + (Math.random() - 0.5) * 30,
-          vx: 0,
-          vy: 0,
-        });
+        const baseX = 100 + node.umap_x * 480;
+        const baseY = 80 + node.umap_y * 360;
+        newPositions.set(node.id, { x: baseX, y: baseY, vx: 0, vy: 0 });
       } else {
-        // Organic scattered placement
-        const angle = (i / nodes.length) * Math.PI * 2 + (Math.random() - 0.5) * 1.2;
-        const radius = 60 + Math.random() * 160;
+        // Place major nodes in a wide circle
+        const angle = (i / majorNodes.length) * Math.PI * 2 - Math.PI / 2;
+        const radius = 160 + Math.random() * 40;
         newPositions.set(node.id, {
-          x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 40,
-          y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 40,
+          x: centerX + Math.cos(angle) * radius,
+          y: centerY + Math.sin(angle) * radius,
           vx: 0,
           vy: 0,
         });
       }
     });
+    
+    // Then scatter minor nodes throughout
+    minorNodes.forEach((node, i) => {
+      if (viewMode === 'map') {
+        const baseX = 80 + node.umap_x * 500;
+        const baseY = 60 + node.umap_y * 400;
+        newPositions.set(node.id, {
+          x: baseX + (Math.random() - 0.5) * 40,
+          y: baseY + (Math.random() - 0.5) * 40,
+          vx: 0,
+          vy: 0,
+        });
+      } else {
+        // Scatter minor nodes randomly in the space
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 40 + Math.random() * 200;
+        newPositions.set(node.id, {
+          x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 60,
+          y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 60,
+          vx: 0,
+          vy: 0,
+        });
+      }
+    });
+    
     setPositions(newPositions);
   }, [nodes, viewMode]);
 
-  // Force simulation
+  // Force simulation with better spacing for major nodes
   useEffect(() => {
     if (viewMode !== 'network' || positions.size === 0 || draggingNodeId) return;
 
     const simulate = () => {
       const newPositions = new Map(positions);
-      const centerX = 300;
-      const centerY = 220;
-      const repulsion = 2000;
-      const attraction = 0.02;
-      const damping = 0.7;
-      const centerForce = 0.002;
+      const centerX = 320;
+      const centerY = 240;
+      const baseRepulsion = 1500;
+      const attraction = 0.008; // Weaker attraction for more spread
+      const damping = 0.65;
+      const centerForce = 0.001; // Weaker center pull
 
       nodes.forEach((node) => {
         const pos = newPositions.get(node.id);
@@ -119,10 +143,13 @@ export const TopologyVisualization = ({
 
         let fx = 0;
         let fy = 0;
+        const nodeIsMajor = isMajorNode(node);
 
+        // Weak center force
         fx += (centerX - pos.x) * centerForce;
         fy += (centerY - pos.y) * centerForce;
 
+        // Repulsion between nodes - MUCH stronger for major nodes
         nodes.forEach((other) => {
           if (node.id === other.id) return;
           const otherPos = newPositions.get(other.id);
@@ -131,9 +158,27 @@ export const TopologyVisualization = ({
           const dx = pos.x - otherPos.x;
           const dy = pos.y - otherPos.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const minDist = isMajorNode(node) || isMajorNode(other) ? 80 : 40;
-          if (dist < minDist) {
-            const force = (minDist - dist) * 0.5;
+          const otherIsMajor = isMajorNode(other);
+          
+          // Major-to-major: very strong repulsion (keep them far apart)
+          // Major-to-minor: medium repulsion
+          // Minor-to-minor: weak repulsion
+          let repulsionMultiplier = 1;
+          let minDistance = 35;
+          
+          if (nodeIsMajor && otherIsMajor) {
+            repulsionMultiplier = 8; // Very strong - push major nodes far apart
+            minDistance = 180;
+          } else if (nodeIsMajor || otherIsMajor) {
+            repulsionMultiplier = 2.5;
+            minDistance = 70;
+          }
+          
+          const repulsion = baseRepulsion * repulsionMultiplier;
+          
+          if (dist < minDistance) {
+            // Strong push when too close
+            const force = (minDistance - dist) * 0.8;
             fx += (dx / dist) * force;
             fy += (dy / dist) * force;
           } else {
@@ -143,6 +188,7 @@ export const TopologyVisualization = ({
           }
         });
 
+        // Weaker attraction along edges
         edges.forEach((edge) => {
           let otherNode: DataNode | undefined;
           if (edge.source_id === node.id) {
@@ -157,8 +203,11 @@ export const TopologyVisualization = ({
 
           const dx = otherPos.x - pos.x;
           const dy = otherPos.y - pos.y;
-          fx += dx * attraction;
-          fy += dy * attraction;
+          
+          // Weaker attraction for major nodes (they should stay spread out)
+          const attractionStrength = (nodeIsMajor || isMajorNode(otherNode)) ? attraction * 0.3 : attraction;
+          fx += dx * attractionStrength;
+          fy += dy * attractionStrength;
         });
 
         pos.vx = (pos.vx + fx) * damping;
