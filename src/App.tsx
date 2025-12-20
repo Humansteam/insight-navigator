@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { ChatProvider } from "@/contexts/ChatContext";
-import { NotesProvider } from "@/contexts/NotesContext";
+import { JournalsProvider } from "@/contexts/JournalsContext";
 import Index from "./pages/Index";
 import Translate from "./pages/Translate";
 import NotFound from "./pages/NotFound";
@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="dark" themes={['light', 'dark', 'deep-space']}>
-      <NotesProvider>
+      <JournalsProvider>
         <ChatProvider>
           <TooltipProvider>
             <Toaster />
@@ -30,7 +30,7 @@ const App = () => (
             </BrowserRouter>
           </TooltipProvider>
         </ChatProvider>
-      </NotesProvider>
+      </JournalsProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
