@@ -9,7 +9,6 @@ interface PaperRowCardProps {
 
 export const PaperRowCard = ({ paper, isSelected, onSelect }: PaperRowCardProps) => {
   const { screening } = paper;
-  const isInclude = screening.verdict === 'include';
   
   return (
     <div
@@ -53,24 +52,8 @@ export const PaperRowCard = ({ paper, isSelected, onSelect }: PaperRowCardProps)
           {screening.rationale}
         </p>
         
-        {/* All Tags at Bottom */}
+        {/* Tags at Bottom */}
         <div className="flex flex-wrap items-center gap-2 pt-1">
-          {/* Verdict Tag */}
-          <span
-            className={cn(
-              'inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium',
-              isInclude 
-                ? 'bg-emerald-500/10 text-emerald-600/80 dark:text-emerald-400/80' 
-                : 'bg-red-500/10 text-red-600/80 dark:text-red-400/80'
-            )}
-          >
-            <div className={cn(
-              'w-1.5 h-1.5 rounded-full',
-              isInclude ? 'bg-emerald-500/70' : 'bg-red-500/70'
-            )} />
-            {isInclude ? 'Include' : 'Exclude'}
-          </span>
-          
           {/* Aspect Tag */}
           <span className="px-2 py-0.5 bg-muted/50 text-muted-foreground rounded text-[11px]">
             {screening.aspectTag}
