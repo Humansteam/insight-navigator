@@ -74,31 +74,38 @@ export const TopologyVisualization = ({
   // Determine if a node is "major" (high score = larger, with label)
   const isMajorNode = (node: DataNode) => node.score >= 0.7;
 
-  // Initialize positions - cluster nodes in organic ellipsoid shapes
+  // Initialize positions - score-based: high score = closer to center, low = further
   useEffect(() => {
     const newPositions = new Map<string, NodePosition>();
     const width = 640;
     const height = 480;
+    const globalCenterX = width / 2;
+    const globalCenterY = height / 2;
     
     nodes.forEach((node) => {
       const clusterIdx = getClusterIndex(node.id);
-      const center = clusterCenters[clusterIdx];
-      const isMajor = isMajorNode(node);
+      const clusterCenter = clusterCenters[clusterIdx];
       
-      // Organic ellipsoid distribution
-      const angle = Math.random() * Math.PI * 2;
-      const radiusFactor = Math.pow(Math.random(), 0.6); // More nodes toward center
+      // Score determines distance from global center (inverted: high score = close)
+      // Score 1.0 → near center, Score 0.0 → far edge
+      const normalizedScore = Math.max(0.1, Math.min(1, node.score));
+      const distanceFromCenter = (1 - normalizedScore) * 0.9 + 0.1; // 0.1-1.0 range
       
-      // Different spread for major vs minor nodes
-      const spreadX = (isMajor ? 0.3 : 0.7 + Math.random() * 0.3) * center.rx * width * radiusFactor;
-      const spreadY = (isMajor ? 0.3 : 0.7 + Math.random() * 0.3) * center.ry * height * radiusFactor;
+      // Angle based on cluster (spread clusters around the center)
+      const clusterAngle = (clusterIdx / 5) * Math.PI * 2 + Math.PI / 10;
+      const angleOffset = (Math.random() - 0.5) * 0.8; // Add variation within cluster
+      const angle = clusterAngle + angleOffset;
+      
+      // Maximum distance from center
+      const maxRadius = Math.min(width, height) * 0.42;
+      const radius = distanceFromCenter * maxRadius;
       
       // Add organic noise
-      const noiseX = (Math.random() - 0.5) * 15;
-      const noiseY = (Math.random() - 0.5) * 15;
+      const noiseX = (Math.random() - 0.5) * 20;
+      const noiseY = (Math.random() - 0.5) * 20;
       
-      const x = center.x * width + Math.cos(angle) * spreadX + noiseX;
-      const y = center.y * height + Math.sin(angle) * spreadY + noiseY;
+      const x = globalCenterX + Math.cos(angle) * radius + noiseX;
+      const y = globalCenterY + Math.sin(angle) * radius + noiseY;
       
       newPositions.set(node.id, { x, y, vx: 0, vy: 0 });
     });
@@ -106,12 +113,14 @@ export const TopologyVisualization = ({
     setPositions(newPositions);
   }, [nodes, viewMode]);
 
-  // Force simulation - organic cluster formation
+  // Force simulation - score-based radial positioning
   useEffect(() => {
     if (viewMode !== 'network' || positions.size === 0 || draggingNodeId) return;
 
     const width = 640;
     const height = 480;
+    const globalCenterX = width / 2;
+    const globalCenterY = height / 2;
 
     const simulate = () => {
       const newPositions = new Map(positions);
@@ -122,24 +131,24 @@ export const TopologyVisualization = ({
         if (!pos) return;
 
         const nodeCluster = getClusterIndex(node.id);
-        const center = clusterCenters[nodeCluster];
         let fx = 0;
         let fy = 0;
 
-        // Gentle pull toward cluster center (organic, not rigid)
-        const centerX = center.x * width;
-        const centerY = center.y * height;
-        const toCenterX = centerX - pos.x;
-        const toCenterY = centerY - pos.y;
-        const distToCenter = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY);
+        // Score-based radial positioning: pull toward target radius from center
+        const normalizedScore = Math.max(0.1, Math.min(1, node.score));
+        const targetDistanceRatio = (1 - normalizedScore) * 0.9 + 0.1;
+        const maxRadius = Math.min(width, height) * 0.42;
+        const targetRadius = targetDistanceRatio * maxRadius;
         
-        // Soft boundary - stronger pull when far from center
-        const maxDist = Math.max(center.rx * width, center.ry * height) * 1.2;
-        if (distToCenter > maxDist * 0.5) {
-          const pullStrength = 0.01 + (distToCenter / maxDist) * 0.02;
-          fx += toCenterX * pullStrength;
-          fy += toCenterY * pullStrength;
-        }
+        const toCenterX = globalCenterX - pos.x;
+        const toCenterY = globalCenterY - pos.y;
+        const distToCenter = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY) || 1;
+        
+        // Pull toward target radius (not center)
+        const radiusDiff = distToCenter - targetRadius;
+        const pullStrength = 0.03;
+        fx += (toCenterX / distToCenter) * radiusDiff * pullStrength;
+        fy += (toCenterY / distToCenter) * radiusDiff * pullStrength;
 
         // Repulsion between nearby nodes (prevent overlap)
         nodes.forEach((other) => {
@@ -327,7 +336,7 @@ export const TopologyVisualization = ({
       ctx.stroke();
     });
 
-    // Draw nodes - satellites first, then major nodes on top
+    // Draw nodes - low score first (back), high score on top (front)
     const sortedNodes = [...nodes].sort((a, b) => a.score - b.score);
 
     sortedNodes.forEach((node) => {
@@ -338,6 +347,10 @@ export const TopologyVisualization = ({
       const isHovered = hoveredNodeId === node.id;
       const isDragging = draggingNodeId === node.id;
       const isMajor = isMajorNode(node);
+      
+      // Score-based opacity: high score = bright, low score = dim
+      const baseOpacity = 0.3 + node.score * 0.7; // 0.3-1.0 range
+      const opacityHex = Math.round(baseOpacity * 255).toString(16).padStart(2, '0');
       
       // Size based on score
       let radius: number;
@@ -353,44 +366,46 @@ export const TopologyVisualization = ({
 
       const color = getNodeColor(node.id);
 
-      // Outer glow (synapse effect)
-      if (isMajor || isHovered || isSelected) {
+      // Outer glow (synapse effect) - intensity based on score
+      if ((isMajor || isHovered || isSelected) && node.score > 0.4) {
         const glowRadius = radius * (isMajor ? 4 : 3);
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, glowRadius, 0, Math.PI * 2);
         const outerGlow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowRadius);
-        outerGlow.addColorStop(0, color + '30');
-        outerGlow.addColorStop(0.4, color + '15');
+        const glowOpacity = Math.round(baseOpacity * 48).toString(16).padStart(2, '0');
+        outerGlow.addColorStop(0, color + glowOpacity);
+        outerGlow.addColorStop(0.4, color + Math.round(baseOpacity * 21).toString(16).padStart(2, '0'));
         outerGlow.addColorStop(1, 'transparent');
         ctx.fillStyle = outerGlow;
         ctx.fill();
       }
 
-      // Medium glow
+      // Medium glow - intensity based on score
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, radius * 2, 0, Math.PI * 2);
       const midGlow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius * 2);
-      midGlow.addColorStop(0, color + '50');
-      midGlow.addColorStop(0.6, color + '20');
+      const midGlowOpacity = Math.round(baseOpacity * 80).toString(16).padStart(2, '0');
+      midGlow.addColorStop(0, color + midGlowOpacity);
+      midGlow.addColorStop(0.6, color + Math.round(baseOpacity * 32).toString(16).padStart(2, '0'));
       midGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = midGlow;
       ctx.fill();
 
-      // Core node
+      // Core node - opacity based on score
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
       const coreGradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius);
-      coreGradient.addColorStop(0, '#ffffff');
-      coreGradient.addColorStop(0.4, color);
-      coreGradient.addColorStop(1, color + 'AA');
+      coreGradient.addColorStop(0, `rgba(255, 255, 255, ${baseOpacity})`);
+      coreGradient.addColorStop(0.4, color + opacityHex);
+      coreGradient.addColorStop(1, color + Math.round(baseOpacity * 170).toString(16).padStart(2, '0'));
       ctx.fillStyle = coreGradient;
       ctx.fill();
 
-      // White center highlight
-      if (radius > 2) {
+      // White center highlight - only for brighter nodes
+      if (radius > 2 && node.score > 0.5) {
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, radius * 0.3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.fillStyle = `rgba(255, 255, 255, ${baseOpacity * 0.85})`;
         ctx.fill();
       }
 
