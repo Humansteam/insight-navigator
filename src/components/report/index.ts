@@ -1,0 +1,1 @@
+export { ReportChatPanel } from './ReportChatPanel';
