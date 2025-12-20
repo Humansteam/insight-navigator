@@ -1,25 +1,28 @@
-import { useState } from 'react';
-import { Plus, BookOpen, ChevronRight, Search, Clock } from 'lucide-react';
+import { useState, useEffect, forwardRef } from 'react';
+import { Plus, ChevronRight, Search, Clock, StickyNote } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useJournals, Journal } from '@/contexts/JournalsContext';
 import { CreateJournalDialog } from './CreateJournalDialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface AddToJournalPopoverProps {
-  trigger: React.ReactNode;
   defaultContent: string;
   source: 'report' | 'chat' | 'topology' | 'papers' | 'manual';
   sourceLabel?: string;
   paperIds?: string[];
+  children?: React.ReactNode;
+  variant?: 'default' | 'icon';
 }
 
 export const AddToJournalPopover = ({
-  trigger,
   defaultContent,
   source,
   sourceLabel,
   paperIds,
+  children,
+  variant = 'default',
 }: AddToJournalPopoverProps) => {
   const { journals, recentJournals, addEntry, createJournal } = useJournals();
   const { toast } = useToast();
@@ -28,6 +31,20 @@ export const AddToJournalPopover = ({
   const [search, setSearch] = useState('');
   const [content, setContent] = useState(defaultContent);
   const [isEditing, setIsEditing] = useState(false);
+
+  // Update content when defaultContent changes
+  useEffect(() => {
+    setContent(defaultContent);
+  }, [defaultContent]);
+
+  // Reset state when popover opens
+  useEffect(() => {
+    if (isOpen) {
+      setContent(defaultContent);
+      setIsEditing(false);
+      setSearch('');
+    }
+  }, [isOpen, defaultContent]);
 
   const filteredJournals = journals.filter(j =>
     j.title.toLowerCase().includes(search.toLowerCase())
@@ -51,10 +68,14 @@ export const AddToJournalPopover = ({
   };
 
   const handleCreateAndAdd = (journalId: string) => {
-    const journal = journals.find(j => j.id === journalId);
-    if (journal) {
-      handleAddToJournal(journal);
-    }
+    // Need to get the journal from the updated list after creation
+    setTimeout(() => {
+      const updatedJournals = journals;
+      const journal = updatedJournals.find(j => j.id === journalId);
+      if (journal) {
+        handleAddToJournal(journal);
+      }
+    }, 0);
     setShowCreateDialog(false);
   };
 
@@ -67,13 +88,24 @@ export const AddToJournalPopover = ({
     handleAddToJournal(journal);
   };
 
+  const defaultTrigger = variant === 'icon' ? (
+    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary">
+      <StickyNote className="w-4 h-4" />
+    </Button>
+  ) : (
+    <Button variant="outline" size="sm" className="gap-1.5">
+      <StickyNote className="w-3.5 h-3.5" />
+      Save to journal
+    </Button>
+  );
+
   return (
     <>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
-          {trigger}
+          {children || defaultTrigger}
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-0" align="start">
+        <PopoverContent className="w-80 p-0" align="start" sideOffset={5}>
           {/* Header */}
           <div className="p-3 border-b border-border">
             <h4 className="text-sm font-semibold text-foreground mb-2">Add to Journal</h4>
@@ -84,13 +116,14 @@ export const AddToJournalPopover = ({
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 className="w-full h-24 p-2 rounded-lg bg-muted border border-border text-xs resize-none focus:outline-none focus:ring-1 focus:ring-primary"
+                autoFocus
               />
             ) : (
               <div 
                 onClick={() => setIsEditing(true)}
                 className="p-2 rounded-lg bg-muted/50 text-xs text-muted-foreground line-clamp-3 cursor-pointer hover:bg-muted transition-colors"
               >
-                {content || defaultContent}
+                {content || defaultContent || 'No content selected'}
                 <span className="text-primary ml-1">(click to edit)</span>
               </div>
             )}
@@ -134,8 +167,10 @@ export const AddToJournalPopover = ({
 
             {/* All journals or search results */}
             {(search ? filteredJournals : journals.filter(j => !recentJournals.some(r => r.id === j.id))).length > 0 && (
-              <div className="p-2 border-t border-border">
-                {!search && <p className="text-xs text-muted-foreground px-2 py-1">All Journals</p>}
+              <div className={cn("p-2", !search && recentJournals.length > 0 && "border-t border-border")}>
+                {!search && journals.filter(j => !recentJournals.some(r => r.id === j.id)).length > 0 && (
+                  <p className="text-xs text-muted-foreground px-2 py-1">All Journals</p>
+                )}
                 {(search ? filteredJournals : journals.filter(j => !recentJournals.some(r => r.id === j.id))).map(journal => (
                   <button
                     key={journal.id}
@@ -147,6 +182,14 @@ export const AddToJournalPopover = ({
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </button>
                 ))}
+              </div>
+            )}
+
+            {/* Empty state - no journals */}
+            {journals.length === 0 && (
+              <div className="p-4 text-center">
+                <p className="text-sm text-muted-foreground mb-3">No journals yet</p>
+                <p className="text-xs text-muted-foreground">Create your first journal below</p>
               </div>
             )}
 
