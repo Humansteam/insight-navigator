@@ -145,7 +145,7 @@ export const JournalsPanel = () => {
       <CreateJournalDialog
         isOpen={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
-        onCreated={(id) => setSelectedJournalId(id)}
+        onCreated={(journal) => setSelectedJournalId(journal.id)}
       />
     </div>
   );
