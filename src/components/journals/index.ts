@@ -7,3 +7,5 @@ export { FormatToolbar } from './FormatToolbar';
 export { AddToJournalPopover } from './AddToJournalPopover';
 export { CreateJournalDialog } from './CreateJournalDialog';
 export { TextSelectionTooltip } from './TextSelectionTooltip';
+export { JournalsWorkspaceProvider, JournalsLeftPanel, JournalsMainPanel, useJournalsWorkspace } from './JournalsWorkspaceDock';
+
