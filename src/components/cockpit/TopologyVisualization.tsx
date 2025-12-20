@@ -62,6 +62,7 @@ export const TopologyVisualization = ({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDraggingCanvas, setIsDraggingCanvas] = useState(false);
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const animationRef = useRef<number>();
   const lastMousePos = useRef({ x: 0, y: 0 });
 
@@ -77,32 +78,30 @@ export const TopologyVisualization = ({
   // Initialize positions - score-based: high score = closer to center, low = further
   useEffect(() => {
     const newPositions = new Map<string, NodePosition>();
-    const width = 640;
-    const height = 480;
+    const width = 900;
+    const height = 700;
     const globalCenterX = width / 2;
     const globalCenterY = height / 2;
     
     nodes.forEach((node) => {
       const clusterIdx = getClusterIndex(node.id);
-      const clusterCenter = clusterCenters[clusterIdx];
       
       // Score determines distance from global center (inverted: high score = close)
-      // Score 1.0 → near center, Score 0.0 → far edge
       const normalizedScore = Math.max(0.1, Math.min(1, node.score));
-      const distanceFromCenter = (1 - normalizedScore) * 0.9 + 0.1; // 0.1-1.0 range
+      const distanceFromCenter = (1 - normalizedScore) * 0.85 + 0.15;
       
       // Angle based on cluster (spread clusters around the center)
       const clusterAngle = (clusterIdx / 5) * Math.PI * 2 + Math.PI / 10;
-      const angleOffset = (Math.random() - 0.5) * 0.8; // Add variation within cluster
+      const angleOffset = (Math.random() - 0.5) * 0.8;
       const angle = clusterAngle + angleOffset;
       
-      // Maximum distance from center
-      const maxRadius = Math.min(width, height) * 0.42;
+      // Maximum distance from center - larger canvas
+      const maxRadius = Math.min(width, height) * 0.4;
       const radius = distanceFromCenter * maxRadius;
       
       // Add organic noise
-      const noiseX = (Math.random() - 0.5) * 20;
-      const noiseY = (Math.random() - 0.5) * 20;
+      const noiseX = (Math.random() - 0.5) * 25;
+      const noiseY = (Math.random() - 0.5) * 25;
       
       const x = globalCenterX + Math.cos(angle) * radius + noiseX;
       const y = globalCenterY + Math.sin(angle) * radius + noiseY;
@@ -117,8 +116,8 @@ export const TopologyVisualization = ({
   useEffect(() => {
     if (viewMode !== 'network' || positions.size === 0 || draggingNodeId) return;
 
-    const width = 640;
-    const height = 480;
+    const width = 900;
+    const height = 700;
     const globalCenterX = width / 2;
     const globalCenterY = height / 2;
 
@@ -134,17 +133,17 @@ export const TopologyVisualization = ({
         let fx = 0;
         let fy = 0;
 
-        // Score-based radial positioning: pull toward target radius from center
+        // Score-based radial positioning
         const normalizedScore = Math.max(0.1, Math.min(1, node.score));
-        const targetDistanceRatio = (1 - normalizedScore) * 0.9 + 0.1;
-        const maxRadius = Math.min(width, height) * 0.42;
+        const targetDistanceRatio = (1 - normalizedScore) * 0.85 + 0.15;
+        const maxRadius = Math.min(width, height) * 0.4;
         const targetRadius = targetDistanceRatio * maxRadius;
         
         const toCenterX = globalCenterX - pos.x;
         const toCenterY = globalCenterY - pos.y;
         const distToCenter = Math.sqrt(toCenterX * toCenterX + toCenterY * toCenterY) || 1;
         
-        // Pull toward target radius (not center)
+        // Pull toward target radius
         const radiusDiff = distToCenter - targetRadius;
         const pullStrength = 0.03;
         fx += (toCenterX / distToCenter) * radiusDiff * pullStrength;
@@ -507,6 +506,13 @@ export const TopologyVisualization = ({
     const dx = e.clientX - lastMousePos.current.x;
     const dy = e.clientY - lastMousePos.current.y;
     lastMousePos.current = { x: e.clientX, y: e.clientY };
+    
+    // Track mouse position for tooltip
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const rect = canvas.getBoundingClientRect();
+      setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    }
 
     if (draggingNodeId) {
       setPositions(prev => {
@@ -582,6 +588,29 @@ export const TopologyVisualization = ({
           onMouseLeave={handleMouseLeave}
           onWheel={handleWheel}
         />
+        
+        {/* Hover tooltip */}
+        {hoveredNodeId && (() => {
+          const hoveredNode = nodes.find(n => n.id === hoveredNodeId);
+          if (!hoveredNode) return null;
+          
+          return (
+            <div 
+              className="absolute pointer-events-none bg-card/95 backdrop-blur-sm border border-border rounded-lg px-3 py-2 max-w-xs shadow-lg z-10 animate-fade-in"
+              style={{ 
+                left: Math.min(mousePos.x + 12, 280),
+                top: mousePos.y - 10,
+              }}
+            >
+              <p className="text-sm font-medium text-foreground line-clamp-2">{hoveredNode.title}</p>
+              <div className="flex gap-2 mt-1 text-xs text-muted-foreground">
+                <span>{hoveredNode.year}</span>
+                <span>•</span>
+                <span className="text-primary font-medium">{Math.round(hoveredNode.score * 100)}%</span>
+              </div>
+            </div>
+          );
+        })()}
         
         {/* Legend */}
         <div className="absolute bottom-3 left-3 flex items-center gap-2 pointer-events-none">
