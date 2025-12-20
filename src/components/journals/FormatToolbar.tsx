@@ -62,7 +62,9 @@ export const FormatToolbar = ({
   onExport,
 }: FormatToolbarProps) => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    headings: true,
     text: true,
+    blocks: true,
   });
 
   const toggleSection = (key: string) => {
@@ -74,12 +76,12 @@ export const FormatToolbar = ({
       key={btn.label}
       variant="ghost"
       size="icon"
-      className="h-7 w-7"
+      className="h-10 w-10"
       onClick={() => onInsertFormat(btn.before, btn.after)}
       title={btn.label}
       disabled={isPreview}
     >
-      {btn.icon && <btn.icon className="h-4 w-4" />}
+      {btn.icon && <btn.icon className="h-5 w-5" />}
     </Button>
   );
 
@@ -88,7 +90,7 @@ export const FormatToolbar = ({
       key={btn.label}
       variant="ghost"
       size="sm"
-      className="h-7 px-2 text-xs font-semibold"
+      className="h-10 px-4 text-base font-semibold"
       onClick={() => onInsertFormat(btn.before, btn.after)}
       title={btn.label}
       disabled={isPreview}
@@ -99,14 +101,14 @@ export const FormatToolbar = ({
 
   const Section = ({ title, id, children }: { title: string; id: string; children: React.ReactNode }) => (
     <Collapsible open={openSections[id] ?? false} onOpenChange={() => toggleSection(id)}>
-      <CollapsibleTrigger className="w-full flex items-center justify-between px-3 py-2 hover:bg-accent/30 transition-colors">
-        <span className="text-sm font-medium">{title}</span>
+      <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-3 hover:bg-accent/30 transition-colors">
+        <span className="text-base font-medium">{title}</span>
         <ChevronDown className={cn(
-          "h-4 w-4 transition-transform",
+          "h-5 w-5 transition-transform",
           openSections[id] && "rotate-180"
         )} />
       </CollapsibleTrigger>
-      <CollapsibleContent className="px-3 pb-2">
+      <CollapsibleContent className="px-4 pb-4">
         {children}
       </CollapsibleContent>
     </Collapsible>
@@ -114,48 +116,51 @@ export const FormatToolbar = ({
 
   return (
     <div className="w-[360px] border-l border-border bg-muted/20 flex flex-col h-full">
+      {/* Header */}
+      <div className="h-12 flex items-center px-4 border-b border-border">
+        <span className="text-base font-medium">Formatting</span>
+      </div>
+
       {/* Sections */}
       <div className="flex-1 overflow-auto">
-        <Section title="Text Edit" id="text">
-          {/* Headings */}
-          <div className="flex gap-0.5 mb-2">
+        <Section title="Headings" id="headings">
+          <div className="flex flex-wrap gap-1">
             {headingButtons.map(renderTextButton)}
           </div>
-          
+        </Section>
+
+        <Section title="Text Styles" id="text">
           {/* Text formatting */}
-          <div className="flex gap-0.5 mb-2">
+          <div className="flex flex-wrap gap-1 mb-3">
             {textButtons.map(renderIconButton)}
           </div>
           
           {/* Code, link, image */}
-          <div className="flex gap-0.5 mb-2">
+          <div className="flex flex-wrap gap-1 mb-3">
             {codeButtons.map(renderIconButton)}
           </div>
           
           {/* Lists */}
-          <div className="flex gap-0.5">
+          <div className="flex flex-wrap gap-1">
             {listButtons.map(renderIconButton)}
           </div>
         </Section>
 
-        <Section title="Tables" id="tables">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start text-xs"
-            onClick={() => onInsertFormat('\n| Col1 | Col2 |\n|------|------|\n| A    | B    |\n')}
-            disabled={isPreview}
-          >
-            Insert Table
-          </Button>
-        </Section>
-
-        <Section title="More" id="more">
-          <div className="space-y-1">
+        <Section title="Blocks" id="blocks">
+          <div className="space-y-2">
             <Button
               variant="ghost"
-              size="sm"
-              className="w-full justify-start text-xs"
+              size="lg"
+              className="w-full justify-start text-base h-10"
+              onClick={() => onInsertFormat('\n| Col1 | Col2 |\n|------|------|\n| A    | B    |\n')}
+              disabled={isPreview}
+            >
+              Insert Table
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full justify-start text-base h-10"
               onClick={() => onInsertFormat('\n---\n')}
               disabled={isPreview}
             >
@@ -163,8 +168,8 @@ export const FormatToolbar = ({
             </Button>
             <Button
               variant="ghost"
-              size="sm"
-              className="w-full justify-start text-xs"
+              size="lg"
+              className="w-full justify-start text-base h-10"
               onClick={() => onInsertFormat('> ')}
               disabled={isPreview}
             >
@@ -172,8 +177,8 @@ export const FormatToolbar = ({
             </Button>
             <Button
               variant="ghost"
-              size="sm"
-              className="w-full justify-start text-xs"
+              size="lg"
+              className="w-full justify-start text-base h-10"
               onClick={() => onInsertFormat('```\n', '\n```')}
               disabled={isPreview}
             >
@@ -184,30 +189,31 @@ export const FormatToolbar = ({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-border p-2 space-y-2">
+      <div className="border-t border-border p-4 space-y-3">
         <Button
-          variant={isPreview ? "secondary" : "ghost"}
-          size="sm"
-          className="w-full justify-start gap-2 text-xs"
+          variant={isPreview ? "secondary" : "outline"}
+          size="lg"
+          className="w-full justify-center gap-2 text-base h-10"
           onClick={onTogglePreview}
         >
+          <FileText className="h-5 w-5" />
           {isPreview ? 'Edit Mode' : 'Preview'}
         </Button>
         
         <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start gap-2 text-xs"
+          variant="outline"
+          size="lg"
+          className="w-full justify-center gap-2 text-base h-10"
           onClick={onExport}
         >
-          <Download className="h-3.5 w-3.5" />
+          <Download className="h-5 w-5" />
           Export .md
         </Button>
       </div>
       
       {/* Status bar */}
-      <div className="h-7 flex items-center justify-end gap-3 px-3 border-t border-border text-[10px] text-muted-foreground">
-        <span>Words: {wordCount}</span>
+      <div className="h-10 flex items-center justify-end gap-4 px-4 border-t border-border text-sm text-muted-foreground">
+        <span>{wordCount} words</span>
       </div>
     </div>
   );
