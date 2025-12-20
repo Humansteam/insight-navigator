@@ -1,7 +1,7 @@
 import { X, Sparkles, FileText, Trash2, StickyNote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DataNode } from '@/types/morphik';
-import { AddNotePopover } from '@/components/notebook/AddNotePopover';
+import { AddToJournalPopover } from '@/components/journals';
 
 interface SelectionActionBarProps {
   selectedNodes: DataNode[];
@@ -47,11 +47,11 @@ export const SelectionActionBar = ({
             Summarize
           </Button>
           
-          <AddNotePopover
+          <AddToJournalPopover
             trigger={
               <Button variant="outline" size="sm" className="gap-1.5">
                 <StickyNote className="w-3.5 h-3.5" />
-                Save to notes
+                Save to journal
               </Button>
             }
             defaultContent={noteContent}

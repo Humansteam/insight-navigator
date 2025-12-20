@@ -4,7 +4,7 @@ import { ArrowUp, Loader2, Plus, Lightbulb, ChevronRight, Bookmark, CornerDownLe
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useChat } from '@/contexts/ChatContext';
-import { AddNotePopover } from '@/components/notebook/AddNotePopover';
+import { AddToJournalPopover } from '@/components/journals';
 
 export const ReportChatPanel = () => {
   const [input, setInput] = useState('');
@@ -101,9 +101,9 @@ export const ReportChatPanel = () => {
                       <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                         <CornerDownLeft className="w-4 h-4" />
                       </button>
-                      <AddNotePopover
+                      <AddToJournalPopover
                         trigger={
-                          <button className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Save to notebook">
+                          <button className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Save to journal">
                             <StickyNote className="w-4 h-4" />
                           </button>
                         }
