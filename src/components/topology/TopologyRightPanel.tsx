@@ -181,11 +181,25 @@ export const TopologyRightPanel = ({
               <h4 className="text-sm font-medium text-foreground leading-snug mb-1 line-clamp-2">
                 {paper.title}
               </h4>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-muted-foreground truncate max-w-[180px]">
                   {paper.authors.join(', ')}
                 </p>
                 <span className="text-xs text-muted-foreground">{paper.year}</span>
+              </div>
+              {/* Score with progress bar */}
+              <div className="space-y-1">
+                <div className="text-right">
+                  <span className="text-xs font-medium text-primary">
+                    {Math.round(paper.score * 100)}%
+                  </span>
+                </div>
+                <div className="h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary rounded-full transition-all"
+                    style={{ width: `${paper.score * 100}%` }}
+                  />
+                </div>
               </div>
             </div>
           );
