@@ -181,8 +181,8 @@ const Index = () => {
 
   return (
     <div className="h-screen w-full flex bg-background relative">
-      {/* Left Chat Panel - visible in Report view */}
-      {activeView === 'report' && (
+      {/* Left Chat Panel - visible in Report and Topology views */}
+      {(activeView === 'report' || activeView === 'topology') && (
         <div className="w-96 border-r border-border bg-background">
           <ReportChatPanel />
         </div>
