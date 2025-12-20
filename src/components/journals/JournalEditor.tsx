@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { Journal } from '@/contexts/JournalsContext';
+import { format } from 'date-fns';
 
 interface JournalEditorProps {
   journal: Journal;
@@ -45,23 +46,28 @@ export const JournalEditor = ({
     }, 100);
   }, [onChange]);
 
+  const formattedDate = format(new Date(journal.updatedAt), 'MMMM d, yyyy');
+
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-background">
-      {/* Title - centered at top */}
-      <div className="text-center py-4">
-        <span className="text-xs text-muted-foreground">{journal.icon} {journal.title}</span>
-      </div>
-      
-      {/* Editor area - centered with max-width like Obsidian */}
-      <div className="flex-1 flex flex-col px-8 pb-6 mx-auto w-full max-w-3xl">
-        <h1 className="text-2xl font-semibold text-foreground mb-4">{journal.title}</h1>
+    <div className="flex-1 overflow-auto lovable-scrollbar">
+      <div className="max-w-3xl mx-auto px-8 py-10">
+        {/* Date - like Report */}
+        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+          {formattedDate}
+        </p>
         
+        {/* Title - like Report text-4xl */}
+        <h1 className="text-4xl font-semibold text-foreground mb-6">
+          {journal.icon} {journal.title}
+        </h1>
+        
+        {/* Textarea for content - text-base like Report paragraphs */}
         <textarea
           ref={ref}
           defaultValue={content}
           onInput={handleInput}
-          placeholder="Start writing..."
-          className="w-full flex-1 resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-base leading-relaxed"
+          placeholder="Start writing your journal..."
+          className="w-full min-h-[500px] resize-none bg-transparent text-base text-foreground/90 leading-relaxed placeholder:text-muted-foreground focus:outline-none"
           spellCheck={false}
         />
       </div>
