@@ -23,11 +23,12 @@ interface NodePosition {
   vy: number;
 }
 
+// Stylish color palette inspired by modern design
 const countryColors: Record<string, string> = {
-  china: '#ef4444',
-  usa: '#3b82f6',
-  europe: '#eab308',
-  other: '#a855f7',
+  china: '#FF9408',    // Merin's Fire - vibrant orange
+  usa: '#16E9D7',      // Polar Aqua - teal
+  europe: '#1845CD',   // Liquid Sapphire - deep blue
+  other: '#732553',    // Pico Eggplant - purple
 };
 
 export const TopologyVisualization = ({
@@ -47,23 +48,30 @@ export const TopologyVisualization = ({
   const [isDragging, setIsDragging] = useState(false);
   const animationRef = useRef<number>();
 
-  // Initialize positions
+  // Initialize positions with better separation
   useEffect(() => {
     const newPositions = new Map<string, NodePosition>();
-    const centerX = 250;
-    const centerY = 150;
+    const centerX = 280;
+    const centerY = 180;
     
     nodes.forEach((node, i) => {
       if (viewMode === 'map') {
+        // Better spread with more separation
+        const baseX = 60 + node.umap_x * 420;
+        const baseY = 40 + node.umap_y * 280;
+        // Add small offset based on index to avoid overlaps
+        const offsetX = (i % 3 - 1) * 15;
+        const offsetY = (Math.floor(i / 3) % 3 - 1) * 15;
         newPositions.set(node.id, {
-          x: 80 + node.umap_x * 350,
-          y: 50 + node.umap_y * 220,
+          x: baseX + offsetX,
+          y: baseY + offsetY,
           vx: 0,
           vy: 0,
         });
       } else {
+        // Larger radius for network view
         const angle = (i / nodes.length) * Math.PI * 2;
-        const radius = 80 + Math.random() * 60;
+        const radius = 100 + Math.random() * 80;
         newPositions.set(node.id, {
           x: centerX + Math.cos(angle) * radius,
           y: centerY + Math.sin(angle) * radius,
@@ -75,18 +83,18 @@ export const TopologyVisualization = ({
     setPositions(newPositions);
   }, [nodes, viewMode]);
 
-  // Force simulation for network mode
+  // Force simulation for network mode - with stronger separation
   useEffect(() => {
     if (viewMode !== 'network' || positions.size === 0) return;
 
     const simulate = () => {
       const newPositions = new Map(positions);
-      const centerX = 250;
-      const centerY = 150;
-      const repulsion = 1200;
-      const attraction = 0.012;
-      const damping = 0.85;
-      const centerForce = 0.006;
+      const centerX = 280;
+      const centerY = 180;
+      const repulsion = 2500; // Increased for more separation
+      const attraction = 0.008; // Decreased for looser connections
+      const damping = 0.82;
+      const centerForce = 0.004;
 
       nodes.forEach((node) => {
         const pos = newPositions.get(node.id);
@@ -177,60 +185,109 @@ export const TopologyVisualization = ({
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
 
-    // Draw edges
+    // Draw edges with stylish gradients and visibility
     edges.forEach((edge) => {
       const sourcePos = positions.get(edge.source_id);
       const targetPos = positions.get(edge.target_id);
       if (!sourcePos || !targetPos) return;
 
+      const sourceNode = nodes.find(n => n.id === edge.source_id);
+      const targetNode = nodes.find(n => n.id === edge.target_id);
+      const sourceColor = countryColors[sourceNode?.country || 'other'];
+      const targetColor = countryColors[targetNode?.country || 'other'];
+
+      // Create gradient for edge
+      const gradient = ctx.createLinearGradient(
+        sourcePos.x, sourcePos.y,
+        targetPos.x, targetPos.y
+      );
+      gradient.addColorStop(0, sourceColor + '60');
+      gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.15)');
+      gradient.addColorStop(1, targetColor + '60');
+
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
       ctx.lineTo(targetPos.x, targetPos.y);
-      ctx.strokeStyle = 'rgba(100, 180, 200, 0.2)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = 1.5 + (edge.weight * 1.5); // Thickness based on weight
+      ctx.lineCap = 'round';
       ctx.stroke();
     });
 
-    // Draw nodes
+    // Draw nodes with enhanced styling
     nodes.forEach((node) => {
       const pos = positions.get(node.id);
       if (!pos) return;
 
       const isSelected = selectedNodeId === node.id;
       const isHovered = hoveredNodeId === node.id;
-      const radius = 10 + (node.score * 8);
+      const baseRadius = 8 + (node.score * 10);
+      const radius = isSelected || isHovered ? baseRadius + 3 : baseRadius;
       const color = countryColors[node.country] || countryColors.other;
 
-      // Glow effect
+      // Outer glow ring for all nodes (subtle)
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius + 6, 0, Math.PI * 2);
+      const outerGlow = ctx.createRadialGradient(pos.x, pos.y, radius, pos.x, pos.y, radius + 6);
+      outerGlow.addColorStop(0, color + '30');
+      outerGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = outerGlow;
+      ctx.fill();
+
+      // Enhanced glow for selected/hovered
       if (isSelected || isHovered) {
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, radius + 10, 0, Math.PI * 2);
-        const gradient = ctx.createRadialGradient(pos.x, pos.y, radius, pos.x, pos.y, radius + 10);
-        gradient.addColorStop(0, color + '50');
+        ctx.arc(pos.x, pos.y, radius + 15, 0, Math.PI * 2);
+        const gradient = ctx.createRadialGradient(pos.x, pos.y, radius, pos.x, pos.y, radius + 15);
+        gradient.addColorStop(0, color + '70');
+        gradient.addColorStop(0.5, color + '30');
         gradient.addColorStop(1, 'transparent');
         ctx.fillStyle = gradient;
         ctx.fill();
       }
 
-      // Node circle
+      // Node circle with gradient fill
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = color;
+      const nodeGradient = ctx.createRadialGradient(
+        pos.x - radius * 0.3, pos.y - radius * 0.3, 0,
+        pos.x, pos.y, radius
+      );
+      nodeGradient.addColorStop(0, color);
+      nodeGradient.addColorStop(0.7, color);
+      nodeGradient.addColorStop(1, color + 'AA');
+      ctx.fillStyle = nodeGradient;
       ctx.fill();
 
-      if (isSelected) {
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
+      // Inner highlight
+      ctx.beginPath();
+      ctx.arc(pos.x - radius * 0.25, pos.y - radius * 0.25, radius * 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.fill();
 
-      // Label
+      // Border
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = isSelected ? '#ffffff' : 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = isSelected ? 2.5 : 1;
+      ctx.stroke();
+
+      // Label with background
       const authors = node.authors[0]?.split(',')[0] || 'Unknown';
       const label = `${authors}, ${node.year}`;
-      ctx.font = '10px Inter, sans-serif';
-      ctx.fillStyle = isSelected || isHovered ? '#fff' : 'rgba(255,255,255,0.6)';
+      ctx.font = '9px Inter, sans-serif';
+      
+      if (isSelected || isHovered) {
+        // Draw label background
+        const textWidth = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.fillRect(pos.x - textWidth / 2 - 4, pos.y + radius + 6, textWidth + 8, 14);
+        ctx.fillStyle = '#ffffff';
+      } else {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      }
       ctx.textAlign = 'center';
-      ctx.fillText(label, pos.x, pos.y + radius + 14);
+      ctx.fillText(label, pos.x, pos.y + radius + 16);
     });
 
     ctx.restore();
@@ -341,18 +398,22 @@ export const TopologyVisualization = ({
         />
         
         {/* Legend */}
-        <div className="absolute bottom-3 left-3 flex items-center gap-4 text-xs bg-background/80 backdrop-blur-sm px-3 py-1.5 rounded border border-border">
+        <div className="absolute bottom-3 left-3 flex items-center gap-3 text-xs bg-background/90 backdrop-blur-sm px-3 py-2 rounded-lg border border-border/50 shadow-lg">
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: countryColors.china }} />
-            <span className="text-muted-foreground">China</span>
+            <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: countryColors.china, boxShadow: `0 0 8px ${countryColors.china}50` }} />
+            <span className="text-foreground/80 font-medium">China</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: countryColors.usa }} />
-            <span className="text-muted-foreground">USA</span>
+            <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: countryColors.usa, boxShadow: `0 0 8px ${countryColors.usa}50` }} />
+            <span className="text-foreground/80 font-medium">USA</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full" style={{ background: countryColors.europe }} />
-            <span className="text-muted-foreground">Europe</span>
+            <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: countryColors.europe, boxShadow: `0 0 8px ${countryColors.europe}50` }} />
+            <span className="text-foreground/80 font-medium">Europe</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full shadow-sm" style={{ background: countryColors.other, boxShadow: `0 0 8px ${countryColors.other}50` }} />
+            <span className="text-foreground/80 font-medium">Other</span>
           </div>
         </div>
       </div>
