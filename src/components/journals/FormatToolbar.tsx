@@ -113,7 +113,7 @@ export const FormatToolbar = ({
   );
 
   return (
-    <div className="w-52 border-l border-border bg-muted/20 flex flex-col h-full">
+    <div className="w-[360px] border-l border-border bg-muted/20 flex flex-col h-full">
       {/* Sections */}
       <div className="flex-1 overflow-auto">
         <Section title="Text Edit" id="text">
