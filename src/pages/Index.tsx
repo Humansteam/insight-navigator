@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronRight, PanelRight, Loader2, Languages } from 'lucide-react';
+import { ChevronRight, PanelRight, Loader2, Languages, FileText, FileSearch, Network, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { mockNodes } from '@/data/mockData';
 import { cn } from '@/lib/utils';
@@ -8,9 +8,12 @@ import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
 import { PipelineDAG } from '@/components/cockpit/PipelineDAG';
 import { useEngineData } from '@/hooks/useEngineData';
 import { DataNode } from '@/types/morphik';
+import { PapersScreeningMain } from '@/components/papers-screening';
+import { ReportView } from '@/components/papers-screening/types';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeView, setActiveView] = useState<ReportView>('report');
 
   // Engine data hook
   const {
@@ -164,6 +167,14 @@ const Index = () => {
     );
   };
 
+  // View switcher options
+  const viewOptions: { id: ReportView; label: string; icon: React.ReactNode }[] = [
+    { id: 'report', label: 'Report', icon: <FileText className="w-3.5 h-3.5" /> },
+    { id: 'papers', label: 'Papers', icon: <FileSearch className="w-3.5 h-3.5" /> },
+    { id: 'topology', label: 'Topology', icon: <Network className="w-3.5 h-3.5" /> },
+    { id: 'timeline', label: 'Timeline', icon: <Clock className="w-3.5 h-3.5" /> },
+  ];
+
   return (
     <div className="h-screen w-full flex bg-background relative">
       {/* Left Panel: Report + Chat */}
@@ -177,6 +188,24 @@ const Index = () => {
             <ChevronRight className="w-4 h-4 text-muted-foreground" />
           </div>
           <div className="flex items-center gap-2">
+            {/* View Switcher */}
+            <div className="flex bg-muted/50 rounded-lg p-0.5 mr-2">
+              {viewOptions.map((view) => (
+                <button
+                  key={view.id}
+                  onClick={() => setActiveView(view.id)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    activeView === view.id
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {view.icon}
+                  {view.label}
+                </button>
+              ))}
+            </div>
             <div className="flex gap-1">
               {phaseDots.map((active, i) => (
                 <div key={i} className={cn(
@@ -210,13 +239,31 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Report Content */}
+        {/* Main Content Area */}
         <div className="flex-1 overflow-auto">
           {isLoading && phase !== 'complete' ? (
             <PipelineDAG
               query={input || 'Analyzing...'}
               onComplete={() => {}}
             />
+          ) : activeView === 'papers' ? (
+            <PapersScreeningMain 
+              onPaperSelect={(id) => console.log('Selected paper:', id)} 
+            />
+          ) : activeView === 'topology' ? (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              <div className="text-center">
+                <Network className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Topology view coming soon</p>
+              </div>
+            </div>
+          ) : activeView === 'timeline' ? (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              <div className="text-center">
+                <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>Timeline view coming soon</p>
+              </div>
+            </div>
           ) : (
             <div className="max-w-3xl mx-auto px-8 py-10">
               {/* Date */}
