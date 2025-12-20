@@ -14,11 +14,11 @@ export const mockScreeningData: PaperWithScreening[] = [
       score: 4.2,
       rationale: 'The abstract describes a membrane-based DLE system with specific performance metrics (94% recovery). Directly relevant to systematic review on lithium extraction technologies.',
       criteria: [
-        { name: 'Clinical Outcomes', status: 'fail' },
-        { name: 'Data Quality', status: 'pass' },
-        { name: 'Study Design', status: 'pass' },
-        { name: 'Relevance', status: 'pass' },
-        { name: 'Sample Size', status: 'partial' },
+        { name: 'Extraction Efficiency', status: 'pass' },
+        { name: 'Industrial Scalability', status: 'pass' },
+        { name: 'Methodology Quality', status: 'pass' },
+        { name: 'Data Completeness', status: 'partial' },
+        { name: 'Topic Relevance', status: 'pass' },
       ]
     }
   },
@@ -35,11 +35,11 @@ export const mockScreeningData: PaperWithScreening[] = [
       score: 3.8,
       rationale: 'Relevant comparative study on lithium recovery methods. Good methodology description but focuses on battery recycling rather than primary extraction.',
       criteria: [
-        { name: 'Clinical Outcomes', status: 'partial' },
-        { name: 'Data Quality', status: 'pass' },
-        { name: 'Study Design', status: 'pass' },
-        { name: 'Relevance', status: 'partial' },
-        { name: 'Sample Size', status: 'pass' },
+        { name: 'Extraction Efficiency', status: 'partial' },
+        { name: 'Industrial Scalability', status: 'pass' },
+        { name: 'Methodology Quality', status: 'pass' },
+        { name: 'Data Completeness', status: 'pass' },
+        { name: 'Topic Relevance', status: 'partial' },
       ]
     }
   },
@@ -56,11 +56,11 @@ export const mockScreeningData: PaperWithScreening[] = [
       score: 2.1,
       rationale: 'Focuses on computational modeling rather than experimental results. No empirical data on actual lithium extraction performance.',
       criteria: [
-        { name: 'Clinical Outcomes', status: 'fail' },
-        { name: 'Data Quality', status: 'fail' },
-        { name: 'Study Design', status: 'partial' },
-        { name: 'Relevance', status: 'pass' },
-        { name: 'Sample Size', status: 'fail' },
+        { name: 'Extraction Efficiency', status: 'fail' },
+        { name: 'Industrial Scalability', status: 'fail' },
+        { name: 'Methodology Quality', status: 'partial' },
+        { name: 'Data Completeness', status: 'fail' },
+        { name: 'Topic Relevance', status: 'pass' },
       ]
     }
   },
@@ -77,11 +77,11 @@ export const mockScreeningData: PaperWithScreening[] = [
       score: 3.5,
       rationale: 'Valuable environmental perspective on lithium extraction. High citation count indicates field relevance.',
       criteria: [
-        { name: 'Clinical Outcomes', status: 'fail' },
-        { name: 'Data Quality', status: 'pass' },
-        { name: 'Study Design', status: 'pass' },
-        { name: 'Relevance', status: 'partial' },
-        { name: 'Sample Size', status: 'pass' },
+        { name: 'Extraction Efficiency', status: 'fail' },
+        { name: 'Industrial Scalability', status: 'pass' },
+        { name: 'Methodology Quality', status: 'pass' },
+        { name: 'Data Completeness', status: 'pass' },
+        { name: 'Topic Relevance', status: 'partial' },
       ]
     }
   },
@@ -98,11 +98,11 @@ export const mockScreeningData: PaperWithScreening[] = [
       score: 1.8,
       rationale: 'Too focused on fundamental chemistry. Lacks practical extraction performance data.',
       criteria: [
-        { name: 'Clinical Outcomes', status: 'fail' },
-        { name: 'Data Quality', status: 'partial' },
-        { name: 'Study Design', status: 'pass' },
-        { name: 'Relevance', status: 'fail' },
-        { name: 'Sample Size', status: 'fail' },
+        { name: 'Extraction Efficiency', status: 'fail' },
+        { name: 'Industrial Scalability', status: 'fail' },
+        { name: 'Methodology Quality', status: 'pass' },
+        { name: 'Data Completeness', status: 'partial' },
+        { name: 'Topic Relevance', status: 'fail' },
       ]
     }
   },
@@ -119,11 +119,11 @@ export const mockScreeningData: PaperWithScreening[] = [
       score: 4.7,
       rationale: 'Excellent pilot-scale results with high purity metrics. Directly applicable to industrial lithium extraction.',
       criteria: [
-        { name: 'Clinical Outcomes', status: 'pass' },
-        { name: 'Data Quality', status: 'pass' },
-        { name: 'Study Design', status: 'pass' },
-        { name: 'Relevance', status: 'pass' },
-        { name: 'Sample Size', status: 'pass' },
+        { name: 'Extraction Efficiency', status: 'pass' },
+        { name: 'Industrial Scalability', status: 'pass' },
+        { name: 'Methodology Quality', status: 'pass' },
+        { name: 'Data Completeness', status: 'pass' },
+        { name: 'Topic Relevance', status: 'pass' },
       ]
     }
   },
