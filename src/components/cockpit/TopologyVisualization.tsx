@@ -22,29 +22,23 @@ interface NodePosition {
   vy: number;
 }
 
-// Soft pastel color palette matching reference
-const nodeColors = [
-  '#E8967A', // Coral/Salmon
-  '#85DCBA', // Mint Green  
-  '#7FBBE9', // Sky Blue
-  '#C9A7C7', // Lavender/Pink
-  '#F5D76E', // Soft Yellow
-  '#D4A5A5', // Dusty Rose
-  '#B8B8B8', // Warm Grey
-  '#9FD5D1', // Teal
-  '#E8C49A', // Peach
-  '#A3C4BC', // Sage
-  '#F1948A', // Light Coral
-  '#AED6F1', // Light Blue
+// Cluster-based color palette matching reference (pink/magenta, yellow/cream, cyan/blue)
+const clusterColors = [
+  '#E85A8F', // Pink/Magenta
+  '#D4A853', // Golden Yellow
+  '#4DC4E8', // Cyan/Blue
+  '#F5C853', // Bright Yellow
+  '#FF6B8A', // Coral Pink
+  '#5BBDD4', // Teal Blue
 ];
 
-// Generate consistent color based on node id
+// Generate consistent cluster color based on node id
 const getNodeColor = (nodeId: string): string => {
   let hash = 0;
   for (let i = 0; i < nodeId.length; i++) {
     hash = nodeId.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return nodeColors[Math.abs(hash) % nodeColors.length];
+  return clusterColors[Math.abs(hash) % clusterColors.length];
 };
 
 export const TopologyVisualization = ({
@@ -263,43 +257,26 @@ export const TopologyVisualization = ({
       return hoveredNodeId && (edge.source_id === hoveredNodeId || edge.target_id === hoveredNodeId);
     };
 
-    // Draw non-highlighted edges first (thin, subtle)
+    // Draw non-highlighted edges first - super thin hair-like lines
     edges.forEach((edge) => {
-      if (isEdgeHighlighted(edge)) return; // Skip highlighted edges, draw later
+      if (isEdgeHighlighted(edge)) return;
       
       const sourcePos = positions.get(edge.source_id);
       const targetPos = positions.get(edge.target_id);
       if (!sourcePos || !targetPos) return;
 
       const sourceColor = getNodeColor(edge.source_id);
-      const targetColor = getNodeColor(edge.target_id);
 
-      const midX = (sourcePos.x + targetPos.x) / 2;
-      const midY = (sourcePos.y + targetPos.y) / 2;
-      const dx = targetPos.x - sourcePos.x;
-      const dy = targetPos.y - sourcePos.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const curvature = Math.min(dist * 0.15, 30);
-      const perpX = (-dy / dist) * curvature;
-      const perpY = (dx / dist) * curvature;
-
-      const gradient = ctx.createLinearGradient(
-        sourcePos.x, sourcePos.y,
-        targetPos.x, targetPos.y
-      );
-      gradient.addColorStop(0, sourceColor + '20');
-      gradient.addColorStop(0.5, 'rgba(160, 160, 160, 0.1)');
-      gradient.addColorStop(1, targetColor + '20');
-
+      // Straight thin lines (like reference)
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
-      ctx.quadraticCurveTo(midX + perpX, midY + perpY, targetPos.x, targetPos.y);
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 0.5;
+      ctx.lineTo(targetPos.x, targetPos.y);
+      ctx.strokeStyle = sourceColor + '30'; // Very transparent
+      ctx.lineWidth = 0.3; // Super thin
       ctx.stroke();
     });
 
-    // Draw highlighted edges on top (thick, bright, glowing)
+    // Draw highlighted edges on top - slightly brighter but still thin
     edges.forEach((edge) => {
       if (!isEdgeHighlighted(edge)) return;
       
@@ -308,39 +285,21 @@ export const TopologyVisualization = ({
       if (!sourcePos || !targetPos) return;
 
       const sourceColor = getNodeColor(edge.source_id);
-      const targetColor = getNodeColor(edge.target_id);
 
-      const midX = (sourcePos.x + targetPos.x) / 2;
-      const midY = (sourcePos.y + targetPos.y) / 2;
-      const dx = targetPos.x - sourcePos.x;
-      const dy = targetPos.y - sourcePos.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const curvature = Math.min(dist * 0.15, 30);
-      const perpX = (-dy / dist) * curvature;
-      const perpY = (dx / dist) * curvature;
-
-      // Glow effect
+      // Subtle glow
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
-      ctx.quadraticCurveTo(midX + perpX, midY + perpY, targetPos.x, targetPos.y);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.lineWidth = 6;
+      ctx.lineTo(targetPos.x, targetPos.y);
+      ctx.strokeStyle = sourceColor + '40';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Bright gradient edge
-      const gradient = ctx.createLinearGradient(
-        sourcePos.x, sourcePos.y,
-        targetPos.x, targetPos.y
-      );
-      gradient.addColorStop(0, sourceColor);
-      gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.8)');
-      gradient.addColorStop(1, targetColor);
-
+      // Bright thin line
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
-      ctx.quadraticCurveTo(midX + perpX, midY + perpY, targetPos.x, targetPos.y);
-      ctx.strokeStyle = gradient;
-      ctx.lineWidth = 2.5;
+      ctx.lineTo(targetPos.x, targetPos.y);
+      ctx.strokeStyle = sourceColor + 'CC';
+      ctx.lineWidth = 0.8;
       ctx.stroke();
     });
 
