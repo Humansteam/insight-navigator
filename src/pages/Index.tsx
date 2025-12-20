@@ -18,6 +18,7 @@ import { ReportChatPanel } from '@/components/report';
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeView, setActiveView] = useState<ReportView>('report');
+  const [graphHoveredPaperId, setGraphHoveredPaperId] = useState<string | null>(null);
 
   // Engine data hook
   const {
@@ -262,7 +263,12 @@ const Index = () => {
               onPaperSelect={(id) => console.log('Selected paper:', id)} 
             />
           ) : activeView === 'topology' ? (
-            <TopologyMain nodes={papers} edges={mockEdges} />
+            <TopologyMain 
+              nodes={papers} 
+              edges={mockEdges} 
+              externalHoveredNodeId={graphHoveredPaperId}
+              onExternalHoverNode={setGraphHoveredPaperId}
+            />
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
@@ -295,7 +301,11 @@ const Index = () => {
           "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
           isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
         )}>
-          <EvidenceMatrixPanel papers={papers} />
+          <EvidenceMatrixPanel 
+            papers={papers} 
+            hoveredPaperId={graphHoveredPaperId}
+            onHoverPaper={setGraphHoveredPaperId}
+          />
         </div>
       )}
     </div>
