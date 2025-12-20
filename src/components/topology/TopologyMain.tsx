@@ -3,7 +3,6 @@ import { cn } from '@/lib/utils';
 import { DataNode, DataEdge } from '@/types/morphik';
 import { mockNodes, mockEdges } from '@/data/mockData';
 import { TopologyVisualization } from '@/components/cockpit/TopologyVisualization';
-import { TopologyRightPanel } from './TopologyRightPanel';
 
 interface TopologyMainProps {
   nodes?: DataNode[];
@@ -19,10 +18,6 @@ export const TopologyMain = ({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
-  const selectedNode = useMemo(() => {
-    return nodes.find(n => n.id === selectedNodeId) || null;
-  }, [nodes, selectedNodeId]);
-
   return (
     <div className={cn('flex h-full', className)}>
       {/* Center - Graph Visualization */}
@@ -33,18 +28,6 @@ export const TopologyMain = ({
           selectedNodeId={selectedNodeId}
           onSelectNode={setSelectedNodeId}
           hoveredNodeId={hoveredNodeId}
-          onHoverNode={setHoveredNodeId}
-        />
-      </div>
-
-      {/* Right Panel - Papers List / Details */}
-      <div className="w-80 border-l border-border bg-background">
-        <TopologyRightPanel
-          nodes={nodes}
-          selectedNode={selectedNode}
-          selectedNodeId={selectedNodeId}
-          hoveredNodeId={hoveredNodeId}
-          onSelectNode={setSelectedNodeId}
           onHoverNode={setHoveredNodeId}
         />
       </div>
