@@ -23,7 +23,7 @@ export const PapersScreeningMain = ({
 
   const sortedPapers = useMemo(() => {
     return [...papers].sort((a, b) => {
-      const diff = a.screening.score - b.screening.score;
+      const diff = a.screening.combinedScore - b.screening.combinedScore;
       return sortOrder === 'desc' ? -diff : diff;
     });
   }, [papers, sortOrder]);
