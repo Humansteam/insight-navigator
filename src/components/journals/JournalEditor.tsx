@@ -14,7 +14,6 @@ export const JournalEditor = ({
   onChange,
   textareaRef,
 }: JournalEditorProps) => {
-  // Prevent cursor jump by using uncontrolled input with manual sync
   const internalRef = useRef<HTMLTextAreaElement>(null);
   const ref = textareaRef || internalRef;
   const isUserTyping = useRef(false);
@@ -25,7 +24,6 @@ export const JournalEditor = ({
     if (ref.current && !isUserTyping.current && content !== lastContent.current) {
       const cursorPos = ref.current.selectionStart;
       ref.current.value = content;
-      // Restore cursor position
       ref.current.setSelectionRange(cursorPos, cursorPos);
     }
     lastContent.current = content;
@@ -42,7 +40,6 @@ export const JournalEditor = ({
   const handleInput = useCallback((e: React.FormEvent<HTMLTextAreaElement>) => {
     isUserTyping.current = true;
     onChange(e.currentTarget.value);
-    // Reset typing flag after a short delay
     setTimeout(() => {
       isUserTyping.current = false;
     }, 100);
@@ -50,14 +47,23 @@ export const JournalEditor = ({
 
   return (
     <div className="flex-1 flex flex-col min-w-0 bg-background">
-      <textarea
-        ref={ref}
-        defaultValue={content}
-        onInput={handleInput}
-        placeholder="Start writing..."
-        className="flex-1 w-full p-6 resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none font-mono text-sm leading-relaxed"
-        spellCheck={false}
-      />
+      {/* Title bar */}
+      <div className="px-12 pt-8 pb-2">
+        <div className="text-xs text-muted-foreground mb-2">{journal.icon} {journal.title}</div>
+        <h1 className="text-3xl font-semibold text-foreground">{journal.title}</h1>
+      </div>
+      
+      {/* Editor area */}
+      <div className="flex-1 px-12 pb-8">
+        <textarea
+          ref={ref}
+          defaultValue={content}
+          onInput={handleInput}
+          placeholder="Start writing..."
+          className="w-full h-full resize-none bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-base leading-relaxed"
+          spellCheck={false}
+        />
+      </div>
     </div>
   );
 };
