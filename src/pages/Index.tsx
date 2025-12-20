@@ -173,8 +173,8 @@ const Index = () => {
   // View switcher options
   const viewOptions: { id: ReportView; label: string; icon: React.ReactNode }[] = [
     { id: 'report', label: 'Report', icon: <FileText className="w-3.5 h-3.5" /> },
-    { id: 'papers', label: 'Papers', icon: <FileSearch className="w-3.5 h-3.5" /> },
     { id: 'topology', label: 'Topology', icon: <Network className="w-3.5 h-3.5" /> },
+    { id: 'papers', label: 'Papers', icon: <FileSearch className="w-3.5 h-3.5" /> },
     { id: 'timeline', label: 'Timeline', icon: <Clock className="w-3.5 h-3.5" /> },
   ];
 
