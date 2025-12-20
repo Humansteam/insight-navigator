@@ -15,75 +15,68 @@ export const PaperRowCard = ({ paper, isSelected, onSelect }: PaperRowCardProps)
   return (
     <div
       className={cn(
-        'grid grid-cols-[1fr_280px] border-b border-border/40 cursor-pointer transition-colors',
+        'grid grid-cols-[300px_1fr] border-b border-border/40 cursor-pointer transition-colors',
         'hover:bg-muted/20',
         isSelected && 'bg-accent/5'
       )}
       onClick={() => onSelect?.(paper.id)}
     >
-      {/* Paper Details Column */}
-      <div className="py-4 px-5 space-y-2">
-        <h3 className="text-sm font-medium text-foreground leading-snug">
+      {/* Paper Column - Fixed 300px */}
+      <div className="py-4 px-4 space-y-1.5">
+        <h3 className="text-sm font-medium text-foreground leading-snug line-clamp-2">
           {paper.title}
         </h3>
-        
         <p className="text-xs text-muted-foreground">
-          {paper.authors.join(', ')} · {paper.year}
+          {paper.authors.slice(0, 2).join(', ')}
         </p>
-        
-        <p className="text-sm text-foreground/80 leading-relaxed">
-          {paper.abstract}
+        <p className="text-xs text-muted-foreground">
+          {paper.year} · {paper.citations} citations
         </p>
       </div>
       
-      {/* Screening Judgement Column */}
-      <div className="py-4 px-4 border-l border-border/40 space-y-3">
+      {/* Screening Judgement Column - Flex 1 */}
+      <div className="py-4 px-5 border-l border-border/40 space-y-3">
+        {/* Verdict and Score */}
         <div className="flex items-center justify-between">
           <div
             className={cn(
-              'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium',
+              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium',
               isInclude 
                 ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
                 : 'bg-red-500/10 text-red-600 dark:text-red-400'
             )}
           >
-            {isInclude ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+            <div className={cn(
+              'w-2 h-2 rounded-full',
+              isInclude ? 'bg-emerald-500' : 'bg-red-500'
+            )} />
             {isInclude ? 'Include' : 'Exclude'}
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
-              <div 
-                className={cn(
-                  'h-full rounded-full',
-                  screening.score >= 3.5 ? 'bg-emerald-500' : 
-                  screening.score >= 2.5 ? 'bg-amber-500' : 'bg-red-400'
-                )}
-                style={{ width: `${(screening.score / 5) * 100}%` }}
-              />
-            </div>
-            <span className="text-xs font-mono text-muted-foreground">
-              {screening.score.toFixed(1)}
-            </span>
-          </div>
+          <span className="text-xs text-muted-foreground">
+            {screening.score.toFixed(1)} / 5
+          </span>
         </div>
         
-        <p className="text-xs text-muted-foreground leading-relaxed">
+        {/* Rationale */}
+        <p className="text-sm text-foreground/80 leading-relaxed">
           {screening.rationale}
         </p>
         
-        {/* Minimal criteria indicators */}
-        <div className="flex gap-1">
+        {/* Criteria Tags */}
+        <div className="flex flex-wrap gap-2">
           {screening.criteria.map((c, i) => (
             <div
               key={i}
-              title={c.name}
-              className={cn(
+              className="flex items-center gap-1.5 text-xs text-muted-foreground"
+            >
+              <div className={cn(
                 'w-1.5 h-1.5 rounded-full',
                 c.status === 'pass' ? 'bg-emerald-500' :
                 c.status === 'partial' ? 'bg-amber-500' : 'bg-red-400'
-              )}
-            />
+              )} />
+              {c.name}
+            </div>
           ))}
         </div>
       </div>
