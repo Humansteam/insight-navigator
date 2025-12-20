@@ -512,12 +512,9 @@ export const TopologyVisualization = ({
     const nodeId = findNodeAtPosition(e.clientX, e.clientY);
     if (nodeId) {
       setDraggingNodeId(nodeId);
-      // Shift+click for multi-select, regular click for single select
-      if (e.shiftKey) {
-        onToggleNodeSelection(nodeId, true);
-      } else {
-        onSelectNode(nodeId);
-      }
+      // Any click adds to multi-select
+      onToggleNodeSelection(nodeId, e.shiftKey);
+      onSelectNode(nodeId);
     } else {
       setIsDraggingCanvas(true);
     }
