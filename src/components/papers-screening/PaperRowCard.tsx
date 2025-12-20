@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
 import { PaperWithScreening } from './types';
-import { BarChart3, Star } from 'lucide-react';
 
 interface PaperRowCardProps {
   paper: PaperWithScreening;
@@ -11,14 +10,6 @@ interface PaperRowCardProps {
 export const PaperRowCard = ({ paper, isSelected, onSelect }: PaperRowCardProps) => {
   const { screening } = paper;
   const isInclude = screening.verdict === 'include';
-  
-  const getRelevanceColor = (score: 'high' | 'medium' | 'low') => {
-    switch (score) {
-      case 'high': return 'text-emerald-500';
-      case 'medium': return 'text-amber-500';
-      case 'low': return 'text-red-400';
-    }
-  };
   
   return (
     <div
@@ -44,70 +35,58 @@ export const PaperRowCard = ({ paper, isSelected, onSelect }: PaperRowCardProps)
       
       {/* Screening Judgement Column - Flex 1 */}
       <div className="py-4 px-5 border-l border-border/40 space-y-3 relative">
-        {/* Metrics - Top Right */}
-        <div className="absolute top-4 right-5 flex flex-col items-end gap-2">
-          {/* Combined Score */}
-          <div className="flex flex-col items-end gap-1">
-            <span className="text-sm font-medium text-primary">
-              {screening.combinedScore}%
-            </span>
-            <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full"
-                style={{ width: `${screening.combinedScore}%` }}
-              />
-            </div>
-          </div>
-          
-          {/* FWCI */}
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Star className="w-3 h-3" />
-            <span>{screening.metrics.fwci.toFixed(1)}x avg</span>
-          </div>
-        </div>
-
-        {/* Verdict & Aspect Tag */}
-        <div className="flex items-center gap-2">
-          <div
-            className={cn(
-              'inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium',
-              isInclude 
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-                : 'bg-red-500/10 text-red-600 dark:text-red-400'
-            )}
-          >
-            <div className={cn(
-              'w-2 h-2 rounded-full',
-              isInclude ? 'bg-emerald-500' : 'bg-red-500'
-            )} />
-            {isInclude ? 'Include' : 'Exclude'}
-          </div>
-          
-          {/* Aspect Tag */}
-          <span className="px-2 py-0.5 bg-accent/50 text-accent-foreground rounded text-xs">
-            {screening.aspectTag}
+        {/* Score - Top Right */}
+        <div className="absolute top-4 right-5 flex flex-col items-end gap-1">
+          <span className="text-sm font-medium text-primary">
+            {screening.combinedScore}%
           </span>
-          
-          {/* Relevance Score */}
-          <span className={cn('text-xs font-medium capitalize', getRelevanceColor(screening.relevanceScore))}>
-            {screening.relevanceScore} relevance
-          </span>
+          <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full"
+              style={{ width: `${screening.combinedScore}%` }}
+            />
+          </div>
         </div>
         
-        {/* Rationale */}
+        {/* Rationale - Main Content */}
         <p className="text-sm text-foreground/80 leading-relaxed pr-24">
           {screening.rationale}
         </p>
         
-        {/* Dimensions (Dynamic) */}
-        <div className="flex flex-wrap gap-2">
+        {/* All Tags at Bottom */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {/* Verdict Tag */}
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium',
+              isInclude 
+                ? 'bg-emerald-500/10 text-emerald-600/80 dark:text-emerald-400/80' 
+                : 'bg-red-500/10 text-red-600/80 dark:text-red-400/80'
+            )}
+          >
+            <div className={cn(
+              'w-1.5 h-1.5 rounded-full',
+              isInclude ? 'bg-emerald-500/70' : 'bg-red-500/70'
+            )} />
+            {isInclude ? 'Include' : 'Exclude'}
+          </span>
+          
+          {/* Aspect Tag */}
+          <span className="px-2 py-0.5 bg-muted/50 text-muted-foreground rounded text-[11px]">
+            {screening.aspectTag}
+          </span>
+          
+          {/* Divider */}
+          <span className="w-px h-3 bg-border/50" />
+          
+          {/* Dimensions */}
           {screening.dimensions.map((d, i) => (
             <div
               key={i}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground"
+              className="flex items-center gap-1 text-[11px] text-muted-foreground/80"
             >
               <div className={cn(
-                'w-1.5 h-1.5 rounded-full',
+                'w-1.5 h-1.5 rounded-full opacity-70',
                 d.status === 'pass' ? 'bg-emerald-500' :
                 d.status === 'partial' ? 'bg-amber-500' : 'bg-red-400'
               )} />
