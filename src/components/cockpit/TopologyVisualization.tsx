@@ -22,24 +22,37 @@ interface NodePosition {
   vy: number;
 }
 
-// Cluster-based color palette matching reference (pink/magenta, yellow/cream, cyan/blue)
+// 5 cluster colors like in reference
 const clusterColors = [
-  '#E85A8F', // Pink/Magenta
-  '#D4A853', // Golden Yellow
-  '#4DC4E8', // Cyan/Blue
-  '#F5C853', // Bright Yellow
-  '#FF6B8A', // Coral Pink
-  '#5BBDD4', // Teal Blue
+  '#FF5A7F', // Pink/Red (bottom left)
+  '#D97B3D', // Orange (middle left)
+  '#E8C547', // Yellow (center)
+  '#4DC4C4', // Cyan/Teal (top right)
+  '#6BA8DC', // Blue (bottom right)
 ];
 
-// Generate consistent cluster color based on node id
-const getNodeColor = (nodeId: string): string => {
+// Get cluster index (0-4) from node id - deterministic
+const getClusterIndex = (nodeId: string): number => {
   let hash = 0;
   for (let i = 0; i < nodeId.length; i++) {
     hash = nodeId.charCodeAt(i) + ((hash << 5) - hash);
   }
-  return clusterColors[Math.abs(hash) % clusterColors.length];
+  return Math.abs(hash) % 5;
 };
+
+// Generate consistent cluster color based on node id
+const getNodeColor = (nodeId: string): string => {
+  return clusterColors[getClusterIndex(nodeId)];
+};
+
+// Cluster center positions (5 clusters spread around)
+const clusterCenters = [
+  { x: 0.15, y: 0.75 }, // Pink - bottom left
+  { x: 0.25, y: 0.4 },  // Orange - middle left
+  { x: 0.5, y: 0.55 },  // Yellow - center bottom
+  { x: 0.55, y: 0.25 }, // Cyan - top center
+  { x: 0.8, y: 0.5 },   // Blue - right
+];
 
 export const TopologyVisualization = ({
   nodes,
@@ -63,87 +76,69 @@ export const TopologyVisualization = ({
   // Determine if a node is "major" (high score = larger, with label)
   const isMajorNode = (node: DataNode) => node.score >= 0.85;
 
-  // Initialize positions - spread major nodes far apart
+  // Initialize positions - cluster nodes together based on their cluster index
   useEffect(() => {
     const newPositions = new Map<string, NodePosition>();
-    const centerX = 320;
-    const centerY = 260;
+    const width = 640;
+    const height = 480;
     
-    // First, position major nodes in a wide spread
-    const majorNodes = nodes.filter(isMajorNode);
-    const minorNodes = nodes.filter(n => !isMajorNode(n));
-    
-    majorNodes.forEach((node, i) => {
-      if (viewMode === 'map') {
-        const baseX = 100 + node.umap_x * 480;
-        const baseY = 80 + node.umap_y * 360;
-        newPositions.set(node.id, { x: baseX, y: baseY, vx: 0, vy: 0 });
-      } else {
-        // Place major nodes in a wide circle
-        const angle = (i / majorNodes.length) * Math.PI * 2 - Math.PI / 2;
-        const radius = 160 + Math.random() * 40;
-        newPositions.set(node.id, {
-          x: centerX + Math.cos(angle) * radius,
-          y: centerY + Math.sin(angle) * radius,
-          vx: 0,
-          vy: 0,
-        });
+    // Group nodes by cluster
+    const nodesByCluster: Map<number, DataNode[]> = new Map();
+    nodes.forEach(node => {
+      const clusterIdx = getClusterIndex(node.id);
+      if (!nodesByCluster.has(clusterIdx)) {
+        nodesByCluster.set(clusterIdx, []);
       }
+      nodesByCluster.get(clusterIdx)!.push(node);
     });
     
-    // Then scatter minor nodes throughout
-    minorNodes.forEach((node, i) => {
-      if (viewMode === 'map') {
-        const baseX = 80 + node.umap_x * 500;
-        const baseY = 60 + node.umap_y * 400;
-        newPositions.set(node.id, {
-          x: baseX + (Math.random() - 0.5) * 40,
-          y: baseY + (Math.random() - 0.5) * 40,
-          vx: 0,
-          vy: 0,
-        });
-      } else {
-        // Scatter minor nodes randomly in the space
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 40 + Math.random() * 200;
-        newPositions.set(node.id, {
-          x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 60,
-          y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 60,
-          vx: 0,
-          vy: 0,
-        });
-      }
+    // Position each node near its cluster center
+    nodes.forEach((node) => {
+      const clusterIdx = getClusterIndex(node.id);
+      const center = clusterCenters[clusterIdx];
+      const isMajor = isMajorNode(node);
+      
+      // Cluster spread radius
+      const spreadRadius = isMajor ? 20 + Math.random() * 30 : 30 + Math.random() * 60;
+      const angle = Math.random() * Math.PI * 2;
+      
+      const x = center.x * width + Math.cos(angle) * spreadRadius;
+      const y = center.y * height + Math.sin(angle) * spreadRadius;
+      
+      newPositions.set(node.id, { x, y, vx: 0, vy: 0 });
     });
     
     setPositions(newPositions);
   }, [nodes, viewMode]);
 
-  // Force simulation with better spacing for major nodes
+  // Force simulation - cluster nodes together, separate clusters
   useEffect(() => {
     if (viewMode !== 'network' || positions.size === 0 || draggingNodeId) return;
 
+    const width = 640;
+    const height = 480;
+
     const simulate = () => {
       const newPositions = new Map(positions);
-      const centerX = 320;
-      const centerY = 240;
-      const baseRepulsion = 1500;
-      const attraction = 0.008; // Weaker attraction for more spread
-      const damping = 0.65;
-      const centerForce = 0.001; // Weaker center pull
+      const damping = 0.6;
 
       nodes.forEach((node) => {
         const pos = newPositions.get(node.id);
         if (!pos) return;
 
+        const nodeCluster = getClusterIndex(node.id);
+        const nodeIsMajor = isMajorNode(node);
         let fx = 0;
         let fy = 0;
-        const nodeIsMajor = isMajorNode(node);
 
-        // Weak center force
-        fx += (centerX - pos.x) * centerForce;
-        fy += (centerY - pos.y) * centerForce;
+        // Strong pull toward cluster center
+        const center = clusterCenters[nodeCluster];
+        const centerX = center.x * width;
+        const centerY = center.y * height;
+        fx += (centerX - pos.x) * 0.02;
+        fy += (centerY - pos.y) * 0.02;
 
-        // Repulsion between nodes - MUCH stronger for major nodes
+        // Repulsion/attraction between nodes
         nodes.forEach((other) => {
           if (node.id === other.id) return;
           const otherPos = newPositions.get(other.id);
@@ -152,37 +147,31 @@ export const TopologyVisualization = ({
           const dx = pos.x - otherPos.x;
           const dy = pos.y - otherPos.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const otherIsMajor = isMajorNode(other);
-          
-          // Major-to-major: very strong repulsion (keep them far apart)
-          // Major-to-minor: medium repulsion
-          // Minor-to-minor: weak repulsion
-          let repulsionMultiplier = 1;
-          let minDistance = 35;
-          
-          if (nodeIsMajor && otherIsMajor) {
-            repulsionMultiplier = 8; // Very strong - push major nodes far apart
-            minDistance = 180;
-          } else if (nodeIsMajor || otherIsMajor) {
-            repulsionMultiplier = 2.5;
-            minDistance = 70;
-          }
-          
-          const repulsion = baseRepulsion * repulsionMultiplier;
-          
-          if (dist < minDistance) {
-            // Strong push when too close
-            const force = (minDistance - dist) * 0.8;
-            fx += (dx / dist) * force;
-            fy += (dy / dist) * force;
+          const otherCluster = getClusterIndex(other.id);
+          const sameCluster = nodeCluster === otherCluster;
+
+          if (sameCluster) {
+            // Same cluster: weak repulsion to prevent overlap, weak attraction to stay together
+            if (dist < 20) {
+              const force = (20 - dist) * 0.3;
+              fx += (dx / dist) * force;
+              fy += (dy / dist) * force;
+            } else if (dist > 80) {
+              // Pull back toward cluster if too far
+              fx -= (dx / dist) * 0.5;
+              fy -= (dy / dist) * 0.5;
+            }
           } else {
-            const force = repulsion / (dist * dist);
-            fx += (dx / dist) * force;
-            fy += (dy / dist) * force;
+            // Different cluster: strong repulsion to keep clusters separate
+            if (dist < 120) {
+              const force = (120 - dist) * 0.15;
+              fx += (dx / dist) * force;
+              fy += (dy / dist) * force;
+            }
           }
         });
 
-        // Weaker attraction along edges
+        // Edge attraction (weaker)
         edges.forEach((edge) => {
           let otherNode: DataNode | undefined;
           if (edge.source_id === node.id) {
@@ -198,23 +187,26 @@ export const TopologyVisualization = ({
           const dx = otherPos.x - pos.x;
           const dy = otherPos.y - pos.y;
           
-          // Weaker attraction for major nodes (they should stay spread out)
-          const attractionStrength = (nodeIsMajor || isMajorNode(otherNode)) ? attraction * 0.3 : attraction;
-          fx += dx * attractionStrength;
-          fy += dy * attractionStrength;
+          // Weak attraction along edges
+          fx += dx * 0.003;
+          fy += dy * 0.003;
         });
 
         pos.vx = (pos.vx + fx) * damping;
         pos.vy = (pos.vy + fy) * damping;
         pos.x += pos.vx;
         pos.y += pos.vy;
+        
+        // Keep in bounds
+        pos.x = Math.max(40, Math.min(width - 40, pos.x));
+        pos.y = Math.max(40, Math.min(height - 40, pos.y));
       });
 
       setPositions(newPositions);
     };
 
     let iterations = 0;
-    const maxIterations = 100;
+    const maxIterations = 150;
 
     const tick = () => {
       if (iterations < maxIterations) {
@@ -248,21 +240,38 @@ export const TopologyVisualization = ({
     ctx.scale(2, 2);
 
     // Dark cosmic background
-    ctx.fillStyle = '#0a0f1a';
+    ctx.fillStyle = '#0a0e18';
     ctx.fillRect(0, 0, rect.width, rect.height);
     
-    // Draw subtle stars/dots in background
-    const starCount = 80;
-    for (let i = 0; i < starCount; i++) {
-      const starX = (Math.sin(i * 123.456) * 0.5 + 0.5) * rect.width;
-      const starY = (Math.cos(i * 789.012) * 0.5 + 0.5) * rect.height;
-      const starSize = 0.5 + Math.random() * 1;
-      const starAlpha = 0.15 + Math.random() * 0.25;
-      
+    // Draw grid for depth effect (like in reference)
+    const gridSpacing = 40;
+    ctx.strokeStyle = 'rgba(60, 80, 120, 0.15)';
+    ctx.lineWidth = 0.5;
+    
+    // Vertical lines
+    for (let x = 0; x < rect.width; x += gridSpacing) {
       ctx.beginPath();
-      ctx.arc(starX, starY, starSize, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(100, 150, 200, ${starAlpha})`;
-      ctx.fill();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, rect.height);
+      ctx.stroke();
+    }
+    
+    // Horizontal lines
+    for (let y = 0; y < rect.height; y += gridSpacing) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(rect.width, y);
+      ctx.stroke();
+    }
+    
+    // Draw subtle glowing dots at grid intersections
+    for (let x = 0; x < rect.width; x += gridSpacing) {
+      for (let y = 0; y < rect.height; y += gridSpacing) {
+        ctx.beginPath();
+        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(80, 120, 180, 0.3)';
+        ctx.fill();
+      }
     }
 
     ctx.save();
