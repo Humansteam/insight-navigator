@@ -17,13 +17,17 @@ export const EvidenceMatrixPanel = ({
 }: EvidenceMatrixPanelProps) => {
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
 
-  const selectedPaper = useMemo(() => {
-    return papers.find(p => p.id === selectedPaperId) || null;
-  }, [papers, selectedPaperId]);
+  // Show hovered paper details instantly, or selected paper if clicked
+  const displayPaperId = hoveredPaperId || selectedPaperId;
+  
+  const displayPaper = useMemo(() => {
+    return papers.find(p => p.id === displayPaperId) || null;
+  }, [papers, displayPaperId]);
 
-  // If a paper is selected, show Details view
-  if (selectedPaper) {
-    const node = selectedPaper;
+  // If a paper is displayed (hovered or selected), show Details view
+  if (displayPaper) {
+    const node = displayPaper;
+    const isHoveredView = hoveredPaperId === node.id;
     
     // Calculate derived metrics
     const similarity = node.score;
@@ -45,13 +49,17 @@ export const EvidenceMatrixPanel = ({
       <div className="h-full flex flex-col min-w-[360px]">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <button
-            onClick={() => setSelectedPaperId(null)}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
+          {!isHoveredView ? (
+            <button
+              onClick={() => setSelectedPaperId(null)}
+              className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+          ) : (
+            <span className="text-xs text-muted-foreground">Hover preview</span>
+          )}
           <span className="text-sm font-medium">Details</span>
         </div>
 
