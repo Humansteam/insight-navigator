@@ -23,7 +23,7 @@ export const TopologyChatPanel = () => {
   }, [messages]);
 
   return (
-    <div className="flex flex-col h-full bg-muted/30">
+    <div className="relative flex flex-col h-full bg-muted/30">
       {/* Header */}
       <div className="p-3 border-b border-border">
         <div className="flex items-center gap-2">
@@ -37,8 +37,8 @@ export const TopologyChatPanel = () => {
         </div>
       </div>
 
-      {/* Messages */}
-      <ScrollArea className="flex-1 p-3">
+      {/* Messages - with padding bottom for floating input */}
+      <ScrollArea className="flex-1 p-3 pb-40">
         <div className="space-y-3">
           <AnimatePresence>
             {messages.map((msg) => (
@@ -100,9 +100,12 @@ export const TopologyChatPanel = () => {
         </div>
       </ScrollArea>
 
-      {/* Input - Lovable style */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-border">
-        <div className="flex flex-col gap-2">
+      {/* Floating Input Container - Lovable style */}
+      <div className="absolute bottom-4 left-3 right-3">
+        <form 
+          onSubmit={handleSubmit} 
+          className="rounded-2xl bg-card border border-border shadow-lg shadow-black/20 overflow-hidden"
+        >
           {/* Text input */}
           <textarea
             value={input}
@@ -115,38 +118,35 @@ export const TopologyChatPanel = () => {
             }}
             placeholder="Ask Lovable..."
             disabled={isProcessing}
-            rows={1}
-            className="w-full px-3 py-3 rounded-lg bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none min-h-[44px]"
+            rows={2}
+            className="w-full px-4 py-3 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none border-none"
           />
           
           {/* Bottom controls */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between px-3 py-2 border-t border-border/50">
             {/* Left: Plus button */}
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-md border border-border bg-background hover:bg-muted"
+              className="h-8 w-8 rounded-full border border-border/60 bg-transparent hover:bg-muted/50 flex items-center justify-center transition-colors"
             >
               <Plus className="w-4 h-4 text-muted-foreground" />
-            </Button>
+            </button>
             
             {/* Right: Send button */}
-            <Button
+            <button
               type="submit"
-              size="icon"
               disabled={!input.trim() || isProcessing}
-              className="h-8 w-8 rounded-full bg-foreground hover:bg-foreground/90 text-background"
+              className="h-8 w-8 rounded-full border border-border/60 bg-transparent hover:bg-muted/50 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               {isProcessing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
               ) : (
-                <ArrowUp className="w-4 h-4" />
+                <ArrowUp className="w-4 h-4 text-muted-foreground" />
               )}
-            </Button>
+            </button>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
