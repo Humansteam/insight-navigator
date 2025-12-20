@@ -91,7 +91,8 @@ export const TextSelectionTooltip = ({ containerRef, source, sourceLabel }: Text
     handleAddToJournal(journal);
   };
 
-  const handleCreateAndAdd = (journalId: string) => {
+  const handleCreateAndAdd = (journal: { id: string }) => {
+    const journalId = journal.id;
     setTimeout(() => {
       const journal = journals.find(j => j.id === journalId);
       if (journal) {

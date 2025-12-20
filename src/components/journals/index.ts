@@ -1,5 +1,9 @@
-export { JournalsPanel } from './JournalsPanel';
-export { JournalView } from './JournalView';
+export { JournalsWorkspace } from './JournalsWorkspace';
+export { JournalsSidebar } from './JournalsSidebar';
+export { JournalTabs } from './JournalTabs';
+export { JournalEditor } from './JournalEditor';
+export { JournalPreview } from './JournalPreview';
+export { FormatToolbar } from './FormatToolbar';
 export { AddToJournalPopover } from './AddToJournalPopover';
 export { CreateJournalDialog } from './CreateJournalDialog';
 export { TextSelectionTooltip } from './TextSelectionTooltip';

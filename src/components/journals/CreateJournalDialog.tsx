@@ -5,19 +5,35 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface CreateJournalDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onCreated?: (journalId: string) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onCreated?: (journal: { id: string }) => void;
+  // Legacy props for backwards compatibility
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const emojiSuggestions = ['📓', '🔬', '💡', '🧬', '⚡', '🎯', '📊', '🌟', '🔍', '💎', '🚀', '📚'];
 
-export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJournalDialogProps) => {
+export const CreateJournalDialog = ({ 
+  open, 
+  onOpenChange, 
+  onCreated,
+  isOpen,
+  onClose,
+}: CreateJournalDialogProps) => {
   const { createJournal } = useJournals();
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState('📓');
 
-  if (!isOpen) return null;
+  // Support both new and legacy props
+  const isVisible = open ?? isOpen ?? false;
+  const handleClose = () => {
+    onOpenChange?.(false);
+    onClose?.();
+  };
+
+  if (!isVisible) return null;
 
   const handleCreate = () => {
     if (!title.trim()) return;
@@ -25,10 +41,10 @@ export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJourna
       title: title.trim(),
       icon,
     });
-    onCreated?.(journal.id);
+    onCreated?.(journal);
     setTitle('');
     setIcon('📓');
-    onClose();
+    handleClose();
   };
 
   return (
@@ -36,7 +52,7 @@ export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJourna
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       />
       
       {/* Dialog */}
@@ -45,7 +61,7 @@ export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJourna
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-lg font-semibold text-foreground">Create New Journal</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <X className="w-4 h-4" />
@@ -91,7 +107,7 @@ export const CreateJournalDialog = ({ isOpen, onClose, onCreated }: CreateJourna
 
         {/* Footer */}
         <div className="flex justify-end gap-2 p-4 border-t border-border">
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={handleClose}>
             Cancel
           </Button>
           <Button onClick={handleCreate} disabled={!title.trim()}>

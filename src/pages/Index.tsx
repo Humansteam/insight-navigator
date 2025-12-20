@@ -14,7 +14,7 @@ import { TopologyMain } from '@/components/topology';
 import { ReportView } from '@/components/papers-screening/types';
 import { useChat } from '@/contexts/ChatContext';
 import { ReportChatPanel } from '@/components/report';
-import { JournalsPanel, TextSelectionTooltip } from '@/components/journals';
+import { JournalsWorkspace, TextSelectionTooltip } from '@/components/journals';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -307,7 +307,7 @@ const Index = () => {
               onExternalHoverNode={handleGraphNodeHover}
             />
           ) : activeView === 'notes' ? (
-            <JournalsPanel />
+            <JournalsWorkspace />
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
