@@ -64,7 +64,6 @@ export const TopologyVisualization = ({
   const [draggingNodeId, setDraggingNodeId] = useState<string | null>(null);
   const animationRef = useRef<number>();
   const lastMousePos = useRef({ x: 0, y: 0 });
-  const starsRef = useRef<Array<{ x: number; y: number; size: number; brightness: number }>>([]);
 
   // Generate topology with satellites
   const { nodes, edges } = useMemo(() => 
@@ -74,21 +73,6 @@ export const TopologyVisualization = ({
 
   // Determine if a node is "major" (high score = larger, with label)
   const isMajorNode = (node: DataNode) => node.score >= 0.7;
-
-  // Generate stars for background (once)
-  useEffect(() => {
-    if (starsRef.current.length === 0) {
-      const numStars = 150;
-      for (let i = 0; i < numStars; i++) {
-        starsRef.current.push({
-          x: Math.random(),
-          y: Math.random(),
-          size: 0.5 + Math.random() * 1.5,
-          brightness: 0.2 + Math.random() * 0.4,
-        });
-      }
-    }
-  }, []);
 
   // Initialize positions - cluster nodes in organic ellipsoid shapes
   useEffect(() => {
@@ -254,30 +238,13 @@ export const TopologyVisualization = ({
     ctx.scale(2, 2);
 
     // Dark cosmic background
-    const bgGradient = ctx.createRadialGradient(
-      rect.width / 2, rect.height / 2, 0,
-      rect.width / 2, rect.height / 2, rect.width
-    );
-    bgGradient.addColorStop(0, '#0d1220');
-    bgGradient.addColorStop(1, '#060a12');
-    ctx.fillStyle = bgGradient;
+    ctx.fillStyle = '#0a0e18';
     ctx.fillRect(0, 0, rect.width, rect.height);
     
-    // Draw stars for depth (like reference)
-    starsRef.current.forEach(star => {
-      const x = star.x * rect.width;
-      const y = star.y * rect.height;
-      
-      ctx.beginPath();
-      ctx.arc(x, y, star.size, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(150, 180, 220, ${star.brightness})`;
-      ctx.fill();
-    });
-
-    // Subtle grid overlay for depth
-    ctx.strokeStyle = 'rgba(50, 70, 100, 0.08)';
+    // Subtle grid for depth (barely visible like reference)
+    ctx.strokeStyle = 'rgba(40, 60, 100, 0.06)';
     ctx.lineWidth = 0.5;
-    const gridSize = 50;
+    const gridSize = 40;
     for (let x = 0; x < rect.width; x += gridSize) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
@@ -329,7 +296,7 @@ export const TopologyVisualization = ({
       ctx.stroke();
     });
 
-    // Draw highlighted edges on top
+    // Draw highlighted edges on top - same thickness, just brighter
     edges.forEach((edge) => {
       if (!isEdgeHighlighted(edge)) return;
       
@@ -338,21 +305,15 @@ export const TopologyVisualization = ({
       if (!sourcePos || !targetPos) return;
 
       const sourceColor = getNodeColor(edge.source_id);
+      const sameCluster = getClusterIndex(edge.source_id) === getClusterIndex(edge.target_id);
 
-      // Glow
       ctx.beginPath();
       ctx.moveTo(sourcePos.x, sourcePos.y);
       ctx.lineTo(targetPos.x, targetPos.y);
-      ctx.strokeStyle = sourceColor + '50';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // Bright line
-      ctx.beginPath();
-      ctx.moveTo(sourcePos.x, sourcePos.y);
-      ctx.lineTo(targetPos.x, targetPos.y);
-      ctx.strokeStyle = sourceColor + 'DD';
-      ctx.lineWidth = 1;
+      
+      // Same line width as inactive, just 100% brighter (full opacity)
+      ctx.strokeStyle = sourceColor + 'FF';
+      ctx.lineWidth = sameCluster ? 0.3 : 0.5;
       ctx.stroke();
     });
 
