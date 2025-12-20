@@ -247,7 +247,24 @@ export const TopologyVisualization = ({
     canvas.height = rect.height * 2;
     ctx.scale(2, 2);
 
-    ctx.clearRect(0, 0, rect.width, rect.height);
+    // Dark cosmic background
+    ctx.fillStyle = '#0a0f1a';
+    ctx.fillRect(0, 0, rect.width, rect.height);
+    
+    // Draw subtle stars/dots in background
+    const starCount = 80;
+    for (let i = 0; i < starCount; i++) {
+      const starX = (Math.sin(i * 123.456) * 0.5 + 0.5) * rect.width;
+      const starY = (Math.cos(i * 789.012) * 0.5 + 0.5) * rect.height;
+      const starSize = 0.5 + Math.random() * 1;
+      const starAlpha = 0.15 + Math.random() * 0.25;
+      
+      ctx.beginPath();
+      ctx.arc(starX, starY, starSize, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(100, 150, 200, ${starAlpha})`;
+      ctx.fill();
+    }
+
     ctx.save();
     ctx.translate(pan.x, pan.y);
     ctx.scale(zoom, zoom);
@@ -303,7 +320,7 @@ export const TopologyVisualization = ({
       ctx.stroke();
     });
 
-    // Draw nodes - minor nodes first, then major nodes on top
+    // Draw nodes - minor nodes first, then major nodes on top (glowing synapse style)
     const sortedNodes = [...nodes].sort((a, b) => a.score - b.score);
 
     sortedNodes.forEach((node) => {
@@ -315,63 +332,64 @@ export const TopologyVisualization = ({
       const isDragging = draggingNodeId === node.id;
       const isMajor = isMajorNode(node);
       
-      // Size based on score - major nodes are much larger
+      // Size based on score
       let radius: number;
       if (isMajor) {
-        radius = 25 + (node.score - 0.8) * 80; // 25-45px for major
+        radius = 8 + (node.score - 0.8) * 30; // 8-14px for major
       } else {
-        radius = 4 + node.score * 12; // 4-14px for minor
+        radius = 2 + node.score * 4; // 2-5px for minor
       }
       
       if (isSelected || isHovered || isDragging) {
-        radius += isMajor ? 5 : 2;
+        radius += isMajor ? 3 : 1.5;
       }
 
       const color = getNodeColor(node.id);
 
-      // Soft outer glow
+      // Large outer glow (synapse effect)
+      const glowRadius = radius * (isMajor ? 5 : 4);
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, radius + (isMajor ? 12 : 6), 0, Math.PI * 2);
-      const outerGlow = ctx.createRadialGradient(pos.x, pos.y, radius * 0.3, pos.x, pos.y, radius + (isMajor ? 12 : 6));
-      outerGlow.addColorStop(0, color + '40');
+      ctx.arc(pos.x, pos.y, glowRadius, 0, Math.PI * 2);
+      const outerGlow = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, glowRadius);
+      outerGlow.addColorStop(0, color + '35');
+      outerGlow.addColorStop(0.3, color + '18');
+      outerGlow.addColorStop(0.7, color + '08');
       outerGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = outerGlow;
       ctx.fill();
 
-      // Main node
+      // Medium glow ring
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-      const nodeGradient = ctx.createRadialGradient(
-        pos.x - radius * 0.25, pos.y - radius * 0.25, 0,
-        pos.x, pos.y, radius * 1.1
-      );
-      nodeGradient.addColorStop(0, color);
-      nodeGradient.addColorStop(0.7, color);
-      nodeGradient.addColorStop(1, color + 'BB');
-      ctx.fillStyle = nodeGradient;
+      ctx.arc(pos.x, pos.y, radius * 2.5, 0, Math.PI * 2);
+      const midGlow = ctx.createRadialGradient(pos.x, pos.y, radius * 0.5, pos.x, pos.y, radius * 2.5);
+      midGlow.addColorStop(0, color + '60');
+      midGlow.addColorStop(0.5, color + '25');
+      midGlow.addColorStop(1, 'transparent');
+      ctx.fillStyle = midGlow;
       ctx.fill();
 
-      // Inner dot for major nodes (like reference)
-      if (isMajor) {
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-        ctx.fill();
+      // Core node - bright center
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+      const coreGradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius);
+      coreGradient.addColorStop(0, '#ffffff');
+      coreGradient.addColorStop(0.3, color);
+      coreGradient.addColorStop(1, color + 'CC');
+      ctx.fillStyle = coreGradient;
+      ctx.fill();
 
-        // Subtle inner ring
-        ctx.beginPath();
-        ctx.arc(pos.x, pos.y, radius * 0.65, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
+      // Bright white center dot
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, radius * 0.35, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.fill();
 
       // Selection ring
       if (isSelected || isDragging) {
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, radius + 3, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.lineWidth = 2;
+        ctx.arc(pos.x, pos.y, radius + 4, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
       }
     });
@@ -387,30 +405,30 @@ export const TopologyVisualization = ({
       
       // Labels for major nodes or hovered/selected nodes
       if (isMajor || isSelected || isHovered) {
-        let radius = isMajor ? 25 + (node.score - 0.8) * 80 : 4 + node.score * 12;
+        let radius = isMajor ? 8 + (node.score - 0.8) * 30 : 2 + node.score * 4;
         
         // Create short label
-        const title = node.title.length > 30 ? node.title.substring(0, 30) + '...' : node.title;
-        ctx.font = '10px Inter, sans-serif';
+        const title = node.title.length > 25 ? node.title.substring(0, 25) + '...' : node.title;
+        ctx.font = '9px Inter, sans-serif';
         const textMetrics = ctx.measureText(title);
         const textWidth = textMetrics.width;
         
         // Label position
         const labelX = pos.x;
-        const labelY = pos.y + radius + 16;
+        const labelY = pos.y + radius + 14;
         
-        // Draw label box (like reference)
-        const padding = 6;
+        // Draw label box (blue like reference)
+        const padding = 5;
         const boxWidth = textWidth + padding * 2;
-        const boxHeight = 18;
+        const boxHeight = 16;
         
-        ctx.fillStyle = 'rgba(35, 35, 35, 0.92)';
+        ctx.fillStyle = 'rgba(40, 80, 160, 0.9)';
         ctx.beginPath();
-        ctx.roundRect(labelX - boxWidth / 2, labelY - boxHeight / 2, boxWidth, boxHeight, 3);
+        ctx.roundRect(labelX - boxWidth / 2, labelY - boxHeight / 2, boxWidth, boxHeight, 2);
         ctx.fill();
         
         // Box border
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.strokeStyle = 'rgba(100, 150, 220, 0.6)';
         ctx.lineWidth = 1;
         ctx.stroke();
         
