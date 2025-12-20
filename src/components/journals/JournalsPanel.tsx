@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { Plus, Search, BookOpen, Clock, FileText, ChevronRight } from 'lucide-react';
-import { useJournals, Journal } from '@/contexts/JournalsContext';
+import { useJournals } from '@/contexts/JournalsContext';
 import { JournalView } from './JournalView';
 import { CreateJournalDialog } from './CreateJournalDialog';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
 export const JournalsPanel = () => {
-  const { journals, getJournalEntries } = useJournals();
+  const { journals } = useJournals();
   const [selectedJournalId, setSelectedJournalId] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [search, setSearch] = useState('');
@@ -35,6 +34,15 @@ export const JournalsPanel = () => {
     );
   }
 
+  // Helper to get word count
+  const getWordCount = (content: string) => content.trim().split(/\s+/).filter(Boolean).length;
+
+  // Helper to get preview text
+  const getPreview = (content: string) => {
+    const lines = content.split('\n').filter(l => l.trim() && !l.startsWith('#') && !l.startsWith('---'));
+    return lines.slice(0, 2).join(' ').substring(0, 150);
+  };
+
   return (
     <div className="h-full flex flex-col p-6">
       {/* Header */}
@@ -45,7 +53,7 @@ export const JournalsPanel = () => {
             Research Journals
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Your research diaries organized by topic
+            Your research notes organized by topic
           </p>
         </div>
         <Button onClick={() => setShowCreateDialog(true)} className="gap-1.5">
@@ -90,7 +98,9 @@ export const JournalsPanel = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto">
           {sortedJournals.map(journal => {
-            const entries = getJournalEntries(journal.id);
+            const wordCount = getWordCount(journal.content);
+            const preview = getPreview(journal.content);
+            
             return (
               <button
                 key={journal.id}
@@ -103,11 +113,6 @@ export const JournalsPanel = () => {
                     <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors truncate">
                       {journal.title}
                     </h3>
-                    {journal.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-                        {journal.description}
-                      </p>
-                    )}
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
                 </div>
@@ -115,7 +120,7 @@ export const JournalsPanel = () => {
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <FileText className="w-3 h-3" />
-                    {entries.length} entries
+                    {wordCount} words
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -123,11 +128,11 @@ export const JournalsPanel = () => {
                   </span>
                 </div>
 
-                {/* Entry preview */}
-                {entries.length > 0 && (
+                {/* Content preview */}
+                {preview && (
                   <div className="mt-3 pt-3 border-t border-border/50">
                     <p className="text-xs text-muted-foreground line-clamp-2">
-                      {entries[entries.length - 1].content}
+                      {preview}
                     </p>
                   </div>
                 )}

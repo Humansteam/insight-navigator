@@ -13,7 +13,7 @@ interface TextSelectionTooltipProps {
 }
 
 export const TextSelectionTooltip = ({ containerRef, source, sourceLabel }: TextSelectionTooltipProps) => {
-  const { journals, recentJournals, addEntry, createJournal } = useJournals();
+  const { journals, recentJournals, appendToJournal, createJournal } = useJournals();
   const { toast } = useToast();
   const [selectedText, setSelectedText] = useState('');
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
@@ -22,7 +22,7 @@ export const TextSelectionTooltip = ({ containerRef, source, sourceLabel }: Text
   const [search, setSearch] = useState('');
 
   const handleSelection = useCallback(() => {
-    // Don't update selection if popover is open
+    // Do not update selection if popover is open
     if (isOpen) return;
 
     const selection = window.getSelection();
@@ -69,12 +69,7 @@ export const TextSelectionTooltip = ({ containerRef, source, sourceLabel }: Text
   );
 
   const handleAddToJournal = (journal: Journal) => {
-    addEntry({
-      journalId: journal.id,
-      content: selectedText,
-      source,
-      sourceLabel,
-    });
+    appendToJournal(journal.id, selectedText, sourceLabel);
     toast({
       title: 'Added to journal',
       description: `Saved to "${journal.title}"`,
@@ -102,7 +97,7 @@ export const TextSelectionTooltip = ({ containerRef, source, sourceLabel }: Text
       if (journal) {
         handleAddToJournal(journal);
       }
-    }, 0);
+    }, 50);
     setShowCreateDialog(false);
   };
 
@@ -206,7 +201,7 @@ export const TextSelectionTooltip = ({ containerRef, source, sourceLabel }: Text
                     className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
-                    Create "{search}"
+                    Create &quot;{search}&quot;
                   </button>
                 </div>
               )}

@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, ChevronRight, Search, Clock, StickyNote } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useJournals, Journal } from '@/contexts/JournalsContext';
@@ -24,7 +24,7 @@ export const AddToJournalPopover = ({
   children,
   variant = 'default',
 }: AddToJournalPopoverProps) => {
-  const { journals, recentJournals, addEntry, createJournal } = useJournals();
+  const { journals, recentJournals, appendToJournal, createJournal } = useJournals();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -51,13 +51,11 @@ export const AddToJournalPopover = ({
   );
 
   const handleAddToJournal = (journal: Journal) => {
-    addEntry({
-      journalId: journal.id,
-      content: content || defaultContent,
-      source,
-      sourceLabel,
-      paperIds,
-    });
+    const finalContent = paperIds?.length 
+      ? `${content || defaultContent}\n\n*Linked papers: ${paperIds.join(', ')}*`
+      : content || defaultContent;
+    
+    appendToJournal(journal.id, finalContent, sourceLabel);
     toast({
       title: 'Added to journal',
       description: `Saved to "${journal.title}"`,
@@ -68,14 +66,12 @@ export const AddToJournalPopover = ({
   };
 
   const handleCreateAndAdd = (journalId: string) => {
-    // Need to get the journal from the updated list after creation
     setTimeout(() => {
-      const updatedJournals = journals;
-      const journal = updatedJournals.find(j => j.id === journalId);
+      const journal = journals.find(j => j.id === journalId);
       if (journal) {
         handleAddToJournal(journal);
       }
-    }, 0);
+    }, 50);
     setShowCreateDialog(false);
   };
 
@@ -202,7 +198,7 @@ export const AddToJournalPopover = ({
                   className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm hover:bg-primary/90 transition-colors"
                 >
                   <Plus className="w-4 h-4" />
-                  Create "{search}"
+                  Create &quot;{search}&quot;
                 </button>
               </div>
             )}
