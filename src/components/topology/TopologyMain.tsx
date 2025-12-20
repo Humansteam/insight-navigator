@@ -8,15 +8,24 @@ interface TopologyMainProps {
   nodes?: DataNode[];
   edges?: DataEdge[];
   className?: string;
+  externalHoveredNodeId?: string | null;
+  onExternalHoverNode?: (id: string | null) => void;
 }
 
 export const TopologyMain = ({ 
   nodes = mockNodes,
   edges = mockEdges,
-  className 
+  className,
+  externalHoveredNodeId,
+  onExternalHoverNode
 }: TopologyMainProps) => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  
+  // Use external hover state if provided, otherwise local
+  const hoveredNodeId = externalHoveredNodeId ?? null;
+  const handleHoverNode = (id: string | null) => {
+    onExternalHoverNode?.(id);
+  };
 
   return (
     <div className={cn('flex h-full', className)}>
@@ -28,7 +37,7 @@ export const TopologyMain = ({
           selectedNodeId={selectedNodeId}
           onSelectNode={setSelectedNodeId}
           hoveredNodeId={hoveredNodeId}
-          onHoverNode={setHoveredNodeId}
+          onHoverNode={handleHoverNode}
         />
       </div>
     </div>

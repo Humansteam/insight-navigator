@@ -6,9 +6,15 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface EvidenceMatrixPanelProps {
   papers: DataNode[];
+  hoveredPaperId?: string | null;
+  onHoverPaper?: (id: string | null) => void;
 }
 
-export const EvidenceMatrixPanel = ({ papers }: EvidenceMatrixPanelProps) => {
+export const EvidenceMatrixPanel = ({ 
+  papers, 
+  hoveredPaperId,
+  onHoverPaper 
+}: EvidenceMatrixPanelProps) => {
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
 
   const selectedPaper = useMemo(() => {
@@ -195,7 +201,14 @@ export const EvidenceMatrixPanel = ({ papers }: EvidenceMatrixPanelProps) => {
           <div
             key={paper.id}
             onClick={() => setSelectedPaperId(paper.id)}
-            className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors relative"
+            onMouseEnter={() => onHoverPaper?.(paper.id)}
+            onMouseLeave={() => onHoverPaper?.(null)}
+            className={cn(
+              "px-4 py-3 border-b border-border/50 cursor-pointer transition-all relative",
+              hoveredPaperId === paper.id 
+                ? "bg-primary/10 ring-1 ring-primary/30" 
+                : "hover:bg-muted/30"
+            )}
           >
             <div className="absolute top-3 right-4 flex flex-col items-end gap-1">
               <span className="text-xs font-medium text-primary">
