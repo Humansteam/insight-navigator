@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Languages, PanelRight } from 'lucide-react';
+import { Languages, PanelRight, PanelLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ReportView } from '@/components/papers-screening/types';
@@ -17,6 +17,8 @@ interface UnifiedHeaderProps {
   projectTitle: string;
   isSidebarOpen: boolean;
   setIsSidebarOpen: (open: boolean) => void;
+  isLeftPanelOpen: boolean;
+  setIsLeftPanelOpen: (open: boolean) => void;
 }
 
 const viewLabels: Record<ReportView, string> = {
@@ -34,11 +36,32 @@ export const UnifiedHeader = ({
   projectTitle,
   isSidebarOpen,
   setIsSidebarOpen,
+  isLeftPanelOpen,
+  setIsLeftPanelOpen,
 }: UnifiedHeaderProps) => {
   return (
     <header className="h-14 flex items-center border-b border-border bg-background">
-      {/* Column 1: App Name - matches left panel width (434px) */}
-      <div className="w-[434px] flex items-center px-4 border-r border-border h-full flex-shrink-0">
+      {/* Column 1: App Name + Left Panel Toggle */}
+      <div 
+        className={cn(
+          "flex items-center px-4 border-r border-border h-full flex-shrink-0 transition-all duration-300",
+          isLeftPanelOpen ? "w-[434px]" : "w-auto"
+        )}
+      >
+        {/* Left Panel Toggle */}
+        <button
+          onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
+          className={cn(
+            "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors mr-3",
+            isLeftPanelOpen
+              ? "bg-secondary border-border"
+              : "bg-background border-border hover:bg-accent"
+          )}
+          title={isLeftPanelOpen ? "Collapse left panel" : "Expand left panel"}
+        >
+          <PanelLeft className="w-4 h-4" />
+        </button>
+        
         <Link
           to="/"
           className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
