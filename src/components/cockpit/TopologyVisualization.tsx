@@ -15,6 +15,7 @@ interface TopologyVisualizationProps {
   onHoverNode: (id: string | null) => void;
   selectedNodeIds: Set<string>;
   onToggleNodeSelection: (id: string, addToSelection: boolean) => void;
+  onMatrixClusterSelect?: (quadrant: string | null, nodeIds: string[]) => void;
 }
 
 type ViewMode = 'map' | 'network' | 'matrix';
@@ -58,6 +59,7 @@ export const TopologyVisualization = ({
   onHoverNode,
   selectedNodeIds,
   onToggleNodeSelection,
+  onMatrixClusterSelect,
 }: TopologyVisualizationProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -602,7 +604,9 @@ export const TopologyVisualization = ({
       {/* Content */}
       <div ref={containerRef} className="flex-1 relative">
         {viewMode === 'matrix' ? (
-          <MaturityMatrix />
+          <MaturityMatrix 
+            onClusterSelect={onMatrixClusterSelect}
+          />
         ) : (
           <>
             <canvas

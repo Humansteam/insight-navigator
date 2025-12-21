@@ -13,6 +13,7 @@ interface TopologyMainProps {
   className?: string;
   externalHoveredNodeId?: string | null;
   onExternalHoverNode?: (id: string | null) => void;
+  onMatrixClusterSelect?: (quadrant: string | null, nodeIds: string[]) => void;
 }
 
 export const TopologyMain = ({ 
@@ -20,7 +21,8 @@ export const TopologyMain = ({
   edges = mockEdges,
   className,
   externalHoveredNodeId,
-  onExternalHoverNode
+  onExternalHoverNode,
+  onMatrixClusterSelect,
 }: TopologyMainProps) => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [localHoveredNodeId, setLocalHoveredNodeId] = useState<string | null>(null);
@@ -122,6 +124,7 @@ ${selectedPapers.slice(0, 3).map(p => `• "${p.title}" (${p.year}) — ${p.auth
           onHoverNode={handleHoverNode}
           selectedNodeIds={selectedNodeIds}
           onToggleNodeSelection={handleToggleNodeSelection}
+          onMatrixClusterSelect={onMatrixClusterSelect}
         />
       </div>
 

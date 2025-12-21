@@ -10,15 +10,115 @@ import {
   Tooltip,
   Cell,
 } from 'recharts';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingUp, TrendingDown, Minus, Globe, FileText, X } from 'lucide-react';
 import { MaturityNode } from '@/types/morphik';
-import { maturityMockData, maxVolume, getQuadrantColor, getQuadrantName } from '@/data/maturityMockData';
+import { 
+  maturityMockData, 
+  maxVolume, 
+  getQuadrantColor, 
+  getQuadrantName,
+  getClusterSummary,
+  getQuadrantSummary,
+  ClusterSummary
+} from '@/data/maturityMockData';
 
 interface MaturityMatrixProps {
   data?: MaturityNode[];
   onNodeClick?: (node: MaturityNode) => void;
   onNodeHover?: (node: MaturityNode | null) => void;
+  onClusterSelect?: (quadrant: string | null, nodeIds: string[]) => void;
 }
+
+// Cluster Summary Panel component
+interface ClusterSummaryPanelProps {
+  summary: ClusterSummary;
+  nodeName: string;
+  onClose: () => void;
+}
+
+const ClusterSummaryPanel: React.FC<ClusterSummaryPanelProps> = ({ summary, nodeName, onClose }) => {
+  const quadrantColor = summary.quadrant === 'winners' ? '#4ADE80' : 
+                        summary.quadrant === 'emerging' ? '#38BDF8' : 
+                        summary.quadrant === 'mature' ? '#4ADE80' : '#A78BFA';
+  
+  const TrendIcon = summary.trend === 'up' ? TrendingUp : 
+                    summary.trend === 'down' ? TrendingDown : Minus;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="absolute bottom-16 left-4 right-4 backdrop-blur-md bg-slate-900/95 border border-white/10 rounded-lg p-4 shadow-2xl"
+      style={{ borderLeftColor: quadrantColor, borderLeftWidth: 4 }}
+    >
+      <button
+        onClick={onClose}
+        className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded transition-colors"
+      >
+        <X className="w-4 h-4 text-slate-400" />
+      </button>
+      
+      <div className="flex items-start gap-4">
+        {/* Cluster info */}
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: quadrantColor, boxShadow: `0 0 12px ${quadrantColor}` }}
+            />
+            <span className="text-sm font-semibold text-white">{nodeName}</span>
+            <span 
+              className="text-xs px-2 py-0.5 rounded-full uppercase font-medium"
+              style={{ backgroundColor: quadrantColor + '20', color: quadrantColor }}
+            >
+              {summary.quadrant}
+            </span>
+          </div>
+          
+          <p className="text-sm text-slate-300 leading-relaxed">
+            This cluster (<span className="text-white font-medium">{summary.name}</span>) has moved from{' '}
+            <span className="text-cyan-400 font-mono">TRL {summary.trlChange.from}</span> to{' '}
+            <span className="text-emerald-400 font-mono">TRL {summary.trlChange.to}</span> in{' '}
+            <span className="text-white font-medium">{summary.months} months</span>.{' '}
+            Leading player: <span className="text-amber-400 font-medium">{summary.leader}</span>.
+          </p>
+        </div>
+        
+        {/* Stats */}
+        <div className="flex gap-4">
+          <div className="text-center">
+            <div className="flex items-center gap-1 text-xs text-slate-400 mb-1">
+              <FileText className="w-3 h-3" />
+              Papers
+            </div>
+            <div className="text-lg font-bold text-white">{summary.paperCount}</div>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center gap-1 text-xs text-slate-400 mb-1">
+              <Globe className="w-3 h-3" />
+              Leader
+            </div>
+            <div className="text-lg font-bold text-amber-400">{summary.leader}</div>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center gap-1 text-xs text-slate-400 mb-1">
+              <TrendIcon className="w-3 h-3" />
+              Trend
+            </div>
+            <div className={`text-lg font-bold ${
+              summary.trend === 'up' ? 'text-emerald-400' : 
+              summary.trend === 'down' ? 'text-red-400' : 'text-slate-400'
+            }`}>
+              {summary.trend === 'up' ? '↑' : summary.trend === 'down' ? '↓' : '–'}
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 // Custom SVG Glow Filters
 const GlowFilters = () => (
@@ -166,8 +266,11 @@ export const MaturityMatrix: React.FC<MaturityMatrixProps> = ({
   data = maturityMockData,
   onNodeClick,
   onNodeHover,
+  onClusterSelect,
 }) => {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [selectedNode, setSelectedNode] = useState<MaturityNode | null>(null);
+  const [clusterSummary, setClusterSummary] = useState<ClusterSummary | null>(null);
 
   const handleMouseEnter = useCallback((node: MaturityNode) => {
     setHoveredNode(node.id);
@@ -178,6 +281,32 @@ export const MaturityMatrix: React.FC<MaturityMatrixProps> = ({
     setHoveredNode(null);
     onNodeHover?.(null);
   }, [onNodeHover]);
+
+  const handleNodeClick = useCallback((nodeData: any) => {
+    const node = nodeData as MaturityNode;
+    setSelectedNode(node);
+    
+    // Get summary for this node or quadrant
+    const nodeSummary = getClusterSummary(node.id);
+    const quadrant = node.cluster || getQuadrantName(node.trl, node.velocity).toLowerCase();
+    const summary = nodeSummary || getQuadrantSummary(quadrant);
+    setClusterSummary({ ...summary, name: node.name });
+    
+    // Filter papers by quadrant - get all nodes in same quadrant
+    const quadrantNodes = data.filter(n => {
+      const nQuadrant = n.cluster || getQuadrantName(n.trl, n.velocity).toLowerCase();
+      return nQuadrant === quadrant;
+    });
+    
+    onClusterSelect?.(quadrant, quadrantNodes.map(n => n.id));
+    onNodeClick?.(node);
+  }, [data, onNodeClick, onClusterSelect]);
+
+  const handleCloseSummary = useCallback(() => {
+    setSelectedNode(null);
+    setClusterSummary(null);
+    onClusterSelect?.(null, []);
+  }, [onClusterSelect]);
 
   return (
     <div className="w-full h-full relative" style={{ background: '#0F172A' }}>
@@ -284,7 +413,7 @@ export const MaturityMatrix: React.FC<MaturityMatrixProps> = ({
             )}
             onMouseEnter={(data: any) => handleMouseEnter(data)}
             onMouseLeave={handleMouseLeave}
-            onClick={(data: any) => onNodeClick?.(data)}
+            onClick={handleNodeClick}
           >
             {data.map((entry) => (
               <Cell
@@ -295,6 +424,17 @@ export const MaturityMatrix: React.FC<MaturityMatrixProps> = ({
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
+      
+      {/* Cluster Summary Panel */}
+      <AnimatePresence>
+        {clusterSummary && selectedNode && (
+          <ClusterSummaryPanel
+            summary={clusterSummary}
+            nodeName={selectedNode.name}
+            onClose={handleCloseSummary}
+          />
+        )}
+      </AnimatePresence>
       
       {/* Legend */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-5 text-xs">
