@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DataNode, DataEdge } from '@/types/morphik';
 import { getClusterIndex, generateTopologyData } from '@/data/topologyGenerator';
+import { MaturityMatrix } from './MaturityMatrix';
 
 interface TopologyVisualizationProps {
   nodes: DataNode[];
@@ -16,7 +17,7 @@ interface TopologyVisualizationProps {
   onToggleNodeSelection: (id: string, addToSelection: boolean) => void;
 }
 
-type ViewMode = 'map' | 'network';
+type ViewMode = 'map' | 'network' | 'matrix';
 
 interface NodePosition {
   x: number;
@@ -580,51 +581,60 @@ export const TopologyVisualization = ({
           <TabsList className="h-7 bg-muted/50">
             <TabsTrigger value="map" className="h-5 text-xs px-2">Map</TabsTrigger>
             <TabsTrigger value="network" className="h-5 text-xs px-2">Network</TabsTrigger>
+            <TabsTrigger value="matrix" className="h-5 text-xs px-2">Matrix</TabsTrigger>
           </TabsList>
         </Tabs>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setZoom(z => Math.min(3, z * 1.2))}>
-            <ZoomIn className="w-3.5 h-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setZoom(z => Math.max(0.5, z * 0.8))}>
-            <ZoomOut className="w-3.5 h-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={resetView}>
-            <Locate className="w-3.5 h-3.5" />
-          </Button>
-        </div>
+        {viewMode !== 'matrix' && (
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setZoom(z => Math.min(3, z * 1.2))}>
+              <ZoomIn className="w-3.5 h-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setZoom(z => Math.max(0.5, z * 0.8))}>
+              <ZoomOut className="w-3.5 h-3.5" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={resetView}>
+              <Locate className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Canvas */}
+      {/* Content */}
       <div ref={containerRef} className="flex-1 relative">
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onWheel={handleWheel}
-        />
-        
-        {/* Legend */}
-        <div className="absolute bottom-3 left-3 flex items-center gap-2 pointer-events-none">
-          {['Pink', 'Orange', 'Yellow', 'Cyan', 'Blue'].map((name, idx) => (
-            <div key={name} className="flex items-center gap-1">
-              <div 
-                className="w-2 h-2 rounded-full" 
-                style={{ backgroundColor: clusterColors[idx] }}
-              />
-              <span className="text-[10px] text-muted-foreground">{name}</span>
+        {viewMode === 'matrix' ? (
+          <MaturityMatrix />
+        ) : (
+          <>
+            <canvas
+              ref={canvasRef}
+              className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseLeave}
+              onWheel={handleWheel}
+            />
+            
+            {/* Legend */}
+            <div className="absolute bottom-3 left-3 flex items-center gap-2 pointer-events-none">
+              {['Pink', 'Orange', 'Yellow', 'Cyan', 'Blue'].map((name, idx) => (
+                <div key={name} className="flex items-center gap-1">
+                  <div 
+                    className="w-2 h-2 rounded-full" 
+                    style={{ backgroundColor: clusterColors[idx] }}
+                  />
+                  <span className="text-[10px] text-muted-foreground">{name}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
 
-        {/* Selection hint */}
-        {selectedNodeIds.size === 0 && (
-          <div className="absolute top-3 left-3 text-xs text-muted-foreground bg-card/80 backdrop-blur-sm px-2 py-1 rounded pointer-events-none">
-            Shift+Click to multi-select
-          </div>
+            {/* Selection hint */}
+            {selectedNodeIds.size === 0 && (
+              <div className="absolute top-3 left-3 text-xs text-muted-foreground bg-card/80 backdrop-blur-sm px-2 py-1 rounded pointer-events-none">
+                Shift+Click to multi-select
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

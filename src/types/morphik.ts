@@ -59,3 +59,16 @@ export interface Citation {
   text: string;
   paper_id: string;
 }
+
+// Maturity Matrix Types
+export interface MaturityNode {
+  id: string;
+  name: string;        // Tech name (e.g. "Solid State")
+  trl: number;         // X-Axis: 1.0 to 9.0 (Technology Readiness Level)
+  velocity: number;    // Y-Axis: 0 to 100 (Market Momentum)
+  volume: number;      // Z-Axis: Bubble size (Paper count)
+  cluster: string;     // Group name for coloring
+  growth: number;      // YoY growth for tooltip
+}
+
+export type MaturityQuadrant = 'winners' | 'emerging' | 'mature' | 'niche';
