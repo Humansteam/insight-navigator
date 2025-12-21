@@ -92,26 +92,131 @@ export const getQuadrantName = (trl: number, velocity: number): string => {
 export interface ClusterSummary {
   name: string;
   quadrant: 'winners' | 'emerging' | 'mature' | 'niche';
+  badge: string;
+  badgeEmoji: string;
   trlChange: { from: number; to: number };
   months: number;
-  leader: string;
+  cohortRank: string;
+  projectedScale: string;
+  dominantRegion: string;
+  dominantInstitution: string;
+  keyRival: string;
+  rivalGap: string;
+  application: string;
   paperCount: number;
-  trend: 'up' | 'down' | 'stable';
+  growth: number;
+  patents: number;
 }
 
 export const clusterSummaries: Record<string, ClusterSummary> = {
-  'w1': { name: 'Solid State Electrolytes', quadrant: 'winners', trlChange: { from: 4, to: 6 }, months: 18, leader: 'China', paperCount: 520, trend: 'up' },
-  'w2': { name: 'LFP Cathode Materials', quadrant: 'winners', trlChange: { from: 6, to: 8 }, months: 24, leader: 'China', paperCount: 380, trend: 'up' },
-  'w3': { name: 'Silicon Anode Technology', quadrant: 'winners', trlChange: { from: 4, to: 7 }, months: 12, leader: 'USA', paperCount: 620, trend: 'up' },
-  'w4': { name: 'Fast Charging Systems', quadrant: 'winners', trlChange: { from: 5, to: 7 }, months: 20, leader: 'Korea', paperCount: 280, trend: 'up' },
-  'w5': { name: 'NMC 811 Chemistry', quadrant: 'winners', trlChange: { from: 7, to: 8 }, months: 30, leader: 'Japan', paperCount: 410, trend: 'stable' },
-  'e1': { name: 'Sodium-Ion Batteries', quadrant: 'emerging', trlChange: { from: 2, to: 4 }, months: 12, leader: 'China', paperCount: 480, trend: 'up' },
-  'e2': { name: 'Lithium-Air Research', quadrant: 'emerging', trlChange: { from: 1, to: 3 }, months: 36, leader: 'USA', paperCount: 125, trend: 'up' },
-  'e5': { name: 'Graphene Anode Materials', quadrant: 'emerging', trlChange: { from: 2, to: 4 }, months: 18, leader: 'EU', paperCount: 245, trend: 'up' },
-  'm1': { name: 'Lead Acid Technology', quadrant: 'mature', trlChange: { from: 9, to: 9 }, months: 60, leader: 'Global', paperCount: 620, trend: 'stable' },
-  'm4': { name: 'Cylindrical Cell Format', quadrant: 'mature', trlChange: { from: 8, to: 9 }, months: 48, leader: 'Japan', paperCount: 510, trend: 'stable' },
-  'n1': { name: 'Zinc-Air Batteries', quadrant: 'niche', trlChange: { from: 2, to: 3 }, months: 24, leader: 'USA', paperCount: 115, trend: 'up' },
-  'n5': { name: 'Flow Battery Systems', quadrant: 'niche', trlChange: { from: 3, to: 4 }, months: 18, leader: 'China', paperCount: 150, trend: 'up' },
+  'w1': { 
+    name: 'Solid State Electrolytes', 
+    quadrant: 'winners', 
+    badge: 'WINNER',
+    badgeEmoji: '🏆',
+    trlChange: { from: 4, to: 7 }, 
+    months: 18, 
+    cohortRank: 'Top performer',
+    projectedScale: 'Q3 2025',
+    dominantRegion: 'China',
+    dominantInstitution: 'CATL Research',
+    keyRival: 'Japan (Toyota)',
+    rivalGap: '+8 mo lead',
+    application: 'High-Energy Density EV Batteries',
+    paperCount: 2850, 
+    growth: 67,
+    patents: 345
+  },
+  'w3': { 
+    name: 'Silicon Anode', 
+    quadrant: 'winners', 
+    badge: 'FAST MOVER',
+    badgeEmoji: '🚀',
+    trlChange: { from: 4, to: 7 }, 
+    months: 12, 
+    cohortRank: 'Fastest in cohort',
+    projectedScale: 'Q1 2026',
+    dominantRegion: 'USA',
+    dominantInstitution: 'Stanford Univ.',
+    keyRival: 'Korea (Samsung SDI)',
+    rivalGap: '-3 mo lag',
+    application: 'Next-Gen Consumer Electronics',
+    paperCount: 3200, 
+    growth: 72,
+    patents: 280
+  },
+  'e1': { 
+    name: 'Sodium-Ion Batteries', 
+    quadrant: 'emerging', 
+    badge: 'MOONSHOT',
+    badgeEmoji: '🚀',
+    trlChange: { from: 2, to: 4 }, 
+    months: 15, 
+    cohortRank: 'Fastest in cohort',
+    projectedScale: 'Q2 2027',
+    dominantRegion: 'China',
+    dominantInstitution: 'CATL / BYD',
+    keyRival: 'EU (Northvolt)',
+    rivalGap: '+12 mo lead',
+    application: 'Grid-Scale Energy Storage',
+    paperCount: 1850, 
+    growth: 120,
+    patents: 95
+  },
+  'e9': { 
+    name: 'Ionic Liquids', 
+    quadrant: 'emerging', 
+    badge: 'MOONSHOT',
+    badgeEmoji: '🚀',
+    trlChange: { from: 2, to: 4 }, 
+    months: 15, 
+    cohortRank: 'Fastest in cohort',
+    projectedScale: 'Q2 2027',
+    dominantRegion: 'USA',
+    dominantInstitution: 'Stanford Univ.',
+    keyRival: 'China (CAS)',
+    rivalGap: '-6 mo lag',
+    application: 'Safety for High-Voltage Cathodes',
+    paperCount: 1850, 
+    growth: 45,
+    patents: 120
+  },
+  'm1': { 
+    name: 'Lead Acid Technology', 
+    quadrant: 'mature', 
+    badge: 'LEGACY',
+    badgeEmoji: '🏛️',
+    trlChange: { from: 9, to: 9 }, 
+    months: 60, 
+    cohortRank: 'Stable',
+    projectedScale: 'Active',
+    dominantRegion: 'Global',
+    dominantInstitution: 'Multiple',
+    keyRival: 'N/A',
+    rivalGap: 'Commoditized',
+    application: 'Automotive Starting Batteries',
+    paperCount: 620, 
+    growth: -5,
+    patents: 45
+  },
+  'n5': { 
+    name: 'Flow Battery Systems', 
+    quadrant: 'niche', 
+    badge: 'SPECIALIST',
+    badgeEmoji: '🔬',
+    trlChange: { from: 3, to: 4 }, 
+    months: 18, 
+    cohortRank: 'Steady progress',
+    projectedScale: 'Q4 2028',
+    dominantRegion: 'China',
+    dominantInstitution: 'Dalian Institute',
+    keyRival: 'USA (PNNL)',
+    rivalGap: '+4 mo lead',
+    application: 'Long-Duration Grid Storage',
+    paperCount: 450, 
+    growth: 28,
+    patents: 65
+  },
 };
 
 // Get cluster summary by node id
@@ -122,10 +227,78 @@ export const getClusterSummary = (nodeId: string): ClusterSummary | null => {
 // Get default summary for a quadrant
 export const getQuadrantSummary = (quadrant: string): ClusterSummary => {
   const defaults: Record<string, ClusterSummary> = {
-    'winners': { name: 'High-Performance Technologies', quadrant: 'winners', trlChange: { from: 5, to: 7 }, months: 18, leader: 'China', paperCount: 3200, trend: 'up' },
-    'emerging': { name: 'Next-Gen Innovation', quadrant: 'emerging', trlChange: { from: 2, to: 4 }, months: 15, leader: 'USA', paperCount: 1850, trend: 'up' },
-    'mature': { name: 'Established Technologies', quadrant: 'mature', trlChange: { from: 8, to: 9 }, months: 48, leader: 'Global', paperCount: 2800, trend: 'stable' },
-    'niche': { name: 'Specialized Research', quadrant: 'niche', trlChange: { from: 2, to: 3 }, months: 24, leader: 'EU', paperCount: 950, trend: 'up' },
+    'winners': { 
+      name: 'High-Performance Technologies', 
+      quadrant: 'winners', 
+      badge: 'WINNER',
+      badgeEmoji: '🏆',
+      trlChange: { from: 5, to: 7 }, 
+      months: 18, 
+      cohortRank: 'Top performers',
+      projectedScale: 'Q2 2026',
+      dominantRegion: 'China',
+      dominantInstitution: 'Multiple Leaders',
+      keyRival: 'USA/Japan',
+      rivalGap: 'Competitive',
+      application: 'EV & Grid Applications',
+      paperCount: 3200, 
+      growth: 45,
+      patents: 520
+    },
+    'emerging': { 
+      name: 'Next-Gen Innovation', 
+      quadrant: 'emerging', 
+      badge: 'MOONSHOT',
+      badgeEmoji: '🚀',
+      trlChange: { from: 2, to: 4 }, 
+      months: 15, 
+      cohortRank: 'Fast movers',
+      projectedScale: 'Q3 2027',
+      dominantRegion: 'USA',
+      dominantInstitution: 'Academic Leaders',
+      keyRival: 'China',
+      rivalGap: 'Race ongoing',
+      application: 'Future Energy Systems',
+      paperCount: 1850, 
+      growth: 85,
+      patents: 180
+    },
+    'mature': { 
+      name: 'Established Technologies', 
+      quadrant: 'mature', 
+      badge: 'LEGACY',
+      badgeEmoji: '🏛️',
+      trlChange: { from: 8, to: 9 }, 
+      months: 48, 
+      cohortRank: 'Stable',
+      projectedScale: 'Active',
+      dominantRegion: 'Global',
+      dominantInstitution: 'Industry',
+      keyRival: 'N/A',
+      rivalGap: 'Commoditized',
+      application: 'Industrial Applications',
+      paperCount: 2800, 
+      growth: 5,
+      patents: 890
+    },
+    'niche': { 
+      name: 'Specialized Research', 
+      quadrant: 'niche', 
+      badge: 'SPECIALIST',
+      badgeEmoji: '🔬',
+      trlChange: { from: 2, to: 3 }, 
+      months: 24, 
+      cohortRank: 'Exploratory',
+      projectedScale: 'Q1 2029',
+      dominantRegion: 'EU',
+      dominantInstitution: 'Research Labs',
+      keyRival: 'Multiple',
+      rivalGap: 'Fragmented',
+      application: 'Specialized Use Cases',
+      paperCount: 950, 
+      growth: 22,
+      patents: 75
+    },
   };
   return defaults[quadrant] || defaults['niche'];
 };
