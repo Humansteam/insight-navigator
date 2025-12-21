@@ -220,7 +220,7 @@ const Index = () => {
     <div className="h-screen w-full flex bg-background relative">
       {/* Left Panel - fixed width to prevent header jumping */}
       <div className="w-96 border-r border-border bg-background">
-        {activeView === 'report' || activeView === 'topology' ? (
+{activeView === 'report' || activeView === 'topology' || activeView === 'papers' ? (
           <ReportChatPanel />
         ) : activeView === 'notes' ? (
           <JournalsWorkspaceProvider>
