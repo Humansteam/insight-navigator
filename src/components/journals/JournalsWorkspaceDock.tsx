@@ -3,7 +3,7 @@ import { FileText } from "lucide-react";
 import { useJournals } from "@/contexts/JournalsContext";
 import { useToast } from "@/hooks/use-toast";
 import { JournalsSidebar } from "./JournalsSidebar";
-import { JournalTabs } from "./JournalTabs";
+
 import { JournalEditor } from "./JournalEditor";
 import { JournalPreview } from "./JournalPreview";
 import { FormatToolbar } from "./FormatToolbar";
@@ -51,6 +51,7 @@ export const JournalsWorkspaceProvider = ({ children }: { children: React.ReactN
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   // Content state per journal to avoid re-renders
   const [contents, setContents] = useState<Record<string, string>>({});
@@ -63,6 +64,21 @@ export const JournalsWorkspaceProvider = ({ children }: { children: React.ReactN
     () => openTabIds.map((id) => getJournalById(id)).filter(Boolean) as WorkspaceJournal[],
     [openTabIds, getJournalById]
   );
+
+  // Auto-open the most recent journal on mount
+  useEffect(() => {
+    if (!initialized && journals.length > 0) {
+      const mostRecent = [...journals].sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      )[0];
+      if (mostRecent) {
+        setOpenTabIds([mostRecent.id]);
+        setActiveTabId(mostRecent.id);
+        setContents({ [mostRecent.id]: mostRecent.content });
+      }
+      setInitialized(true);
+    }
+  }, [journals, initialized]);
 
   // Initialize content when journal is opened
   useEffect(() => {
@@ -249,37 +265,20 @@ export const JournalsMainPanel = () => {
   } = useJournalsWorkspace();
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 h-full">
-      <JournalTabs
-        openTabs={openTabs}
-        activeTabId={activeTabId}
-        onSelectTab={setActiveTabId}
-        onCloseTab={handleCloseTab}
-      />
-
-      <div className="flex-1 flex min-h-0">
+    <div className="flex-1 flex min-w-0 h-full">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0">
         {activeJournal ? (
-          <>
-            {isPreview ? (
-              <JournalPreview content={contents[activeJournal.id] || ""} />
-            ) : (
-              <JournalEditor
-                journal={activeJournal}
-                content={contents[activeJournal.id] || ""}
-                onChange={handleContentChange}
-                textareaRef={textareaRef}
-              />
-            )}
-
-            <FormatToolbar
+          isPreview ? (
+            <JournalPreview content={contents[activeJournal.id] || ""} />
+          ) : (
+            <JournalEditor
+              journal={activeJournal}
+              content={contents[activeJournal.id] || ""}
+              onChange={handleContentChange}
               textareaRef={textareaRef}
-              onInsertFormat={insertFormatting}
-              isPreview={isPreview}
-              onTogglePreview={onTogglePreview}
-              wordCount={wordCount}
-              onExport={onExport}
             />
-          </>
+          )
         ) : (
           <div className="flex-1 flex items-center justify-center text-muted-foreground">
             <div className="text-center space-y-2">
@@ -289,6 +288,16 @@ export const JournalsMainPanel = () => {
           </div>
         )}
       </div>
+
+      {/* Always visible Formatting toolbar */}
+      <FormatToolbar
+        textareaRef={textareaRef}
+        onInsertFormat={insertFormatting}
+        isPreview={isPreview}
+        onTogglePreview={onTogglePreview}
+        wordCount={wordCount}
+        onExport={onExport}
+      />
 
       <CreateJournalDialog
         open={showCreateDialog}
