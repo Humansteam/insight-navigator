@@ -260,24 +260,6 @@ const Index = () => {
                 </button>
               ))}
             </div>
-            <div className="flex gap-1">
-              {phaseDots.map((active, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-colors",
-                    active ? "bg-primary" : "bg-muted"
-                  )}
-                />
-              ))}
-            </div>
-            <span className="text-sm text-muted-foreground">
-              {phase === 'idle'
-                ? 'Research report'
-                : phase === 'complete'
-                  ? 'Complete'
-                  : phase.replace('_', ' ')}
-            </span>
             <Link
               to="/translate"
               className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
