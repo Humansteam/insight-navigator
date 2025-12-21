@@ -87,3 +87,45 @@ export const getQuadrantName = (trl: number, velocity: number): string => {
   if (trl >= 5 && velocity < 50) return 'Mature';
   return 'Niche';
 };
+
+// Cluster summary data for drill-down
+export interface ClusterSummary {
+  name: string;
+  quadrant: 'winners' | 'emerging' | 'mature' | 'niche';
+  trlChange: { from: number; to: number };
+  months: number;
+  leader: string;
+  paperCount: number;
+  trend: 'up' | 'down' | 'stable';
+}
+
+export const clusterSummaries: Record<string, ClusterSummary> = {
+  'w1': { name: 'Solid State Electrolytes', quadrant: 'winners', trlChange: { from: 4, to: 6 }, months: 18, leader: 'China', paperCount: 520, trend: 'up' },
+  'w2': { name: 'LFP Cathode Materials', quadrant: 'winners', trlChange: { from: 6, to: 8 }, months: 24, leader: 'China', paperCount: 380, trend: 'up' },
+  'w3': { name: 'Silicon Anode Technology', quadrant: 'winners', trlChange: { from: 4, to: 7 }, months: 12, leader: 'USA', paperCount: 620, trend: 'up' },
+  'w4': { name: 'Fast Charging Systems', quadrant: 'winners', trlChange: { from: 5, to: 7 }, months: 20, leader: 'Korea', paperCount: 280, trend: 'up' },
+  'w5': { name: 'NMC 811 Chemistry', quadrant: 'winners', trlChange: { from: 7, to: 8 }, months: 30, leader: 'Japan', paperCount: 410, trend: 'stable' },
+  'e1': { name: 'Sodium-Ion Batteries', quadrant: 'emerging', trlChange: { from: 2, to: 4 }, months: 12, leader: 'China', paperCount: 480, trend: 'up' },
+  'e2': { name: 'Lithium-Air Research', quadrant: 'emerging', trlChange: { from: 1, to: 3 }, months: 36, leader: 'USA', paperCount: 125, trend: 'up' },
+  'e5': { name: 'Graphene Anode Materials', quadrant: 'emerging', trlChange: { from: 2, to: 4 }, months: 18, leader: 'EU', paperCount: 245, trend: 'up' },
+  'm1': { name: 'Lead Acid Technology', quadrant: 'mature', trlChange: { from: 9, to: 9 }, months: 60, leader: 'Global', paperCount: 620, trend: 'stable' },
+  'm4': { name: 'Cylindrical Cell Format', quadrant: 'mature', trlChange: { from: 8, to: 9 }, months: 48, leader: 'Japan', paperCount: 510, trend: 'stable' },
+  'n1': { name: 'Zinc-Air Batteries', quadrant: 'niche', trlChange: { from: 2, to: 3 }, months: 24, leader: 'USA', paperCount: 115, trend: 'up' },
+  'n5': { name: 'Flow Battery Systems', quadrant: 'niche', trlChange: { from: 3, to: 4 }, months: 18, leader: 'China', paperCount: 150, trend: 'up' },
+};
+
+// Get cluster summary by node id
+export const getClusterSummary = (nodeId: string): ClusterSummary | null => {
+  return clusterSummaries[nodeId] || null;
+};
+
+// Get default summary for a quadrant
+export const getQuadrantSummary = (quadrant: string): ClusterSummary => {
+  const defaults: Record<string, ClusterSummary> = {
+    'winners': { name: 'High-Performance Technologies', quadrant: 'winners', trlChange: { from: 5, to: 7 }, months: 18, leader: 'China', paperCount: 3200, trend: 'up' },
+    'emerging': { name: 'Next-Gen Innovation', quadrant: 'emerging', trlChange: { from: 2, to: 4 }, months: 15, leader: 'USA', paperCount: 1850, trend: 'up' },
+    'mature': { name: 'Established Technologies', quadrant: 'mature', trlChange: { from: 8, to: 9 }, months: 48, leader: 'Global', paperCount: 2800, trend: 'stable' },
+    'niche': { name: 'Specialized Research', quadrant: 'niche', trlChange: { from: 2, to: 3 }, months: 24, leader: 'EU', paperCount: 950, trend: 'up' },
+  };
+  return defaults[quadrant] || defaults['niche'];
+};

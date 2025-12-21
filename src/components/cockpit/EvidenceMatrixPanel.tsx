@@ -1,21 +1,56 @@
 import { useState, useMemo } from 'react';
 import { DataNode } from '@/types/morphik';
-import { ExternalLink, ArrowLeft, Star, BarChart3, Clock, Sparkles, FileText, Globe, BookOpen } from 'lucide-react';
+import { ExternalLink, ArrowLeft, Star, BarChart3, Clock, Sparkles, FileText, Globe, BookOpen, X, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface EvidenceMatrixPanelProps {
   papers: DataNode[];
   hoveredPaperId?: string | null;
   onHoverPaper?: (id: string | null) => void;
+  matrixFilter?: { quadrant: string | null; nodeIds: string[] } | null;
+  onClearMatrixFilter?: () => void;
 }
+
+// Quadrant colors for filter badge
+const quadrantColors: Record<string, string> = {
+  'winners': '#4ADE80',
+  'emerging': '#38BDF8',
+  'mature': '#4ADE80',
+  'niche': '#A78BFA',
+};
 
 export const EvidenceMatrixPanel = ({ 
   papers, 
   hoveredPaperId,
-  onHoverPaper 
+  onHoverPaper,
+  matrixFilter,
+  onClearMatrixFilter,
 }: EvidenceMatrixPanelProps) => {
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
+
+  // Filter papers if matrixFilter is active
+  const displayPapers = useMemo(() => {
+    if (matrixFilter?.quadrant && matrixFilter.nodeIds.length > 0) {
+      // For matrix filter, we show papers based on their cluster_label matching the quadrant theme
+      // This is a simulation - in real app, you'd have proper mapping
+      const quadrantKeywords: Record<string, string[]> = {
+        'winners': ['industrial', 'manufacturing', 'processing', 'cathode', 'production'],
+        'emerging': ['solid-state', 'electrolyte', 'novel', 'discovery', 'next-gen'],
+        'mature': ['recycling', 'recovery', 'established', 'standard'],
+        'niche': ['specialized', 'research', 'experimental'],
+      };
+      const keywords = quadrantKeywords[matrixFilter.quadrant] || [];
+      return papers.filter(p => 
+        keywords.some(k => 
+          p.title.toLowerCase().includes(k) || 
+          p.cluster_label.toLowerCase().includes(k)
+        )
+      ).slice(0, 15); // Limit to 15 papers for demo
+    }
+    return papers;
+  }, [papers, matrixFilter]);
 
   // Show hovered paper details instantly, or selected paper if clicked
   const displayPaperId = hoveredPaperId || selectedPaperId;
@@ -201,11 +236,49 @@ export const EvidenceMatrixPanel = ({
     <div className="h-full flex flex-col min-w-[360px]">
       {/* Header */}
       <div className="p-4 border-b border-border">
-        <h3 className="text-sm font-medium text-primary">Evidence Matrix</h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-primary">Evidence Matrix</h3>
+          <span className="text-xs text-muted-foreground">
+            {displayPapers.length} papers
+          </span>
+        </div>
+        
+        {/* Matrix Filter Badge */}
+        <AnimatePresence>
+          {matrixFilter?.quadrant && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-3"
+            >
+              <div 
+                className="flex items-center justify-between px-3 py-2 rounded-lg"
+                style={{ 
+                  backgroundColor: quadrantColors[matrixFilter.quadrant] + '15',
+                  borderLeft: `3px solid ${quadrantColors[matrixFilter.quadrant]}`,
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <Filter className="w-3.5 h-3.5" style={{ color: quadrantColors[matrixFilter.quadrant] }} />
+                  <span className="text-xs font-medium capitalize" style={{ color: quadrantColors[matrixFilter.quadrant] }}>
+                    {matrixFilter.quadrant} cluster
+                  </span>
+                </div>
+                <button
+                  onClick={onClearMatrixFilter}
+                  className="p-1 hover:bg-white/10 rounded transition-colors"
+                >
+                  <X className="w-3 h-3 text-muted-foreground" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <ScrollArea className="flex-1">
-        {papers.map((paper) => (
+        {displayPapers.map((paper) => (
           <div
             key={paper.id}
             onClick={() => setSelectedPaperId(paper.id)}
@@ -240,6 +313,12 @@ export const EvidenceMatrixPanel = ({
             </div>
           </div>
         ))}
+        
+        {displayPapers.length === 0 && (
+          <div className="p-8 text-center text-muted-foreground text-sm">
+            No papers match the current filter
+          </div>
+        )}
       </ScrollArea>
     </div>
   );

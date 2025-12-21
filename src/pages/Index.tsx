@@ -19,6 +19,7 @@ const Index = () => {
   const [activeView, setActiveView] = useState<ReportView>('report');
   const [graphHoveredPaperId, setGraphHoveredPaperId] = useState<string | null>(null);
   const [listHoveredPaperId, setListHoveredPaperId] = useState<string | null>(null);
+  const [matrixFilter, setMatrixFilter] = useState<{ quadrant: string | null; nodeIds: string[] } | null>(null);
   
   // Ref for report content - used for text selection
   const reportContentRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,19 @@ const Index = () => {
     // Debounced detail view
     handleGraphHover(id);
   }, [handleGraphHover]);
-
+  
+  // Handle matrix cluster selection
+  const handleMatrixClusterSelect = useCallback((quadrant: string | null, nodeIds: string[]) => {
+    if (quadrant) {
+      setMatrixFilter({ quadrant, nodeIds });
+    } else {
+      setMatrixFilter(null);
+    }
+  }, []);
+  
+  const clearMatrixFilter = useCallback(() => {
+    setMatrixFilter(null);
+  }, []);
   // Engine data hook
   const {
     phase,
@@ -254,6 +267,7 @@ const Index = () => {
                 edges={mockEdges}
                 externalHoveredNodeId={listHoveredPaperId || graphHighlightId}
                 onExternalHoverNode={handleGraphNodeHover}
+                onMatrixClusterSelect={handleMatrixClusterSelect}
               />
             ) : activeView === 'notes' ? (
               <JournalsMainPanel />
@@ -305,6 +319,8 @@ const Index = () => {
               papers={papers}
               hoveredPaperId={graphHoveredPaperId}
               onHoverPaper={setListHoveredPaperId}
+              matrixFilter={activeView === 'topology' ? matrixFilter : null}
+              onClearMatrixFilter={clearMatrixFilter}
             />
           </div>
         )}
