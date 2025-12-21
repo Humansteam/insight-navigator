@@ -44,24 +44,10 @@ export const UnifiedHeader = ({
       {/* Column 1: App Name + Left Panel Toggle */}
       <div 
         className={cn(
-          "flex items-center px-4 border-r border-border h-full flex-shrink-0 transition-all duration-300",
+          "flex items-center justify-between px-4 border-r border-border h-full flex-shrink-0 transition-all duration-300",
           isLeftPanelOpen ? "w-[434px]" : "w-auto"
         )}
       >
-        {/* Left Panel Toggle */}
-        <button
-          onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
-          className={cn(
-            "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors mr-3",
-            isLeftPanelOpen
-              ? "bg-secondary border-border"
-              : "bg-background border-border hover:bg-accent"
-          )}
-          title={isLeftPanelOpen ? "Collapse left panel" : "Expand left panel"}
-        >
-          <PanelLeft className="w-4 h-4" />
-        </button>
-        
         <Link
           to="/"
           className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
@@ -71,6 +57,20 @@ export const UnifiedHeader = ({
           </div>
           <span className="font-semibold text-base">Stata</span>
         </Link>
+        
+        {/* Left Panel Toggle - right side */}
+        <button
+          onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
+          className={cn(
+            "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors",
+            isLeftPanelOpen
+              ? "bg-secondary border-border"
+              : "bg-background border-border hover:bg-accent"
+          )}
+          title={isLeftPanelOpen ? "Collapse left panel" : "Expand left panel"}
+        >
+          <PanelLeft className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Column 2: Project Title + Navigation + Actions - flex to fill between sidebars */}
