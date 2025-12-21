@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { FileText, FileSearch, Network, Clock, BookOpen, ChevronRight } from 'lucide-react';
+import { FileText, FileSearch, Network, BookOpen, ChevronRight } from 'lucide-react';
 import { mockNodes, mockEdges } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
@@ -226,7 +226,6 @@ const Index = () => {
     { id: 'topology', label: 'Topology', icon: <Network className="w-3.5 h-3.5" /> },
     { id: 'papers', label: 'Papers', icon: <FileSearch className="w-3.5 h-3.5" /> },
     { id: 'notes', label: 'Journals', icon: <BookOpen className="w-3.5 h-3.5" /> },
-    { id: 'timeline', label: 'Timeline', icon: <Clock className="w-3.5 h-3.5" /> },
   ];
 
   const mainContent = (
@@ -279,13 +278,6 @@ const Index = () => {
               />
             ) : activeView === 'notes' ? (
               <JournalsMainPanel />
-            ) : activeView === 'timeline' ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground">
-                <div className="text-center">
-                  <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Timeline view coming soon</p>
-                </div>
-              </div>
             ) : (
               <div ref={reportContentRef} className="max-w-3xl mx-auto px-8 py-10 relative">
                 <TextSelectionTooltip
