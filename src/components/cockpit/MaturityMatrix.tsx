@@ -11,7 +11,7 @@ import {
   Cell,
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, Globe, FileText, X } from 'lucide-react';
+import { TrendingUp, TrendingDown, Globe, FileText, X } from 'lucide-react';
 import { MaturityNode } from '@/types/morphik';
 import { 
   maturityMockData, 
@@ -30,7 +30,7 @@ interface MaturityMatrixProps {
   onClusterSelect?: (quadrant: string | null, nodeIds: string[]) => void;
 }
 
-// Cluster Summary Panel component
+// Cluster Summary Panel component - NEW DESIGN per spec
 interface ClusterSummaryPanelProps {
   summary: ClusterSummary;
   nodeName: string;
@@ -42,77 +42,103 @@ const ClusterSummaryPanel: React.FC<ClusterSummaryPanelProps> = ({ summary, node
                         summary.quadrant === 'emerging' ? '#38BDF8' : 
                         summary.quadrant === 'mature' ? '#4ADE80' : '#A78BFA';
   
-  const TrendIcon = summary.trend === 'up' ? TrendingUp : 
-                    summary.trend === 'down' ? TrendingDown : Minus;
+  const isGrowing = summary.growth > 0;
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="absolute bottom-16 left-4 right-4 backdrop-blur-md bg-slate-900/95 border border-white/10 rounded-lg p-4 shadow-2xl"
-      style={{ borderLeftColor: quadrantColor, borderLeftWidth: 4 }}
+      className="absolute bottom-16 left-4 right-4 backdrop-blur-md bg-slate-900/95 border border-white/10 rounded-lg shadow-2xl overflow-hidden"
+      style={{ borderTopColor: quadrantColor, borderTopWidth: 3 }}
     >
+      {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-2 right-2 p-1 hover:bg-white/10 rounded transition-colors"
+        className="absolute top-2 right-2 p-1.5 hover:bg-white/10 rounded transition-colors z-10"
       >
         <X className="w-4 h-4 text-slate-400" />
       </button>
       
-      <div className="flex items-start gap-4">
-        {/* Cluster info */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <div 
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: quadrantColor, boxShadow: `0 0 12px ${quadrantColor}` }}
-            />
-            <span className="text-sm font-semibold text-white">{nodeName}</span>
-            <span 
-              className="text-xs px-2 py-0.5 rounded-full uppercase font-medium"
-              style={{ backgroundColor: quadrantColor + '20', color: quadrantColor }}
-            >
-              {summary.quadrant}
-            </span>
+      {/* Header: Title + Badge */}
+      <div className="px-4 pt-4 pb-3 border-b border-white/5">
+        <div className="flex items-center gap-3">
+          <h3 className="text-base font-semibold text-white">{nodeName}</h3>
+          <span 
+            className="text-xs px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"
+            style={{ backgroundColor: quadrantColor + '20', color: quadrantColor }}
+          >
+            {summary.badgeEmoji} {summary.badge}
+          </span>
+        </div>
+      </div>
+      
+      {/* Content Grid */}
+      <div className="px-4 py-3 space-y-3">
+        {/* DYNAMICS Section */}
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Dynamics</div>
+          <div className="text-sm text-slate-300">
+            Moved <span className="text-cyan-400 font-mono">TRL {summary.trlChange.from}</span>
+            {' → '}
+            <span className="text-emerald-400 font-mono">TRL {summary.trlChange.to}</span>
+            {' in '}
+            <span className="text-white font-medium">{summary.months} mo.</span>
+            {' '}
+            <span className="text-slate-400">({summary.cohortRank})</span>
           </div>
-          
-          <p className="text-sm text-slate-300 leading-relaxed">
-            This cluster (<span className="text-white font-medium">{summary.name}</span>) has moved from{' '}
-            <span className="text-cyan-400 font-mono">TRL {summary.trlChange.from}</span> to{' '}
-            <span className="text-emerald-400 font-mono">TRL {summary.trlChange.to}</span> in{' '}
-            <span className="text-white font-medium">{summary.months} months</span>.{' '}
-            Leading player: <span className="text-amber-400 font-medium">{summary.leader}</span>.
-          </p>
+          <div className="text-xs text-slate-400">
+            Proj. Industrial Scale: <span className="text-amber-400 font-medium">{summary.projectedScale}</span>
+          </div>
         </div>
         
-        {/* Stats */}
-        <div className="flex gap-4">
-          <div className="text-center">
-            <div className="flex items-center gap-1 text-xs text-slate-400 mb-1">
-              <FileText className="w-3 h-3" />
-              Papers
-            </div>
-            <div className="text-lg font-bold text-white">{summary.paperCount}</div>
+        {/* LEADERSHIP Section */}
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Leadership</div>
+          <div className="text-sm text-slate-300">
+            Dominant Region: <span className="text-white font-medium">{summary.dominantRegion}</span>
+            {' '}
+            <span className="text-slate-400">({summary.dominantInstitution})</span>
           </div>
-          <div className="text-center">
-            <div className="flex items-center gap-1 text-xs text-slate-400 mb-1">
-              <Globe className="w-3 h-3" />
-              Leader
-            </div>
-            <div className="text-lg font-bold text-amber-400">{summary.leader}</div>
+          <div className="text-xs text-slate-400">
+            Key Rival: <span className="text-slate-300">{summary.keyRival}</span>
+            {' '}
+            <span className={summary.rivalGap.startsWith('+') ? 'text-emerald-400' : summary.rivalGap.startsWith('-') ? 'text-amber-400' : 'text-slate-400'}>
+              {summary.rivalGap}
+            </span>
           </div>
-          <div className="text-center">
-            <div className="flex items-center gap-1 text-xs text-slate-400 mb-1">
-              <TrendIcon className="w-3 h-3" />
-              Trend
-            </div>
-            <div className={`text-lg font-bold ${
-              summary.trend === 'up' ? 'text-emerald-400' : 
-              summary.trend === 'down' ? 'text-red-400' : 'text-slate-400'
-            }`}>
-              {summary.trend === 'up' ? '↑' : summary.trend === 'down' ? '↓' : '–'}
-            </div>
+        </div>
+        
+        {/* APPLICATION Section */}
+        <div className="space-y-1">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Application</div>
+          <div className="text-sm text-white/90 italic">"{summary.application}"</div>
+        </div>
+      </div>
+      
+      {/* METRICS Row - Bottom */}
+      <div className="px-4 py-2.5 bg-white/5 border-t border-white/5 flex items-center justify-between">
+        <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <FileText className="w-3 h-3 text-slate-400" />
+            <span className="text-slate-400">Papers:</span>
+            <span className="text-white font-semibold">{summary.paperCount.toLocaleString()}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {isGrowing ? (
+              <TrendingUp className="w-3 h-3 text-emerald-400" />
+            ) : (
+              <TrendingDown className="w-3 h-3 text-red-400" />
+            )}
+            <span className="text-slate-400">Growth:</span>
+            <span className={isGrowing ? 'text-emerald-400 font-semibold' : 'text-red-400 font-semibold'}>
+              {isGrowing ? '+' : ''}{summary.growth}% YoY
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Globe className="w-3 h-3 text-slate-400" />
+            <span className="text-slate-400">Patents:</span>
+            <span className="text-white font-semibold">{summary.patents}</span>
           </div>
         </div>
       </div>
