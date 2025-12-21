@@ -353,23 +353,21 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Right Sidebar - fixed width to prevent header jumping */}
-      <div
-        className={cn(
-          "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
-          isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
-        )}
-      >
-        {activeView === 'report' || activeView === 'topology' ? (
+      {/* Right Sidebar - hide for papers/notes/timeline */}
+      {(activeView === 'report' || activeView === 'topology') && (
+        <div
+          className={cn(
+            "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
+            isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
+          )}
+        >
           <EvidenceMatrixPanel
             papers={papers}
             hoveredPaperId={graphHoveredPaperId}
             onHoverPaper={setListHoveredPaperId}
           />
-        ) : (
-          <div className="h-full" />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
