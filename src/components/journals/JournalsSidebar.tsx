@@ -26,7 +26,7 @@ export const JournalsSidebar = ({
   );
 
   return (
-    <div className="w-96 border-r border-border bg-muted/20 flex flex-col h-full">
+    <div className="w-full bg-muted/20 flex flex-col h-full">
       {/* Header */}
       <div className="h-12 flex items-center justify-between px-4 border-b border-border">
         <span className="text-base font-medium">Journals</span>
