@@ -37,8 +37,8 @@ export const UnifiedHeader = ({
 }: UnifiedHeaderProps) => {
   return (
     <header className="h-14 flex items-center border-b border-border bg-background">
-      {/* Column 1: App Name */}
-      <div className="w-[140px] flex items-center px-4 border-r border-border h-full flex-shrink-0">
+      {/* Column 1: App Name - matches left panel width (434px) */}
+      <div className="w-[434px] flex items-center px-4 border-r border-border h-full flex-shrink-0">
         <Link
           to="/"
           className="flex items-center gap-2 text-foreground hover:text-primary transition-colors"
@@ -50,8 +50,8 @@ export const UnifiedHeader = ({
         </Link>
       </div>
 
-      {/* Column 2: Project Title + Navigation + Actions */}
-      <div className="flex-1 flex items-center justify-between px-4 h-full">
+      {/* Column 2: Project Title + Navigation + Actions - flex to fill between sidebars */}
+      <div className="flex-1 flex items-center justify-between px-4 h-full border-r border-border">
         <div className="flex items-center gap-4">
           {/* Project Title */}
           <h2 className="text-sm font-medium text-foreground truncate max-w-[240px]" title={projectTitle}>
@@ -102,8 +102,13 @@ export const UnifiedHeader = ({
         </div>
       </div>
 
-      {/* Column 3: Section Label */}
-      <div className="w-[180px] flex items-center justify-end px-4 border-l border-border h-full flex-shrink-0">
+      {/* Column 3: Section Label - matches right sidebar width (360px) */}
+      <div 
+        className={cn(
+          "flex items-center justify-end px-4 h-full flex-shrink-0 transition-all duration-300",
+          isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden px-0"
+        )}
+      >
         <span className="text-sm text-muted-foreground font-medium truncate">
           {viewLabels[activeView]}
         </span>
