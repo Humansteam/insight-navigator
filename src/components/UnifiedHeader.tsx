@@ -111,30 +111,35 @@ export const UnifiedHeader = ({
             <Languages className="w-4 h-4" />
           </Link>
           <ThemeSwitcher />
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className={cn(
-              "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors",
-              isSidebarOpen
-                ? "bg-secondary border-border"
-                : "bg-background border-border hover:bg-accent"
-            )}
-          >
-            <PanelRight className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
-      {/* Column 3: Section Label - matches right sidebar width (360px) */}
+      {/* Column 3: Right Panel Toggle + Section Label - matches right sidebar width (360px) */}
       <div 
         className={cn(
-          "flex items-center justify-end px-4 h-full flex-shrink-0 transition-all duration-300",
-          isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden px-0"
+          "flex items-center justify-between px-4 h-full flex-shrink-0 transition-all duration-300",
+          isSidebarOpen ? "w-[360px]" : "w-auto"
         )}
       >
-        <span className="text-sm text-muted-foreground font-medium truncate">
-          {viewLabels[activeView]}
-        </span>
+        {/* Right Panel Toggle - left side */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className={cn(
+            "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors",
+            isSidebarOpen
+              ? "bg-secondary border-border"
+              : "bg-background border-border hover:bg-accent"
+          )}
+          title={isSidebarOpen ? "Collapse right panel" : "Expand right panel"}
+        >
+          <PanelRight className="w-4 h-4" />
+        </button>
+        
+        {isSidebarOpen && (
+          <span className="text-sm text-muted-foreground font-medium truncate">
+            {viewLabels[activeView]}
+          </span>
+        )}
       </div>
     </header>
   );
