@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { FileText, FileSearch, Network, Clock, BookOpen, ChevronRight } from 'lucide-react';
+import { FileText, FileSearch, Network, Clock, BookOpen, ChevronRight, PanelLeft } from 'lucide-react';
 import { mockNodes, mockEdges } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
@@ -16,6 +16,7 @@ import { UnifiedHeader } from '@/components/UnifiedHeader';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
   const [activeView, setActiveView] = useState<ReportView>('report');
   const [graphHoveredPaperId, setGraphHoveredPaperId] = useState<string | null>(null);
   const [listHoveredPaperId, setListHoveredPaperId] = useState<string | null>(null);
@@ -243,7 +244,12 @@ const Index = () => {
       {/* Main Body - Below Header */}
       <div className="flex-1 flex min-h-0">
         {/* Left Panel */}
-        <div className="w-[434px] border-r border-border bg-background flex-shrink-0">
+        <div 
+          className={cn(
+            "border-r border-border bg-background flex-shrink-0 transition-all duration-300 ease-in-out relative",
+            isLeftPanelOpen ? "w-[434px]" : "w-0 overflow-hidden border-r-0"
+          )}
+        >
           {activeView === 'report' || activeView === 'topology' || activeView === 'papers' ? (
             <ReportChatPanel />
           ) : activeView === 'notes' ? (
@@ -252,6 +258,21 @@ const Index = () => {
             <div className="h-full" />
           )}
         </div>
+        
+        {/* Left Panel Toggle Button */}
+        <button
+          onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
+          className={cn(
+            "absolute left-0 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-lg bg-card border border-border shadow-lg hover:bg-muted transition-all duration-300",
+            isLeftPanelOpen ? "ml-[434px]" : "ml-0"
+          )}
+          title={isLeftPanelOpen ? "Collapse left panel" : "Expand left panel"}
+        >
+          <PanelLeft className={cn(
+            "w-5 h-5 text-muted-foreground transition-transform",
+            !isLeftPanelOpen && "rotate-180"
+          )} />
+        </button>
 
         {/* Main Content Panel */}
         <div className="flex-1 flex flex-col min-w-0">
