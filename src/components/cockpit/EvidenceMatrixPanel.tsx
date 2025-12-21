@@ -21,6 +21,30 @@ const quadrantColors: Record<string, string> = {
   'niche': '#A78BFA',
 };
 
+// Cluster analysis content
+const clusterAnalysis: Record<string, { abstract: string; summary: string; title: string }> = {
+  'winners': {
+    title: 'High-Performance Battery Technologies',
+    abstract: 'A membrane-based DLE system achieving 95% lithium recovery rate at industrial scale with reduced water consumption. Advanced solid-state electrolyte formulations demonstrate ionic conductivity exceeding 10 mS/cm at room temperature.',
+    summary: 'This cluster represents mature technologies with high market velocity. Research focuses on industrial-scale optimization and manufacturing efficiency. Key players include China (45%), USA (28%), and Japan (15%). Average TRL progression: 4→7 in 18 months.',
+  },
+  'emerging': {
+    title: 'Next-Generation Energy Storage',
+    abstract: 'Novel sodium-ion cathode materials showing 95% capacity retention after 1000 cycles. Graphene-enhanced anodes demonstrate 400% improvement in charge/discharge rates compared to conventional lithium-ion.',
+    summary: 'Emerging technologies with high growth potential but lower technology readiness. Strong research activity from academic institutions. Primary focus areas: solid-state electrolytes, sodium-ion alternatives, and advanced anode materials.',
+  },
+  'mature': {
+    title: 'Established Industrial Processes',
+    abstract: 'Hydrometallurgical recycling processes achieving 99.2% lithium and 98.8% cobalt recovery rates. Standardized manufacturing protocols for cylindrical and pouch cell formats.',
+    summary: 'Well-established technologies with proven industrial track record. Lower innovation velocity but high reliability. Focus on incremental improvements and cost optimization.',
+  },
+  'niche': {
+    title: 'Specialized Research Applications',
+    abstract: 'Experimental zinc-air and flow battery systems for grid-scale storage applications. Novel organic electrode materials for sustainable battery chemistry.',
+    summary: 'Specialized technologies addressing specific use cases. Lower market velocity but important for diversification. Active research in alternative chemistries and novel form factors.',
+  },
+};
+
 export const EvidenceMatrixPanel = ({ 
   papers, 
   hoveredPaperId,
@@ -278,6 +302,88 @@ export const EvidenceMatrixPanel = ({
       </div>
 
       <ScrollArea className="flex-1">
+        {/* Cluster Analysis Section - shown when filter is active */}
+        <AnimatePresence>
+          {matrixFilter?.quadrant && clusterAnalysis[matrixFilter.quadrant] && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="p-4 border-b border-border"
+            >
+              {/* Cluster Title */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-2 h-2 rounded-full"
+                    style={{ 
+                      backgroundColor: quadrantColors[matrixFilter.quadrant],
+                      boxShadow: `0 0 8px ${quadrantColors[matrixFilter.quadrant]}` 
+                    }}
+                  />
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Cluster Analysis</span>
+                </div>
+                
+                <h4 className="text-sm font-semibold text-foreground">
+                  {clusterAnalysis[matrixFilter.quadrant].title}
+                </h4>
+
+                {/* Abstract */}
+                <div className="space-y-1.5">
+                  <div className="text-xs text-muted-foreground">Abstract</div>
+                  <p className="text-sm text-foreground/80 leading-relaxed">
+                    {clusterAnalysis[matrixFilter.quadrant].abstract}
+                  </p>
+                </div>
+
+                {/* Summary */}
+                <div className="space-y-1.5">
+                  <div className="text-xs text-muted-foreground">Summary</div>
+                  <p className="text-sm text-foreground/80 leading-relaxed">
+                    {clusterAnalysis[matrixFilter.quadrant].summary}
+                  </p>
+                </div>
+
+                {/* Open in links */}
+                <div className="space-y-1.5">
+                  <div className="text-xs text-muted-foreground">Open in</div>
+                  <div className="flex flex-wrap gap-2">
+                    <a 
+                      href="#" 
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      PDF
+                    </a>
+                    <a 
+                      href="#" 
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      Full Report
+                    </a>
+                    <a 
+                      href="#" 
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded border border-border hover:bg-muted/50 transition-colors text-foreground"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      Export
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Papers Header when filter is active */}
+        {matrixFilter?.quadrant && (
+          <div className="px-4 py-2 border-b border-border/50 bg-muted/20">
+            <span className="text-xs font-medium text-muted-foreground">
+              Related Papers ({displayPapers.length})
+            </span>
+          </div>
+        )}
         {displayPapers.map((paper) => (
           <div
             key={paper.id}
