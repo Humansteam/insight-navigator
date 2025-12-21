@@ -46,11 +46,11 @@ export const PapersScreeningMain = ({
       {/* Main Table Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Column Headers */}
-        <div className="grid grid-cols-[300px_1fr] border-b border-border bg-muted/30">
-          <div className="px-4 py-2.5 text-xs font-medium text-muted-foreground">
+        <div className="grid grid-cols-[300px_1fr] h-12 border-b border-border bg-muted/30">
+          <div className="px-4 flex items-center text-xs font-medium text-muted-foreground">
             Paper
           </div>
-          <div className="px-5 py-2.5 border-l border-border/40 flex items-center justify-between">
+          <div className="px-5 border-l border-border/40 flex items-center justify-between">
             <span className="text-xs font-medium text-muted-foreground">
               Screening judgement <span className="text-muted-foreground/60">(Abstract only)</span>
             </span>

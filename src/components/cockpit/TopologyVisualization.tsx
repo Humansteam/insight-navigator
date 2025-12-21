@@ -575,7 +575,7 @@ export const TopologyVisualization = ({
   return (
     <div className="flex flex-col h-full bg-background-deep rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-card-border bg-card/50">
+      <div className="flex items-center justify-between h-12 px-3 border-b border-card-border bg-card/50">
         <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)} className="h-7">
           <TabsList className="h-7 bg-muted/50">
             <TabsTrigger value="map" className="h-5 text-xs px-2">Map</TabsTrigger>

@@ -20,7 +20,7 @@ export const ScreeningDetailsPanel = ({ paper, papers = [], onBack }: ScreeningD
     return (
       <div className="h-full flex flex-col">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-border">
+        <div className="h-12 px-4 flex items-center border-b border-border">
           <span className="text-sm font-medium">Screening results</span>
         </div>
 
@@ -61,7 +61,7 @@ export const ScreeningDetailsPanel = ({ paper, papers = [], onBack }: ScreeningD
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+      <div className="flex items-center justify-between h-12 px-4 border-b border-border">
         <button
           onClick={onBack}
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
