@@ -216,16 +216,14 @@ const Index = () => {
     { id: 'timeline', label: 'Timeline', icon: <Clock className="w-3.5 h-3.5" /> },
   ];
 
-  return (
+  const mainContent = (
     <div className="h-screen w-full flex bg-background relative">
       {/* Left Panel - fixed width to prevent header jumping */}
       <div className="w-[434px] border-r border-border bg-background flex-shrink-0">
-{activeView === 'report' || activeView === 'topology' || activeView === 'papers' ? (
+        {activeView === 'report' || activeView === 'topology' || activeView === 'papers' ? (
           <ReportChatPanel />
         ) : activeView === 'notes' ? (
-          <JournalsWorkspaceProvider>
-            <JournalsLeftPanel />
-          </JournalsWorkspaceProvider>
+          <JournalsLeftPanel />
         ) : (
           <div className="h-full" />
         )}
@@ -296,9 +294,7 @@ const Index = () => {
               onExternalHoverNode={handleGraphNodeHover}
             />
           ) : activeView === 'notes' ? (
-            <JournalsWorkspaceProvider>
-              <JournalsMainPanel />
-            </JournalsWorkspaceProvider>
+            <JournalsMainPanel />
           ) : activeView === 'timeline' ? (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               <div className="text-center">
@@ -352,6 +348,17 @@ const Index = () => {
       )}
     </div>
   );
+
+  // Wrap with JournalsWorkspaceProvider when in notes view
+  if (activeView === 'notes') {
+    return (
+      <JournalsWorkspaceProvider>
+        {mainContent}
+      </JournalsWorkspaceProvider>
+    );
+  }
+
+  return mainContent;
 };
 
 // Engine Report Renderer - renders structured Lovable format
