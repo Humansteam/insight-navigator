@@ -235,11 +235,11 @@ const Index = () => {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <header className="h-14 flex items-center justify-between px-6 border-b border-border">
-          <div className="flex items-center gap-3">
-            <h2 className="text-sm font-medium text-foreground">
+          <div className="flex items-center gap-3 min-w-0 max-w-[280px]">
+            <h2 className="text-sm font-medium text-foreground truncate" title={report?.title || 'Exploring Lithium Battery Research'}>
               {report?.title || 'Exploring Lithium Battery Research'}
             </h2>
-            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
           </div>
           <div className="flex items-center gap-2">
             {/* View Switcher */}
