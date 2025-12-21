@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Languages, PanelRight, PanelLeft } from 'lucide-react';
+import { Languages, PanelLeft, PanelRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { ReportView } from '@/components/papers-screening/types';
@@ -103,13 +103,12 @@ export const UnifiedHeader = ({
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <Link
-            to="/translate"
+          <button
             className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
             title="Translate"
           >
             <Languages className="w-4 h-4" />
-          </Link>
+          </button>
           <ThemeSwitcher />
         </div>
       </div>
