@@ -1,9 +1,7 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { ChevronRight, PanelRight, Loader2, Languages, FileText, FileSearch, Network, Clock, BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { FileText, FileSearch, Network, Clock, BookOpen, ChevronRight } from 'lucide-react';
 import { mockNodes, mockEdges } from '@/data/mockData';
 import { cn } from '@/lib/utils';
-import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { InlinePaperCard } from '@/components/cockpit/InlinePaperCard';
 import { PipelineDAG } from '@/components/cockpit/PipelineDAG';
 import { EvidenceMatrixPanel } from '@/components/cockpit/EvidenceMatrixPanel';
@@ -14,6 +12,7 @@ import { TopologyMain } from '@/components/topology';
 import { ReportView } from '@/components/papers-screening/types';
 import { ReportChatPanel } from '@/components/report';
 import { JournalsWorkspaceProvider, JournalsLeftPanel, JournalsMainPanel, TextSelectionTooltip } from '@/components/journals';
+import { UnifiedHeader } from '@/components/UnifiedHeader';
 
 const Index = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -217,135 +216,99 @@ const Index = () => {
   ];
 
   const mainContent = (
-    <div className="h-screen w-full flex bg-background relative">
-      {/* Left Panel - fixed width to prevent header jumping */}
-      <div className="w-[434px] border-r border-border bg-background flex-shrink-0">
-        {activeView === 'report' || activeView === 'topology' || activeView === 'papers' ? (
-          <ReportChatPanel />
-        ) : activeView === 'notes' ? (
-          <JournalsLeftPanel />
-        ) : (
-          <div className="h-full" />
+    <div className="h-screen w-full flex flex-col bg-background relative">
+      {/* Unified Header - Full Width */}
+      <UnifiedHeader
+        activeView={activeView}
+        setActiveView={setActiveView}
+        viewOptions={viewOptions}
+        projectTitle={report?.title || 'Exploring Lithium Battery Research'}
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
+
+      {/* Main Body - Below Header */}
+      <div className="flex-1 flex min-h-0">
+        {/* Left Panel */}
+        <div className="w-[434px] border-r border-border bg-background flex-shrink-0">
+          {activeView === 'report' || activeView === 'topology' || activeView === 'papers' ? (
+            <ReportChatPanel />
+          ) : activeView === 'notes' ? (
+            <JournalsLeftPanel />
+          ) : (
+            <div className="h-full" />
+          )}
+        </div>
+
+        {/* Main Content Panel */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* Main Content Area */}
+          <div className="flex-1 overflow-auto lovable-scrollbar">
+            {isLoading && phase !== 'complete' ? (
+              <PipelineDAG query={input || 'Analyzing...'} onComplete={() => {}} />
+            ) : activeView === 'papers' ? (
+              <PapersScreeningMain onPaperSelect={(id) => console.log('Selected paper:', id)} />
+            ) : activeView === 'topology' ? (
+              <TopologyMain
+                nodes={papers}
+                edges={mockEdges}
+                externalHoveredNodeId={listHoveredPaperId || graphHighlightId}
+                onExternalHoverNode={handleGraphNodeHover}
+              />
+            ) : activeView === 'notes' ? (
+              <JournalsMainPanel />
+            ) : activeView === 'timeline' ? (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                <div className="text-center">
+                  <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Timeline view coming soon</p>
+                </div>
+              </div>
+            ) : (
+              <div ref={reportContentRef} className="max-w-3xl mx-auto px-8 py-10 relative">
+                <TextSelectionTooltip
+                  containerRef={reportContentRef}
+                  source="report"
+                  sourceLabel="Research Report"
+                />
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+                  {new Date()
+                    .toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                    .toUpperCase()}
+                </p>
+
+                {error ? (
+                  <div className="text-red-500 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+                    Error: {error}
+                  </div>
+                ) : (
+                  renderReportContent()
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Sidebar - hide for papers/notes/timeline */}
+        {(activeView === 'report' || activeView === 'topology') && (
+          <div
+            className={cn(
+              "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
+              isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
+            )}
+          >
+            <EvidenceMatrixPanel
+              papers={papers}
+              hoveredPaperId={graphHoveredPaperId}
+              onHoverPaper={setListHoveredPaperId}
+            />
+          </div>
         )}
       </div>
-
-      {/* Main Content Panel */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <header className="h-14 flex items-center justify-between px-6 border-b border-border">
-          <div className="flex items-center gap-3 min-w-0 max-w-[280px]">
-            <h2 className="text-sm font-medium text-foreground truncate" title={report?.title || 'Exploring Lithium Battery Research'}>
-              {report?.title || 'Exploring Lithium Battery Research'}
-            </h2>
-            <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          </div>
-          <div className="flex items-center gap-2">
-            {/* View Switcher */}
-            <div className="flex bg-muted/50 rounded-lg p-0.5 mr-2">
-              {viewOptions.map((view) => (
-                <button
-                  key={view.id}
-                  onClick={() => setActiveView(view.id)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
-                    activeView === view.id
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {view.icon}
-                  {view.label}
-                </button>
-              ))}
-            </div>
-            <Link
-              to="/translate"
-              className="w-9 h-9 rounded-lg border border-border flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
-              title="Translate"
-            >
-              <Languages className="w-4 h-4" />
-            </Link>
-            <ThemeSwitcher />
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={cn(
-                "w-9 h-9 rounded-lg border flex items-center justify-center transition-colors",
-                isSidebarOpen
-                  ? "bg-secondary border-border"
-                  : "bg-background border-border hover:bg-accent"
-              )}
-            >
-              <PanelRight className="w-4 h-4" />
-            </button>
-          </div>
-        </header>
-
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-auto lovable-scrollbar">
-          {isLoading && phase !== 'complete' ? (
-            <PipelineDAG query={input || 'Analyzing...'} onComplete={() => {}} />
-          ) : activeView === 'papers' ? (
-            <PapersScreeningMain onPaperSelect={(id) => console.log('Selected paper:', id)} />
-          ) : activeView === 'topology' ? (
-            <TopologyMain
-              nodes={papers}
-              edges={mockEdges}
-              externalHoveredNodeId={listHoveredPaperId || graphHighlightId}
-              onExternalHoverNode={handleGraphNodeHover}
-            />
-          ) : activeView === 'notes' ? (
-            <JournalsMainPanel />
-          ) : activeView === 'timeline' ? (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              <div className="text-center">
-                <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p>Timeline view coming soon</p>
-              </div>
-            </div>
-          ) : (
-            <div ref={reportContentRef} className="max-w-3xl mx-auto px-8 py-10 relative">
-              <TextSelectionTooltip
-                containerRef={reportContentRef}
-                source="report"
-                sourceLabel="Research Report"
-              />
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
-                {new Date()
-                  .toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
-                  .toUpperCase()}
-              </p>
-
-              {error ? (
-                <div className="text-red-500 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
-                  Error: {error}
-                </div>
-              ) : (
-                renderReportContent()
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right Sidebar - hide for papers/notes/timeline */}
-      {(activeView === 'report' || activeView === 'topology') && (
-        <div
-          className={cn(
-            "border-l border-border flex flex-col transition-all duration-300 ease-in-out",
-            isSidebarOpen ? "w-[360px]" : "w-0 overflow-hidden border-l-0"
-          )}
-        >
-          <EvidenceMatrixPanel
-            papers={papers}
-            hoveredPaperId={graphHoveredPaperId}
-            onHoverPaper={setListHoveredPaperId}
-          />
-        </div>
-      )}
     </div>
   );
 
