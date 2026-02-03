@@ -143,7 +143,7 @@ const DocumentSelector = ({ documents, selectedDocuments, onSelect, onClose }: D
       </div>
       
       {/* Documents list */}
-      <div className="max-h-64 overflow-auto p-2">
+      <div className="h-[280px] overflow-auto p-2">
         {filteredDocuments.length > 0 ? (
           filteredDocuments.map(doc => renderDocumentItem(doc))
         ) : (
