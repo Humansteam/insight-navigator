@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Search, Bot, X, Folder, File } from 'lucide-react';
+import { FileText, Search, Bot, X, Folder, File, ArrowUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,12 @@ const mockDocuments: DocumentItem[] = [
   { id: 'doc-7', name: 'Market Analysis 2024.xlsx', type: 'file' },
 ];
 
+const modeConfig = {
+  documents: { label: 'Documents', icon: FileText, color: 'primary' },
+  research: { label: 'Research', icon: Search, color: 'accent' },
+  agent: { label: 'Agent Mode', icon: Bot, color: 'warning' },
+};
+
 const Home = () => {
   const [activeMode, setActiveMode] = useState<Mode | null>(null);
   const [query, setQuery] = useState('');
@@ -55,27 +61,14 @@ const Home = () => {
   const handleDocumentSelect = (doc: DocumentItem) => {
     const isSelected = selectedDocuments.some((d) => d.id === doc.id);
     if (isSelected) {
-      const newSelected = selectedDocuments.filter((d) => d.id !== doc.id);
-      setSelectedDocuments(newSelected);
-      // If no documents selected, clear documents mode
-      if (newSelected.length === 0 && activeMode === 'documents') {
-        setActiveMode(null);
-      }
+      setSelectedDocuments(selectedDocuments.filter((d) => d.id !== doc.id));
     } else {
       setSelectedDocuments([...selectedDocuments, doc]);
-      // Auto-activate documents mode when selecting
-      if (activeMode !== 'documents') {
-        setActiveMode('documents');
-      }
     }
   };
 
   const removeDocument = (docId: string) => {
-    const newSelected = selectedDocuments.filter((d) => d.id !== docId);
-    setSelectedDocuments(newSelected);
-    if (newSelected.length === 0 && activeMode === 'documents') {
-      setActiveMode(null);
-    }
+    setSelectedDocuments(selectedDocuments.filter((d) => d.id !== docId));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,13 +82,7 @@ const Home = () => {
     console.log('Query:', query, 'Mode:', activeMode, 'Documents:', selectedDocuments);
   };
 
-  // Only Research and Agent Mode buttons (Documents is now in input)
-  const modeButtons = [
-    { id: 'research' as Mode, label: 'Research', icon: Search },
-    { id: 'agent' as Mode, label: 'Agent Mode', icon: Bot },
-  ];
-
-  // renderDocumentItem moved to DocumentSelector component
+  const modeButtons: Mode[] = ['documents', 'research', 'agent'];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -126,14 +113,89 @@ const Home = () => {
 
           {/* Search Input Area */}
           <form onSubmit={handleSubmit} className="relative">
-            {/* Selected Documents Pills */}
+            {/* Input Container - styled like Manus */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden">
+              {/* Input Field */}
+              <div className="relative">
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  placeholder={
+                    activeMode === 'documents'
+                      ? 'Ask about your documents...'
+                      : activeMode === 'research'
+                      ? 'Enter your research query...'
+                      : activeMode === 'agent'
+                      ? 'Assign a task to the agent...'
+                      : 'Assign a task or ask anything'
+                  }
+                  value={query}
+                  onChange={handleInputChange}
+                  className={cn(
+                    "w-full h-14 border-0 bg-transparent text-foreground",
+                    "pl-4 pr-12 text-base",
+                    "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+                    "placeholder:text-muted-foreground"
+                  )}
+                />
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full transition-colors",
+                    query.trim() 
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                      : "bg-muted text-muted-foreground"
+                  )}
+                  disabled={!query.trim()}
+                >
+                  <ArrowUp className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Mode Buttons Row - inside input container */}
+              <div className="flex items-center gap-2 px-3 py-2 border-t border-border">
+                {modeButtons.map((modeId) => {
+                  const config = modeConfig[modeId];
+                  const Icon = config.icon;
+                  const isActive = activeMode === modeId;
+                  const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
+
+                  return (
+                    <Button
+                      key={modeId}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleModeSelect(modeId)}
+                      className={cn(
+                        "h-8 px-3 rounded-lg gap-1.5 transition-all",
+                        isActive && "bg-primary/10 text-primary border border-primary/30",
+                        !isActive && "hover:bg-muted"
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="text-sm">
+                        {config.label}
+                        {hasDocuments && ` (${selectedDocuments.length})`}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Selected Documents Pills - below input */}
             {selectedDocuments.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {selectedDocuments.map((doc) => (
                   <Badge
                     key={doc.id}
                     variant="secondary"
-                    className="pl-2 pr-1 py-1 flex items-center gap-1 bg-primary/10 text-primary border-primary/20"
+                    className="pl-2 pr-1 py-1 flex items-center gap-1 bg-primary/10 text-primary border border-primary/20"
                   >
                     {doc.type === 'folder' ? (
                       <Folder className="w-3 h-3" />
@@ -153,91 +215,61 @@ const Home = () => {
               </div>
             )}
 
-            {/* Input Field */}
-            <div className="relative flex items-center gap-2">
-              {/* Document Selector - always visible */}
-              <DocumentSelector
-                documents={mockDocuments}
-                selectedDocuments={selectedDocuments}
-                onSelect={handleDocumentSelect}
-              />
-
-              {/* Mode Pin for Research/Agent */}
-              {activeMode && activeMode !== 'documents' && (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    "text-xs font-medium border shrink-0",
-                    activeMode === 'research' && "border-accent/50 text-accent bg-accent/5",
-                    activeMode === 'agent' && "border-warning/50 text-warning bg-warning/5"
-                  )}
-                >
-                  {activeMode === 'research' && <Search className="w-3 h-3 mr-1" />}
-                  {activeMode === 'agent' && <Bot className="w-3 h-3 mr-1" />}
-                  {modeButtons.find(m => m.id === activeMode)?.label}
-                </Badge>
-              )}
-
-              <div className="relative flex-1">
-                <Input
-                  ref={inputRef}
-                  type="text"
-                  placeholder={
-                    activeMode === 'documents'
-                      ? 'Ask about your documents...'
-                      : activeMode === 'research'
-                      ? 'Enter your research query...'
-                      : activeMode === 'agent'
-                      ? 'Assign a task to the agent...'
-                      : 'Ask anything...'
-                  }
-                  value={query}
-                  onChange={handleInputChange}
-                  className={cn(
-                    "w-full h-14 rounded-2xl border-border bg-background-elevated text-foreground",
-                    "pl-4 pr-12 text-base",
-                    "focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
-                    "placeholder:text-muted-foreground"
-                  )}
+            {/* Contextual Panel - appears below when mode is active */}
+            {activeMode === 'documents' && (
+              <div className="mt-4">
+                <DocumentSelector
+                  documents={mockDocuments}
+                  selectedDocuments={selectedDocuments}
+                  onSelect={handleDocumentSelect}
                 />
-
-                {/* Submit Button */}
-              <Button
-                type="submit"
-                variant="ghost"
-                size="icon"
-                  className="absolute right-2 h-10 w-10 rounded-xl bg-primary/10 text-primary hover:bg-primary/20"
-                  disabled={!query.trim()}
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
               </div>
-            </div>
+            )}
+
+            {/* Research suggestions could go here */}
+            {activeMode === 'research' && (
+              <div className="mt-4 space-y-2">
+                {[
+                  'Analyze trends in solid-state battery technology',
+                  'Compare lithium-ion vs sodium-ion batteries',
+                  'Review latest electrolyte research papers',
+                  'Summarize manufacturing cost optimization studies',
+                ].map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setQuery(suggestion)}
+                    className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
+                  >
+                    <span>{suggestion}</span>
+                    <ArrowUp className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 -rotate-45 transition-opacity" />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Agent mode suggestions */}
+            {activeMode === 'agent' && (
+              <div className="mt-4 space-y-2">
+                {[
+                  'Create a comprehensive research report on battery materials',
+                  'Build a comparison table of top 10 battery manufacturers',
+                  'Generate an executive summary from selected documents',
+                  'Analyze and extract key findings from research papers',
+                ].map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setQuery(suggestion)}
+                    className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
+                  >
+                    <span>{suggestion}</span>
+                    <ArrowUp className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 -rotate-45 transition-opacity" />
+                  </button>
+                ))}
+              </div>
+            )}
           </form>
-
-          {/* Mode Buttons */}
-          <div className="flex items-center justify-center gap-3 mt-6">
-            {modeButtons.map((mode) => {
-              const Icon = mode.icon;
-              const isActive = activeMode === mode.id;
-
-              return (
-                <Button
-                  key={mode.id}
-                  variant={isActive ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => handleModeSelect(mode.id)}
-                  className={cn(
-                    "rounded-full px-4 transition-all",
-                    isActive && "shadow-glow-sm"
-                  )}
-                >
-                  <Icon className="w-4 h-4 mr-2" />
-                  {mode.label}
-                </Button>
-              );
-            })}
-          </div>
         </div>
       </main>
 
