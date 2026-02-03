@@ -15,9 +15,10 @@ interface DocumentSelectorProps {
   documents: DocumentItem[];
   selectedDocuments: DocumentItem[];
   onSelect: (doc: DocumentItem) => void;
+  onClose?: () => void;
 }
 
-const DocumentSelector = ({ documents, selectedDocuments, onSelect }: DocumentSelectorProps) => {
+const DocumentSelector = ({ documents, selectedDocuments, onSelect, onClose }: DocumentSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
@@ -78,6 +79,11 @@ const DocumentSelector = ({ documents, selectedDocuments, onSelect }: DocumentSe
             )}
             style={{ paddingLeft: `${12 + depth * 16}px` }}
           >
+            <Checkbox
+              checked={selected}
+              onCheckedChange={() => onSelect(doc)}
+              onClick={(e) => e.stopPropagation()}
+            />
             <button
               type="button"
               onClick={(e) => {
@@ -93,11 +99,6 @@ const DocumentSelector = ({ documents, selectedDocuments, onSelect }: DocumentSe
             </button>
             <Icon className="w-4 h-4 text-muted-foreground" />
             <span className="flex-1 text-sm">{doc.name}</span>
-            <Checkbox
-              checked={selected}
-              onCheckedChange={() => onSelect(doc)}
-              onClick={(e) => e.stopPropagation()}
-            />
           </div>
           {isExpanded && doc.children.map(child => renderDocumentItem(child, depth + 1))}
         </div>
@@ -114,13 +115,13 @@ const DocumentSelector = ({ documents, selectedDocuments, onSelect }: DocumentSe
         style={{ paddingLeft: `${12 + depth * 16 + 24}px` }}
         onClick={() => onSelect(doc)}
       >
-        <Icon className="w-4 h-4 text-muted-foreground" />
-        <span className="flex-1 text-sm">{doc.name}</span>
         <Checkbox
           checked={selected}
           onCheckedChange={() => onSelect(doc)}
           onClick={(e) => e.stopPropagation()}
         />
+        <Icon className="w-4 h-4 text-muted-foreground" />
+        <span className="flex-1 text-sm">{doc.name}</span>
       </div>
     );
   };
