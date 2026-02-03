@@ -173,37 +173,33 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mode Buttons - always visible */}
-            <div className="flex items-center justify-center gap-3 mt-4">
-              {modeButtons.map((modeId) => {
-                const config = modeConfig[modeId];
-                const Icon = config.icon;
-                const isActive = activeMode === modeId;
-                const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
+            {/* Mode Buttons - only when no mode is active */}
+            {!activeMode && (
+              <div className="flex items-center justify-center gap-3 mt-4">
+                {modeButtons.map((modeId) => {
+                  const config = modeConfig[modeId];
+                  const Icon = config.icon;
+                  const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
 
-                return (
-                  <Button
-                    key={modeId}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleModeSelect(modeId)}
-                    className={cn(
-                      "h-10 px-5 rounded-full gap-2 transition-all border",
-                      isActive 
-                        ? "bg-card border-foreground/20 text-foreground" 
-                        : "bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
-                    )}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm">
-                      {config.label}
-                      {hasDocuments && ` (${selectedDocuments.length})`}
-                    </span>
-                  </Button>
-                );
-              })}
-            </div>
+                  return (
+                    <Button
+                      key={modeId}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleModeSelect(modeId)}
+                      className="h-10 px-5 rounded-full gap-2 transition-all border bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span className="text-sm">
+                        {config.label}
+                        {hasDocuments && ` (${selectedDocuments.length})`}
+                      </span>
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Content Area - fixed height with pinned selections */}
             <div className="mt-4 min-h-[340px] flex flex-col">
