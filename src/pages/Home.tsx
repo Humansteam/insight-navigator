@@ -1,26 +1,13 @@
 import { useState, useRef } from 'react';
-import { FileText, Search, Bot, X, ChevronDown, Folder, File } from 'lucide-react';
+import { Search, Bot, X, Folder, File } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
+import DocumentSelector, { DocumentItem } from '@/components/home/DocumentSelector';
 
 type Mode = 'documents' | 'research' | 'agent';
-
-interface DocumentItem {
-  id: string;
-  name: string;
-  type: 'folder' | 'file';
-  children?: DocumentItem[];
-}
 
 // Mock documents data - in real app this would come from RAG system
 const mockDocuments: DocumentItem[] = [
@@ -57,26 +44,38 @@ const Home = () => {
   const handleModeSelect = (mode: Mode) => {
     if (activeMode === mode) {
       setActiveMode(null);
-      setSelectedDocuments([]);
-    } else {
-      setActiveMode(mode);
-      if (mode !== 'documents') {
+      if (mode === 'documents') {
         setSelectedDocuments([]);
       }
+    } else {
+      setActiveMode(mode);
     }
   };
 
   const handleDocumentSelect = (doc: DocumentItem) => {
     const isSelected = selectedDocuments.some((d) => d.id === doc.id);
     if (isSelected) {
-      setSelectedDocuments(selectedDocuments.filter((d) => d.id !== doc.id));
+      const newSelected = selectedDocuments.filter((d) => d.id !== doc.id);
+      setSelectedDocuments(newSelected);
+      // If no documents selected, clear documents mode
+      if (newSelected.length === 0 && activeMode === 'documents') {
+        setActiveMode(null);
+      }
     } else {
       setSelectedDocuments([...selectedDocuments, doc]);
+      // Auto-activate documents mode when selecting
+      if (activeMode !== 'documents') {
+        setActiveMode('documents');
+      }
     }
   };
 
   const removeDocument = (docId: string) => {
-    setSelectedDocuments(selectedDocuments.filter((d) => d.id !== docId));
+    const newSelected = selectedDocuments.filter((d) => d.id !== docId);
+    setSelectedDocuments(newSelected);
+    if (newSelected.length === 0 && activeMode === 'documents') {
+      setActiveMode(null);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,62 +86,16 @@ const Home = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    // Handle search/query submission
     console.log('Query:', query, 'Mode:', activeMode, 'Documents:', selectedDocuments);
   };
 
+  // Only Research and Agent Mode buttons (Documents is now in input)
   const modeButtons = [
-    { id: 'documents' as Mode, label: 'Documents', icon: FileText },
     { id: 'research' as Mode, label: 'Research', icon: Search },
     { id: 'agent' as Mode, label: 'Agent Mode', icon: Bot },
   ];
 
-  const renderDocumentItem = (doc: DocumentItem, depth = 0) => {
-    const isSelected = selectedDocuments.some((d) => d.id === doc.id);
-    const Icon = doc.type === 'folder' ? Folder : File;
-
-    if (doc.type === 'folder' && doc.children) {
-      return (
-        <div key={doc.id}>
-          <DropdownMenuItem
-            className={cn(
-              'cursor-pointer',
-              isSelected && 'bg-primary/10'
-            )}
-            style={{ paddingLeft: `${12 + depth * 12}px` }}
-            onClick={(e) => {
-              e.preventDefault();
-              handleDocumentSelect(doc);
-            }}
-          >
-            <Icon className="w-4 h-4 mr-2 text-muted-foreground" />
-            <span className="flex-1">{doc.name}</span>
-            {isSelected && <Badge variant="secondary" className="ml-2 text-xs">Selected</Badge>}
-          </DropdownMenuItem>
-          {doc.children.map((child) => renderDocumentItem(child, depth + 1))}
-        </div>
-      );
-    }
-
-    return (
-      <DropdownMenuItem
-        key={doc.id}
-        className={cn(
-          'cursor-pointer',
-          isSelected && 'bg-primary/10'
-        )}
-        style={{ paddingLeft: `${12 + depth * 12}px` }}
-        onClick={(e) => {
-          e.preventDefault();
-          handleDocumentSelect(doc);
-        }}
-      >
-        <Icon className="w-4 h-4 mr-2 text-muted-foreground" />
-        <span className="flex-1">{doc.name}</span>
-        {isSelected && <Badge variant="secondary" className="ml-2 text-xs">Selected</Badge>}
-      </DropdownMenuItem>
-    );
-  };
+  // renderDocumentItem moved to DocumentSelector component
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -201,83 +154,64 @@ const Home = () => {
             )}
 
             {/* Input Field */}
-            <div className="relative flex items-center">
-              {/* Mode Pin */}
-              {activeMode && (
-                <div className="absolute left-3 flex items-center">
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "text-xs font-medium border",
-                      activeMode === 'documents' && "border-primary/50 text-primary bg-primary/5",
-                      activeMode === 'research' && "border-accent/50 text-accent bg-accent/5",
-                      activeMode === 'agent' && "border-warning/50 text-warning bg-warning/5"
-                    )}
-                  >
-                    {activeMode === 'documents' && <FileText className="w-3 h-3 mr-1" />}
-                    {activeMode === 'research' && <Search className="w-3 h-3 mr-1" />}
-                    {activeMode === 'agent' && <Bot className="w-3 h-3 mr-1" />}
-                    {modeButtons.find(m => m.id === activeMode)?.label}
-                  </Badge>
-                </div>
-              )}
-
-              <Input
-                ref={inputRef}
-                type="text"
-                placeholder={
-                  activeMode === 'documents'
-                    ? 'Ask about your documents...'
-                    : activeMode === 'research'
-                    ? 'Enter your research query...'
-                    : activeMode === 'agent'
-                    ? 'Assign a task to the agent...'
-                    : 'Assign a task'
-                }
-                value={query}
-                onChange={handleInputChange}
-                className={cn(
-                  "w-full h-14 rounded-2xl border-border bg-background-elevated text-foreground",
-                  "pl-4 pr-12 text-base",
-                  "focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
-                  "placeholder:text-muted-foreground",
-                  activeMode && "pl-32"
-                )}
+            <div className="relative flex items-center gap-2">
+              {/* Document Selector - always visible */}
+              <DocumentSelector
+                documents={mockDocuments}
+                selectedDocuments={selectedDocuments}
+                onSelect={handleDocumentSelect}
               />
 
-              {/* Document Selector Dropdown (only when Documents mode is active) */}
-              {activeMode === 'documents' && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="absolute right-12 h-8 w-8 text-muted-foreground hover:text-foreground"
-                    >
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-72 max-h-80 overflow-auto">
-                    <div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                      Select documents for RAG analysis
-                    </div>
-                    <DropdownMenuSeparator />
-                    {mockDocuments.map((doc) => renderDocumentItem(doc))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              {/* Mode Pin for Research/Agent */}
+              {activeMode && activeMode !== 'documents' && (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    "text-xs font-medium border shrink-0",
+                    activeMode === 'research' && "border-accent/50 text-accent bg-accent/5",
+                    activeMode === 'agent' && "border-warning/50 text-warning bg-warning/5"
+                  )}
+                >
+                  {activeMode === 'research' && <Search className="w-3 h-3 mr-1" />}
+                  {activeMode === 'agent' && <Bot className="w-3 h-3 mr-1" />}
+                  {modeButtons.find(m => m.id === activeMode)?.label}
+                </Badge>
               )}
 
-              {/* Submit Button */}
+              <div className="relative flex-1">
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  placeholder={
+                    activeMode === 'documents'
+                      ? 'Ask about your documents...'
+                      : activeMode === 'research'
+                      ? 'Enter your research query...'
+                      : activeMode === 'agent'
+                      ? 'Assign a task to the agent...'
+                      : 'Ask anything...'
+                  }
+                  value={query}
+                  onChange={handleInputChange}
+                  className={cn(
+                    "w-full h-14 rounded-2xl border-border bg-background-elevated text-foreground",
+                    "pl-4 pr-12 text-base",
+                    "focus:ring-2 focus:ring-primary/30 focus:border-primary/50",
+                    "placeholder:text-muted-foreground"
+                  )}
+                />
+
+                {/* Submit Button */}
               <Button
                 type="submit"
                 variant="ghost"
                 size="icon"
-                className="absolute right-2 h-10 w-10 rounded-xl bg-primary/10 text-primary hover:bg-primary/20"
-                disabled={!query.trim()}
-              >
-                <Search className="w-4 h-4" />
-              </Button>
+                  className="absolute right-2 h-10 w-10 rounded-xl bg-primary/10 text-primary hover:bg-primary/20"
+                  disabled={!query.trim()}
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </form>
 
