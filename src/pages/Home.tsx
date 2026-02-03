@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import DocumentSelector, { DocumentItem } from '@/components/home/DocumentSelector';
+import DocumentsChatView, { ChatMessage } from '@/components/home/DocumentsChatView';
 
 type Mode = 'documents' | 'research' | 'agent';
 
@@ -44,8 +45,12 @@ const Home = () => {
   const [activeMode, setActiveMode] = useState<Mode | null>(null);
   const [query, setQuery] = useState('');
   const [selectedDocuments, setSelectedDocuments] = useState<DocumentItem[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Chat state for Documents mode
+  const [isInChatMode, setIsInChatMode] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleModeSelect = (mode: Mode) => {
     if (activeMode === mode) {
@@ -73,16 +78,101 @@ const Home = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    setIsTyping(e.target.value.length > 0);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    console.log('Query:', query, 'Mode:', activeMode, 'Documents:', selectedDocuments);
+
+    if (activeMode === 'documents') {
+      // Add user message
+      const userMessage: ChatMessage = {
+        id: Date.now().toString(),
+        role: 'user',
+        content: query,
+        timestamp: new Date(),
+      };
+      setChatMessages((prev) => [...prev, userMessage]);
+      setIsInChatMode(true);
+      setQuery('');
+      setIsProcessing(true);
+
+      // Simulate AI response
+      setTimeout(() => {
+        const assistantMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `Анализирую выбранные документы по вашему запросу...\n\nНайдено 3 релевантных раздела в документах:\n\n1. **Lithium Battery Analysis.pdf** — раздел о характеристиках литий-ионных батарей\n2. **Solid-State Electrolytes.pdf** — сравнительный анализ электролитов\n3. **Manufacturing Processes.pdf** — технологии производства\n\nХотите, чтобы я подробнее раскрыл какой-либо из этих разделов?`,
+          timestamp: new Date(),
+          isThinking: true,
+        };
+        setChatMessages((prev) => [...prev, assistantMessage]);
+        setIsProcessing(false);
+      }, 2000);
+    } else {
+      console.log('Query:', query, 'Mode:', activeMode, 'Documents:', selectedDocuments);
+    }
+  };
+
+  const handleChatMessage = (message: string) => {
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: message,
+      timestamp: new Date(),
+    };
+    setChatMessages((prev) => [...prev, userMessage]);
+    setIsProcessing(true);
+
+    // Simulate AI response
+    setTimeout(() => {
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: `Продолжаю анализ на основе вашего запроса "${message}"...\n\nВот что я нашел в документах...`,
+        timestamp: new Date(),
+        isThinking: true,
+      };
+      setChatMessages((prev) => [...prev, assistantMessage]);
+      setIsProcessing(false);
+    }, 1500);
+  };
+
+  const handleBackFromChat = () => {
+    setIsInChatMode(false);
+    setChatMessages([]);
   };
 
   const modeButtons: Mode[] = ['documents', 'research', 'agent'];
+
+  // Full-screen chat mode for Documents
+  if (isInChatMode && activeMode === 'documents') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        {/* Header */}
+        <header className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <span className="text-primary font-semibold text-sm">S</span>
+            </div>
+            <span className="text-lg font-medium text-foreground">Stata</span>
+          </div>
+          <ThemeSwitcher />
+        </header>
+
+        {/* Chat View */}
+        <main className="flex-1 flex flex-col overflow-hidden">
+          <DocumentsChatView
+            messages={chatMessages}
+            onSendMessage={handleChatMessage}
+            isProcessing={isProcessing}
+            selectedDocuments={selectedDocuments}
+            onBack={handleBackFromChat}
+          />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
