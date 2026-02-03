@@ -97,8 +97,8 @@ const Home = () => {
         <ThemeSwitcher />
       </header>
 
-      {/* Main Content - centered vertically */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6">
+      {/* Main Content - positioned from top to prevent jumping */}
+      <main className="flex-1 flex flex-col items-center px-6 pt-[20vh]">
         <div className="w-full max-w-3xl">
           {/* Title */}
           <h1 className="text-4xl md:text-5xl font-serif text-center text-foreground mb-12">
@@ -174,7 +174,7 @@ const Home = () => {
             </div>
 
             {/* Fixed height container for content below input - prevents layout shift */}
-            <div className="min-h-[400px]">
+            <div>
               {/* Mode Buttons - only when no mode is active */}
               {!activeMode && (
                 <div className="flex items-center justify-center gap-3 mt-4">
