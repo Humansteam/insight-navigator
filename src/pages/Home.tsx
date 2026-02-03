@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
-import { FileText, Search, Bot, X, Folder, File, ChevronDown } from 'lucide-react';
+import { FileText, Search, Bot, X, Folder, File, Plus, ArrowUp, Mic, Link2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import DocumentSelector, { DocumentItem } from '@/components/home/DocumentSelector';
@@ -45,7 +45,8 @@ const Home = () => {
   const [activeMode, setActiveMode] = useState<Mode | null>(null);
   const [query, setQuery] = useState('');
   const [selectedDocuments, setSelectedDocuments] = useState<DocumentItem[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [showIntegrations, setShowIntegrations] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Chat state for Documents mode
   const [isInChatMode, setIsInChatMode] = useState(false);
@@ -195,72 +196,126 @@ const Home = () => {
             Let's dive into your knowledge
           </h1>
 
-          {/* Search Input Area - Fixed position, doesn't move */}
-          <form onSubmit={handleSubmit} className="relative">
-            {/* Input Container */}
-            <div className="bg-card border border-border rounded-2xl overflow-hidden">
-              {/* Input Field with optional mode badge */}
-              <div className="relative flex items-center">
-                {/* Active Mode Badge - inside input */}
-                {activeMode && (
-                  <div className="flex items-center gap-1.5 ml-3 px-3 py-1.5 bg-muted rounded-full">
-                    {(() => {
-                      const Icon = modeConfig[activeMode].icon;
-                      return <Icon className="w-3.5 h-3.5" />;
-                    })()}
-                    <span className="text-xs font-medium">{modeConfig[activeMode].label}</span>
-                    <button
-                      type="button"
-                      onClick={() => setActiveMode(null)}
-                      className="ml-0.5 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
-                
-                <Input
-                  ref={inputRef}
-                  type="text"
-                  placeholder={
-                    activeMode === 'documents'
-                      ? 'Ask about your documents...'
-                      : activeMode === 'research'
-                      ? 'Enter your research query...'
-                      : activeMode === 'agent'
-                      ? 'Assign a task to the agent...'
-                      : 'Assign a task or ask anything'
-                  }
-                  value={query}
-                  onChange={handleInputChange}
-                  className={cn(
-                    "flex-1 h-14 border-0 bg-transparent text-foreground",
-                    activeMode ? "pl-3" : "pl-4",
-                    "pr-24 text-base",
-                    "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                    "placeholder:text-muted-foreground"
+          {/* Search Input Area - Manus style */}
+          <form onSubmit={handleSubmit}>
+            <div className="w-full">
+              {/* Form card */}
+              <div className="bg-card border border-border rounded-2xl shadow-lg py-4">
+                {/* Input row */}
+                <div className="px-5">
+                  {/* Active Mode Badge */}
+                  {activeMode && (
+                    <div className="flex items-center gap-1.5 mb-3 w-fit px-3 py-1.5 bg-muted rounded-full">
+                      {(() => {
+                        const Icon = modeConfig[activeMode].icon;
+                        return <Icon className="w-3.5 h-3.5" />;
+                      })()}
+                      <span className="text-xs font-medium">{modeConfig[activeMode].label}</span>
+                      <button
+                        type="button"
+                        onClick={() => setActiveMode(null)}
+                        className="ml-0.5 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
                   )}
-                />
-
-                {/* Right side buttons */}
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    size="icon"
+                  
+                  <Textarea
+                    ref={textareaRef}
+                    placeholder={
+                      activeMode === 'documents'
+                        ? 'Ask about your documents...'
+                        : activeMode === 'research'
+                        ? 'Enter your research query...'
+                        : activeMode === 'agent'
+                        ? 'Assign a task to the agent...'
+                        : 'Assign a task or ask anything'
+                    }
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSubmit(e);
+                      }
+                    }}
+                    rows={1}
                     className={cn(
-                      "h-8 w-8 rounded-lg transition-colors",
-                      query.trim() 
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                        : "bg-muted text-muted-foreground"
+                      "w-full min-h-[28px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
+                      "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+                      "placeholder:text-muted-foreground/70 text-base leading-relaxed"
                     )}
-                    disabled={!query.trim()}
-                  >
-                    <Search className="w-4 h-4" />
-                  </Button>
+                  />
+                </div>
+
+                {/* Bottom toolbar */}
+                <div className="flex items-center justify-between px-4 pt-3">
+                  <div className="flex items-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
+                    >
+                      <Link2 className="w-5 h-5" />
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted"
+                    >
+                      <Mic className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="icon"
+                      disabled={!query.trim()}
+                      className={cn(
+                        "h-10 w-10 rounded-full transition-all",
+                        query.trim()
+                          ? "bg-foreground text-background hover:bg-foreground/90"
+                          : "bg-muted text-muted-foreground/50"
+                      )}
+                    >
+                      <ArrowUp className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
+
+              {/* Integrations bar */}
+              {showIntegrations && (
+                <div className="w-full -mt-[22px]">
+                  <div className="h-10 rounded-b-[22px] border border-border bg-card/95 px-4 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Link2 className="w-4 h-4" />
+                      <span>Connect your tools to Strata</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowIntegrations(false)}
+                      className="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      aria-label="Dismiss"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Fixed height container for content below input - prevents layout shift */}
