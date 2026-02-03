@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder, Copy, Sparkles, X } from 'lucide-react';
+import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder, Copy, Sparkles, X, Mic, Link2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -224,12 +224,12 @@ const DocumentsChatView = ({
 
                 {/* Bottom toolbar */}
                 <div className="flex items-center justify-between px-4 pt-3">
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-1">
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
+                      className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
                     >
                       <Plus className="w-5 h-5" />
                     </Button>
@@ -237,26 +237,36 @@ const DocumentsChatView = ({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
+                      className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
                     >
-                      <Sparkles className="w-5 h-5" />
+                      <Link2 className="w-5 h-5" />
                     </Button>
                   </div>
 
-                  <Button
-                    type="submit"
-                    variant="ghost"
-                    size="icon"
-                    disabled={!input.trim() || isProcessing}
-                    className={cn(
-                      "h-10 w-10 rounded-full transition-all",
-                      input.trim() && !isProcessing
-                        ? "bg-foreground/90 text-background hover:bg-foreground"
-                        : "bg-muted/60 text-muted-foreground/50"
-                    )}
-                  >
-                    <ArrowUp className="w-5 h-5" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted"
+                    >
+                      <Mic className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="icon"
+                      disabled={!input.trim() || isProcessing}
+                      className={cn(
+                        "h-10 w-10 rounded-full transition-all",
+                        input.trim() && !isProcessing
+                          ? "bg-foreground text-background hover:bg-foreground/90"
+                          : "bg-muted text-muted-foreground/50"
+                      )}
+                    >
+                      <ArrowUp className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -264,7 +274,7 @@ const DocumentsChatView = ({
               <div className="w-full -mt-[22px]">
                 <div className="h-10 rounded-b-[22px] border border-border bg-card/95 px-4 flex items-center justify-between">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Plus className="w-4 h-4" />
+                    <Link2 className="w-4 h-4" />
                     <span>Connect your tools to Strata</span>
                   </div>
                   <button
