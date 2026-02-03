@@ -98,7 +98,7 @@ const Home = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6">
+      <main className="flex-1 flex flex-col items-center justify-start px-6 pt-24 md:pt-28 pb-10">
         <div className="w-full max-w-3xl">
           {/* Title */}
           <h1 className="text-4xl md:text-5xl font-serif text-center text-foreground mb-12">
