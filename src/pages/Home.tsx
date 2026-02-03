@@ -97,8 +97,8 @@ const Home = () => {
         <ThemeSwitcher />
       </header>
 
-      {/* Main Content - fixed position from top, not centered */}
-      <main className="flex-1 flex flex-col items-center pt-[15vh] px-6">
+      {/* Main Content - centered vertically */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="w-full max-w-3xl">
           {/* Title */}
           <h1 className="text-4xl md:text-5xl font-serif text-center text-foreground mb-12">
@@ -173,33 +173,35 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mode Buttons - only when no mode is active */}
-            {!activeMode && (
-              <div className="flex items-center justify-center gap-3 mt-4">
-                {modeButtons.map((modeId) => {
-                  const config = modeConfig[modeId];
-                  const Icon = config.icon;
-                  const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
+            {/* Fixed height container for content below input - prevents layout shift */}
+            <div className="min-h-[400px]">
+              {/* Mode Buttons - only when no mode is active */}
+              {!activeMode && (
+                <div className="flex items-center justify-center gap-3 mt-4">
+                  {modeButtons.map((modeId) => {
+                    const config = modeConfig[modeId];
+                    const Icon = config.icon;
+                    const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
 
-                  return (
-                    <Button
-                      key={modeId}
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleModeSelect(modeId)}
-                      className="h-10 px-5 rounded-full gap-2 transition-all border bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="text-sm">
-                        {config.label}
-                        {hasDocuments && ` (${selectedDocuments.length})`}
-                      </span>
-                    </Button>
-                  );
-                })}
-              </div>
-            )}
+                    return (
+                      <Button
+                        key={modeId}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleModeSelect(modeId)}
+                        className="h-10 px-5 rounded-full gap-2 transition-all border bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span className="text-sm">
+                          {config.label}
+                          {hasDocuments && ` (${selectedDocuments.length})`}
+                        </span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
 
             {/* Content Area - only shows when mode is active */}
             {activeMode === 'documents' && (
@@ -250,6 +252,7 @@ const Home = () => {
                 )}
               </div>
             )}
+            </div>
           </form>
         </div>
       </main>
