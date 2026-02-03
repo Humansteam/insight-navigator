@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { FileText, Search, Bot, X, Folder, File, ChevronDown, ArrowUpRight } from 'lucide-react';
+import { FileText, Search, Bot, X, Folder, File, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -201,90 +201,44 @@ const Home = () => {
               </div>
             )}
 
-            {/* Content Area - fixed height with pinned selections */}
-            <div className="mt-4 min-h-[340px] flex flex-col">
-              {/* Dynamic content */}
-              <div className="flex-1">
-                {activeMode === 'documents' ? (
-                  <DocumentSelector
-                    documents={mockDocuments}
-                    selectedDocuments={selectedDocuments}
-                    onSelect={handleDocumentSelect}
-                    onClose={() => setActiveMode(null)}
-                  />
-                ) : (
-                  <div className="space-y-2">
-                    {(activeMode === 'research'
-                      ? [
-                          'Analyze trends in solid-state battery technology',
-                          'Compare lithium-ion vs sodium-ion batteries',
-                          'Review latest electrolyte research papers',
-                          'Summarize manufacturing cost optimization studies',
-                          'Explore cathode material innovations',
-                          'Investigate recycling methods for EV batteries',
-                          'Study thermal management in battery packs',
-                        ]
-                      : activeMode === 'agent'
-                      ? [
-                          'Create a comprehensive research report on battery materials',
-                          'Build a comparison table of top 10 battery manufacturers',
-                          'Generate an executive summary from selected documents',
-                          'Analyze and extract key findings from research papers',
-                          'Draft a patent landscape analysis for solid-state batteries',
-                          'Compile a market trends report for Q1 2024',
-                          'Create a technical brief on emerging battery technologies',
-                        ]
-                      : [
-                          'Summarize the key findings from my research papers',
-                          'What are the latest trends in battery technology?',
-                          'Compare performance metrics across my documents',
-                          'Create a literature review on solid-state electrolytes',
-                          'Extract data tables from uploaded PDFs',
-                          'Find contradictions between research papers',
-                          'Identify gaps in current research coverage',
-                        ]
-                    ).map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setQuery(suggestion)}
-                        className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
+            {/* Content Area - only shows when mode is active */}
+            {activeMode === 'documents' && (
+              <div className="mt-4">
+                <DocumentSelector
+                  documents={mockDocuments}
+                  selectedDocuments={selectedDocuments}
+                  onSelect={handleDocumentSelect}
+                  onClose={() => setActiveMode(null)}
+                />
+                
+                {/* Selected Documents Pills - pinned at bottom */}
+                {selectedDocuments.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-2 pt-4 mt-4 border-t border-border">
+                    {selectedDocuments.map((doc) => (
+                      <Badge
+                        key={doc.id}
+                        variant="secondary"
+                        className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted text-foreground border border-border"
                       >
-                        <span>{suggestion}</span>
-                        <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </button>
+                        {doc.type === 'folder' ? (
+                          <Folder className="w-3 h-3" />
+                        ) : (
+                          <File className="w-3 h-3" />
+                        )}
+                        <span className="text-xs">{doc.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeDocument(doc.id)}
+                          className="ml-1 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
                     ))}
                   </div>
                 )}
               </div>
-
-              {/* Selected Documents Pills - always pinned at bottom */}
-              {selectedDocuments.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2 pt-4 mt-4 border-t border-border">
-                  {selectedDocuments.map((doc) => (
-                    <Badge
-                      key={doc.id}
-                      variant="secondary"
-                      className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted text-foreground border border-border"
-                    >
-                      {doc.type === 'folder' ? (
-                        <Folder className="w-3 h-3" />
-                      ) : (
-                        <File className="w-3 h-3" />
-                      )}
-                      <span className="text-xs">{doc.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeDocument(doc.id)}
-                        className="ml-1 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+            )}
           </form>
         </div>
       </main>
