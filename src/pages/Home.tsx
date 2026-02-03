@@ -173,7 +173,39 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mode Buttons Row OR Document Selector - fixed height container */}
+            {/* Mode Buttons - always visible */}
+            <div className="flex items-center justify-center gap-3 mt-4">
+              {modeButtons.map((modeId) => {
+                const config = modeConfig[modeId];
+                const Icon = config.icon;
+                const isActive = activeMode === modeId;
+                const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
+
+                return (
+                  <Button
+                    key={modeId}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleModeSelect(modeId)}
+                    className={cn(
+                      "h-10 px-5 rounded-full gap-2 transition-all border",
+                      isActive 
+                        ? "bg-card border-foreground/20 text-foreground" 
+                        : "bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm">
+                      {config.label}
+                      {hasDocuments && ` (${selectedDocuments.length})`}
+                    </span>
+                  </Button>
+                );
+              })}
+            </div>
+
+            {/* Content Area - fixed height */}
             <div className="mt-4 min-h-[280px]">
               {activeMode === 'documents' ? (
                 <DocumentSelector
@@ -189,6 +221,8 @@ const Home = () => {
                     'Compare lithium-ion vs sodium-ion batteries',
                     'Review latest electrolyte research papers',
                     'Summarize manufacturing cost optimization studies',
+                    'Explore cathode material innovations',
+                    'Investigate recycling methods for EV batteries',
                   ].map((suggestion, idx) => (
                     <button
                       key={idx}
@@ -208,6 +242,8 @@ const Home = () => {
                     'Build a comparison table of top 10 battery manufacturers',
                     'Generate an executive summary from selected documents',
                     'Analyze and extract key findings from research papers',
+                    'Draft a patent landscape analysis for solid-state batteries',
+                    'Compile a market trends report for Q1 2024',
                   ].map((suggestion, idx) => (
                     <button
                       key={idx}
@@ -221,47 +257,38 @@ const Home = () => {
                   ))}
                 </div>
               ) : (
-                <div className="flex items-center justify-center gap-3">
-                  {modeButtons.map((modeId) => {
-                    const config = modeConfig[modeId];
-                    const Icon = config.icon;
-                    const isActive = activeMode === modeId;
-                    const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
-
-                    return (
-                      <Button
-                        key={modeId}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleModeSelect(modeId)}
-                        className={cn(
-                          "h-10 px-5 rounded-full gap-2 transition-all border",
-                          isActive 
-                            ? "bg-card border-foreground/20 text-foreground" 
-                            : "bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
-                        )}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span className="text-sm">
-                          {config.label}
-                          {hasDocuments && ` (${selectedDocuments.length})`}
-                        </span>
-                      </Button>
-                    );
-                  })}
+                /* Default suggestions when no mode selected */
+                <div className="space-y-2">
+                  {[
+                    'Summarize the key findings from my research papers',
+                    'What are the latest trends in battery technology?',
+                    'Compare performance metrics across my documents',
+                    'Create a literature review on solid-state electrolytes',
+                    'Extract data tables from uploaded PDFs',
+                    'Find contradictions between research papers',
+                  ].map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setQuery(suggestion)}
+                      className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
+                    >
+                      <span>{suggestion}</span>
+                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Selected Documents Pills - below input */}
-            {selectedDocuments.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
+            {/* Selected Documents Pills - always at bottom */}
+            {selectedDocuments.length > 0 && !activeMode && (
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
                 {selectedDocuments.map((doc) => (
                   <Badge
                     key={doc.id}
                     variant="secondary"
-                    className="pl-2 pr-1 py-1 flex items-center gap-1 bg-primary/10 text-primary border border-primary/20"
+                    className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted text-foreground border border-border"
                   >
                     {doc.type === 'folder' ? (
                       <Folder className="w-3 h-3" />
@@ -272,7 +299,7 @@ const Home = () => {
                     <button
                       type="button"
                       onClick={() => removeDocument(doc.id)}
-                      className="ml-1 p-0.5 rounded-full hover:bg-primary/20 transition-colors"
+                      className="ml-1 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
