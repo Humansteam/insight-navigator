@@ -166,36 +166,47 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mode Buttons Row - below input container */}
-            <div className="flex items-center justify-center gap-3 mt-4">
-              {modeButtons.map((modeId) => {
-                const config = modeConfig[modeId];
-                const Icon = config.icon;
-                const isActive = activeMode === modeId;
-                const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
+            {/* Mode Buttons Row OR Document Selector - below input container */}
+            <div className="mt-4">
+              {activeMode === 'documents' ? (
+                <DocumentSelector
+                  documents={mockDocuments}
+                  selectedDocuments={selectedDocuments}
+                  onSelect={handleDocumentSelect}
+                  onClose={() => setActiveMode(null)}
+                />
+              ) : (
+                <div className="flex items-center justify-center gap-3">
+                  {modeButtons.map((modeId) => {
+                    const config = modeConfig[modeId];
+                    const Icon = config.icon;
+                    const isActive = activeMode === modeId;
+                    const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
 
-                return (
-                  <Button
-                    key={modeId}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleModeSelect(modeId)}
-                    className={cn(
-                      "h-10 px-5 rounded-full gap-2 transition-all border",
-                      isActive 
-                        ? "bg-card border-foreground/20 text-foreground" 
-                        : "bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
-                    )}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className="text-sm">
-                      {config.label}
-                      {hasDocuments && ` (${selectedDocuments.length})`}
-                    </span>
-                  </Button>
-                );
-              })}
+                    return (
+                      <Button
+                        key={modeId}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleModeSelect(modeId)}
+                        className={cn(
+                          "h-10 px-5 rounded-full gap-2 transition-all border",
+                          isActive 
+                            ? "bg-card border-foreground/20 text-foreground" 
+                            : "bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                        <span className="text-sm">
+                          {config.label}
+                          {hasDocuments && ` (${selectedDocuments.length})`}
+                        </span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Selected Documents Pills - below input */}
@@ -225,16 +236,6 @@ const Home = () => {
               </div>
             )}
 
-            {/* Contextual Panel - appears below when mode is active */}
-            {activeMode === 'documents' && (
-              <div className="mt-4">
-                <DocumentSelector
-                  documents={mockDocuments}
-                  selectedDocuments={selectedDocuments}
-                  onSelect={handleDocumentSelect}
-                />
-              </div>
-            )}
 
             {/* Research suggestions could go here */}
             {activeMode === 'research' && (
