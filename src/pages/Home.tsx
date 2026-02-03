@@ -211,29 +211,40 @@ const Home = () => {
                   onClose={() => setActiveMode(null)}
                 />
                 
-                {/* Selected Documents Pills - pinned at bottom */}
+                {/* Selected Documents Pills - left aligned with row separators */}
                 {selectedDocuments.length > 0 && (
-                  <div className="flex flex-wrap justify-center gap-2 pt-4 mt-4 border-t border-border">
-                    {selectedDocuments.map((doc) => (
-                      <Badge
-                        key={doc.id}
-                        variant="secondary"
-                        className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted text-foreground border border-border"
-                      >
-                        {doc.type === 'folder' ? (
-                          <Folder className="w-3 h-3" />
-                        ) : (
-                          <File className="w-3 h-3" />
+                  <div className="pt-4 mt-4 border-t border-border">
+                    {/* Group documents into rows of 4 */}
+                    {Array.from({ length: Math.ceil(selectedDocuments.length / 4) }).map((_, rowIndex) => (
+                      <div key={rowIndex}>
+                        <div className="flex flex-wrap justify-start gap-2">
+                          {selectedDocuments.slice(rowIndex * 4, (rowIndex + 1) * 4).map((doc) => (
+                            <Badge
+                              key={doc.id}
+                              variant="secondary"
+                              className="pl-2 pr-1 py-1 flex items-center gap-1 bg-muted text-foreground border border-border"
+                            >
+                              {doc.type === 'folder' ? (
+                                <Folder className="w-3 h-3" />
+                              ) : (
+                                <File className="w-3 h-3" />
+                              )}
+                              <span className="text-xs">{doc.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeDocument(doc.id)}
+                                className="ml-1 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                        {/* Separator line after each row of 4 (except last row) */}
+                        {rowIndex < Math.ceil(selectedDocuments.length / 4) - 1 && (
+                          <div className="border-t border-border my-2" />
                         )}
-                        <span className="text-xs">{doc.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeDocument(doc.id)}
-                          className="ml-1 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </Badge>
+                      </div>
                     ))}
                   </div>
                 )}
