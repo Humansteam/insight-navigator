@@ -98,7 +98,7 @@ const Home = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-start px-6 pt-24 md:pt-28 pb-10">
+      <main className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="w-full max-w-3xl">
           {/* Title */}
           <h1 className="text-4xl md:text-5xl font-serif text-center text-foreground mb-12">
@@ -173,8 +173,8 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Mode Buttons Row OR Document Selector - below input container */}
-            <div className="mt-4">
+            {/* Mode Buttons Row OR Document Selector - fixed height container */}
+            <div className="mt-4 min-h-[280px]">
               {activeMode === 'documents' ? (
                 <DocumentSelector
                   documents={mockDocuments}
@@ -182,6 +182,44 @@ const Home = () => {
                   onSelect={handleDocumentSelect}
                   onClose={() => setActiveMode(null)}
                 />
+              ) : activeMode === 'research' ? (
+                <div className="space-y-2">
+                  {[
+                    'Analyze trends in solid-state battery technology',
+                    'Compare lithium-ion vs sodium-ion batteries',
+                    'Review latest electrolyte research papers',
+                    'Summarize manufacturing cost optimization studies',
+                  ].map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setQuery(suggestion)}
+                      className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
+                    >
+                      <span>{suggestion}</span>
+                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  ))}
+                </div>
+              ) : activeMode === 'agent' ? (
+                <div className="space-y-2">
+                  {[
+                    'Create a comprehensive research report on battery materials',
+                    'Build a comparison table of top 10 battery manufacturers',
+                    'Generate an executive summary from selected documents',
+                    'Analyze and extract key findings from research papers',
+                  ].map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setQuery(suggestion)}
+                      className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
+                    >
+                      <span>{suggestion}</span>
+                      <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  ))}
+                </div>
               ) : (
                 <div className="flex items-center justify-center gap-3">
                   {modeButtons.map((modeId) => {
@@ -239,51 +277,6 @@ const Home = () => {
                       <X className="w-3 h-3" />
                     </button>
                   </Badge>
-                ))}
-              </div>
-            )}
-
-
-            {/* Research suggestions could go here */}
-            {activeMode === 'research' && (
-              <div className="mt-4 space-y-2">
-                {[
-                  'Analyze trends in solid-state battery technology',
-                  'Compare lithium-ion vs sodium-ion batteries',
-                  'Review latest electrolyte research papers',
-                  'Summarize manufacturing cost optimization studies',
-                ].map((suggestion, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setQuery(suggestion)}
-                    className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
-                  >
-                    <span>{suggestion}</span>
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Agent mode suggestions */}
-            {activeMode === 'agent' && (
-              <div className="mt-4 space-y-2">
-                {[
-                  'Create a comprehensive research report on battery materials',
-                  'Build a comparison table of top 10 battery manufacturers',
-                  'Generate an executive summary from selected documents',
-                  'Analyze and extract key findings from research papers',
-                ].map((suggestion, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setQuery(suggestion)}
-                    className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
-                  >
-                    <span>{suggestion}</span>
-                    <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
                 ))}
               </div>
             )}
