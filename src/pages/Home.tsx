@@ -97,8 +97,8 @@ const Home = () => {
         <ThemeSwitcher />
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6">
+      {/* Main Content - fixed position from top, not centered */}
+      <main className="flex-1 flex flex-col items-center pt-[15vh] px-6">
         <div className="w-full max-w-3xl">
           {/* Title */}
           <h1 className="text-4xl md:text-5xl font-serif text-center text-foreground mb-12">
