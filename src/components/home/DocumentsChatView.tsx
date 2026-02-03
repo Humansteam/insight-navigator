@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder } from 'lucide-react';
+import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder, Copy, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -59,9 +59,9 @@ const DocumentsChatView = ({
   };
 
   return (
-    <div className="flex flex-col h-full max-w-4xl mx-auto w-full">
-      {/* Header with context */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+    <div className="flex flex-col h-full bg-background">
+      {/* Header with back button and context */}
+      <div className="flex items-center gap-3 px-6 py-3 border-b border-border">
         <Button
           variant="ghost"
           size="icon"
@@ -94,9 +94,9 @@ const DocumentsChatView = ({
         </div>
       </div>
 
-      {/* Messages Area */}
-      <ScrollArea className="flex-1 px-4">
-        <div className="py-6 space-y-6">
+      {/* Messages Area - scrollable, takes remaining space */}
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-3xl mx-auto px-6 py-8 pb-32">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (
               <motion.div
@@ -105,42 +105,63 @@ const DocumentsChatView = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className={cn(
-                  'flex',
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                )}
+                className="mb-8"
               >
                 {message.role === 'user' ? (
-                  <div className="max-w-[80%] px-4 py-3 rounded-2xl bg-card border border-border">
-                    <p className="text-sm">{message.content}</p>
+                  /* User message - right aligned, dark bubble */
+                  <div className="flex justify-end">
+                    <div className="max-w-[80%] px-4 py-3 rounded-2xl bg-card border border-border">
+                      <p className="text-sm text-foreground">{message.content}</p>
+                    </div>
                   </div>
                 ) : (
-                  <div className="max-w-[90%] space-y-2">
+                  /* Assistant message - left aligned with Strata branding */
+                  <div className="space-y-3">
+                    {/* Strata header */}
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <span className="text-primary font-semibold text-xs">S</span>
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-primary" />
                       </div>
-                      <span className="text-sm font-medium">Strata</span>
+                      <span className="font-medium text-foreground">Strata</span>
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                        Lite
+                      </Badge>
                     </div>
                     
+                    {/* Thinking process toggle */}
                     {message.isThinking && (
                       <button
                         type="button"
                         onClick={() => setShowThinking(!showThinking)}
-                        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         Thinking process
                         <ChevronDown className={cn(
-                          "w-3 h-3 transition-transform",
+                          "w-4 h-4 transition-transform",
                           showThinking && "rotate-180"
                         )} />
                       </button>
                     )}
                     
-                    <div className="pl-8">
-                      <p className="text-sm text-foreground whitespace-pre-wrap">
-                        {message.content}
-                      </p>
+                    {/* Message content */}
+                    <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                      {message.content}
+                    </div>
+
+                    {/* Action buttons row */}
+                    <div className="flex items-center gap-4 pt-2">
+                      <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        <Sparkles className="w-4 h-4" />
+                        Start agent
+                      </button>
+                      <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                        <Plus className="w-4 h-4" />
+                        Create
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
                 )}
@@ -153,20 +174,23 @@ const DocumentsChatView = ({
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start"
+              className="mb-8"
             >
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <span className="text-primary font-semibold text-xs">S</span>
+                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-primary" />
                   </div>
-                  <span className="text-sm font-medium">Strata</span>
+                  <span className="font-medium text-foreground">Strata</span>
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                    Lite
+                  </Badge>
                 </div>
-                <div className="pl-8 flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <span className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                   <span className="text-sm text-muted-foreground">Thinking...</span>
                 </div>
@@ -176,53 +200,69 @@ const DocumentsChatView = ({
 
           <div ref={messagesEndRef} />
         </div>
-      </ScrollArea>
+      </div>
 
-      {/* Input Area */}
-      <div className="p-4">
-        <form onSubmit={handleSubmit} className="relative">
-          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-            <div className="relative flex items-end">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 m-1 shrink-0 text-muted-foreground hover:text-foreground"
-              >
-                <Plus className="w-5 h-5" />
-              </Button>
+      {/* Fixed Input Area at bottom - Manus style */}
+      <div className="fixed bottom-0 left-0 right-0 px-6 pb-6 pt-4 bg-gradient-to-t from-background via-background to-transparent">
+        <div className="max-w-3xl mx-auto">
+          <form onSubmit={handleSubmit}>
+            <div className="bg-muted/80 backdrop-blur-sm border border-border rounded-2xl overflow-hidden">
+              {/* Input row */}
+              <div className="px-4 py-3">
+                <Textarea
+                  ref={textareaRef}
+                  placeholder="Send message to Strata"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  className={cn(
+                    "w-full min-h-[24px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
+                    "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+                    "placeholder:text-muted-foreground text-sm leading-relaxed"
+                  )}
+                />
+              </div>
               
-              <Textarea
-                ref={textareaRef}
-                placeholder="Ask Strata..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={1}
-                className={cn(
-                  "flex-1 min-h-[44px] max-h-[200px] py-3 px-0 border-0 bg-transparent resize-none",
-                  "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                  "placeholder:text-muted-foreground text-sm"
-                )}
-              />
-              
-              <Button
-                type="submit"
-                variant="ghost"
-                size="icon"
-                disabled={!input.trim() || isProcessing}
-                className={cn(
-                  "h-8 w-8 m-2 shrink-0 rounded-full transition-colors",
-                  input.trim() && !isProcessing
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                <ArrowUp className="w-4 h-4" />
-              </Button>
+              {/* Bottom toolbar */}
+              <div className="flex items-center justify-between px-3 pb-3">
+                <div className="flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                  >
+                    <Sparkles className="w-5 h-5" />
+                  </Button>
+                </div>
+                
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon"
+                  disabled={!input.trim() || isProcessing}
+                  className={cn(
+                    "h-9 w-9 rounded-full transition-all",
+                    input.trim() && !isProcessing
+                      ? "bg-foreground text-background hover:bg-foreground/90"
+                      : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  <ArrowUp className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
