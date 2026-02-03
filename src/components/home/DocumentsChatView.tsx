@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder, Copy, Sparkles } from 'lucide-react';
+import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder, Copy, Sparkles, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -202,59 +202,79 @@ const DocumentsChatView = ({
       <div className="fixed bottom-0 left-0 right-0 px-8 pb-8 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent">
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit}>
-            <div className="bg-card border border-border rounded-2xl shadow-lg py-4">
-              {/* Input row */}
-              <div className="px-5">
-                <Textarea
-                  ref={textareaRef}
-                  placeholder="Assign a task or ask anything"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  rows={1}
-                  className={cn(
-                    "w-full min-h-[28px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
-                    "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                    "placeholder:text-muted-foreground/70 text-base leading-relaxed"
-                  )}
-                />
-              </div>
-              
-              {/* Bottom toolbar */}
-              <div className="flex items-center justify-between px-4 pt-3">
-                <div className="flex items-center gap-0.5">
+            <div className="w-full">
+              {/* Form card (768px) */}
+              <div className="bg-card border border-border rounded-2xl shadow-lg py-4">
+                {/* Input row */}
+                <div className="px-5">
+                  <Textarea
+                    ref={textareaRef}
+                    placeholder="Assign a task or ask anything"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    rows={1}
+                    className={cn(
+                      "w-full min-h-[28px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
+                      "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
+                      "placeholder:text-muted-foreground/70 text-base leading-relaxed"
+                    )}
+                  />
+                </div>
+
+                {/* Bottom toolbar */}
+                <div className="flex items-center justify-between px-4 pt-3">
+                  <div className="flex items-center gap-0.5">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    >
+                      <Sparkles className="w-5 h-5" />
+                    </Button>
+                  </div>
+
                   <Button
-                    type="button"
+                    type="submit"
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    disabled={!input.trim() || isProcessing}
+                    className={cn(
+                      "h-10 w-10 rounded-full transition-all",
+                      input.trim() && !isProcessing
+                        ? "bg-foreground/90 text-background hover:bg-foreground"
+                        : "bg-muted/60 text-muted-foreground/50"
+                    )}
                   >
-                    <Plus className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
-                  >
-                    <Sparkles className="w-5 h-5" />
+                    <ArrowUp className="w-5 h-5" />
                   </Button>
                 </div>
-                
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={!input.trim() || isProcessing}
-                  className={cn(
-                    "h-10 w-10 rounded-full transition-all",
-                    input.trim() && !isProcessing
-                      ? "bg-foreground/90 text-background hover:bg-foreground"
-                      : "bg-muted/60 text-muted-foreground/50"
-                  )}
-                >
-                  <ArrowUp className="w-5 h-5" />
-                </Button>
+              </div>
+
+              {/* Integrations bar (overlaps under the card) */}
+              <div className="w-full -mt-[22px]">
+                <div className="h-10 rounded-b-[22px] border border-border bg-card/95 px-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Plus className="w-4 h-4" />
+                    <span>Connect your tools to Strata</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    aria-label="Dismiss"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </form>
