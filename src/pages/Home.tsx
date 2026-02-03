@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { FileText, Search, Bot, X, Folder, File, ArrowUp } from 'lucide-react';
+import { FileText, Search, Bot, X, Folder, File, ChevronDown, ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,24 +99,29 @@ const Home = () => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className={cn(
-          "w-full max-w-3xl transition-all duration-500",
-          isTyping ? "translate-y-[-20%]" : ""
-        )}>
+        <div className="w-full max-w-3xl">
           {/* Title */}
-          <h1 className={cn(
-            "text-4xl md:text-5xl font-serif text-center text-foreground mb-12 transition-opacity duration-300",
-            isTyping ? "opacity-0" : "opacity-100"
-          )}>
+          <h1 className="text-4xl md:text-5xl font-serif text-center text-foreground mb-12">
             Let's dive into your knowledge
           </h1>
 
-          {/* Search Input Area */}
+          {/* Search Input Area - Fixed position, doesn't move */}
           <form onSubmit={handleSubmit} className="relative">
-            {/* Input Container - styled like Manus */}
+            {/* Input Container */}
             <div className="bg-card border border-border rounded-2xl overflow-hidden">
-              {/* Input Field */}
-              <div className="relative">
+              {/* Input Field with optional mode badge */}
+              <div className="relative flex items-center">
+                {/* Active Mode Badge - inside input */}
+                {activeMode && (
+                  <div className="flex items-center gap-1.5 ml-3 px-3 py-1.5 bg-muted rounded-full">
+                    {(() => {
+                      const Icon = modeConfig[activeMode].icon;
+                      return <Icon className="w-3.5 h-3.5" />;
+                    })()}
+                    <span className="text-xs font-medium">{modeConfig[activeMode].label}</span>
+                  </div>
+                )}
+                
                 <Input
                   ref={inputRef}
                   type="text"
@@ -132,60 +137,65 @@ const Home = () => {
                   value={query}
                   onChange={handleInputChange}
                   className={cn(
-                    "w-full h-14 border-0 bg-transparent text-foreground",
-                    "pl-4 pr-12 text-base",
+                    "flex-1 h-14 border-0 bg-transparent text-foreground",
+                    activeMode ? "pl-3" : "pl-4",
+                    "pr-24 text-base",
                     "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
                     "placeholder:text-muted-foreground"
                   )}
                 />
 
-                {/* Submit Button */}
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "absolute right-3 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full transition-colors",
-                    query.trim() 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                      : "bg-muted text-muted-foreground"
-                  )}
-                  disabled={!query.trim()}
-                >
-                  <ArrowUp className="w-4 h-4" />
-                </Button>
+                {/* Right side buttons */}
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  <Button
+                    type="submit"
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "h-8 w-8 rounded-lg transition-colors",
+                      query.trim() 
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                        : "bg-muted text-muted-foreground"
+                    )}
+                    disabled={!query.trim()}
+                  >
+                    <Search className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
+            </div>
 
-              {/* Mode Buttons Row - inside input container */}
-              <div className="flex items-center gap-2 px-3 py-2 border-t border-border">
-                {modeButtons.map((modeId) => {
-                  const config = modeConfig[modeId];
-                  const Icon = config.icon;
-                  const isActive = activeMode === modeId;
-                  const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
+            {/* Mode Buttons Row - below input container */}
+            <div className="flex items-center justify-center gap-3 mt-4">
+              {modeButtons.map((modeId) => {
+                const config = modeConfig[modeId];
+                const Icon = config.icon;
+                const isActive = activeMode === modeId;
+                const hasDocuments = modeId === 'documents' && selectedDocuments.length > 0;
 
-                  return (
-                    <Button
-                      key={modeId}
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleModeSelect(modeId)}
-                      className={cn(
-                        "h-8 px-3 rounded-lg gap-1.5 transition-all",
-                        isActive && "bg-primary/10 text-primary border border-primary/30",
-                        !isActive && "hover:bg-muted"
-                      )}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="text-sm">
-                        {config.label}
-                        {hasDocuments && ` (${selectedDocuments.length})`}
-                      </span>
-                    </Button>
-                  );
-                })}
-              </div>
+                return (
+                  <Button
+                    key={modeId}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleModeSelect(modeId)}
+                    className={cn(
+                      "h-10 px-5 rounded-full gap-2 transition-all border",
+                      isActive 
+                        ? "bg-card border-foreground/20 text-foreground" 
+                        : "bg-transparent border-border text-muted-foreground hover:bg-card hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="text-sm">
+                      {config.label}
+                      {hasDocuments && ` (${selectedDocuments.length})`}
+                    </span>
+                  </Button>
+                );
+              })}
             </div>
 
             {/* Selected Documents Pills - below input */}
@@ -242,7 +252,7 @@ const Home = () => {
                     className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
                   >
                     <span>{suggestion}</span>
-                    <ArrowUp className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 -rotate-45 transition-opacity" />
+                    <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
                 ))}
               </div>
@@ -264,7 +274,7 @@ const Home = () => {
                     className="w-full text-left px-4 py-3 text-sm text-foreground bg-card border border-border rounded-xl hover:bg-muted/50 transition-colors flex items-center justify-between group"
                   >
                     <span>{suggestion}</span>
-                    <ArrowUp className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 -rotate-45 transition-opacity" />
+                    <ArrowUpRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
                 ))}
               </div>
