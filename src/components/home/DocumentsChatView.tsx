@@ -200,14 +200,14 @@ const DocumentsChatView = ({
 
       {/* Fixed Input Area at bottom - Manus style */}
       <div className="fixed bottom-0 left-0 right-0 px-8 pb-8 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent">
-        <div className="max-w-[640px] mx-auto">
+        <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit}>
-            <div className="bg-[hsl(var(--muted)/0.5)] backdrop-blur-md border border-border/40 rounded-3xl overflow-hidden shadow-lg">
+            <div className="bg-card border border-border rounded-2xl shadow-lg py-4">
               {/* Input row */}
-              <div className="px-4 py-3">
+              <div className="px-5">
                 <Textarea
                   ref={textareaRef}
-                  placeholder="Send message to Strata"
+                  placeholder="Assign a task or ask anything"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -215,13 +215,13 @@ const DocumentsChatView = ({
                   className={cn(
                     "w-full min-h-[28px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
                     "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                    "placeholder:text-muted-foreground/70 text-[15px] leading-relaxed"
+                    "placeholder:text-muted-foreground/70 text-base leading-relaxed"
                   )}
                 />
               </div>
               
               {/* Bottom toolbar */}
-              <div className="flex items-center justify-between px-4 pb-4 pt-1">
+              <div className="flex items-center justify-between px-4 pt-3">
                 <div className="flex items-center gap-0.5">
                   <Button
                     type="button"
