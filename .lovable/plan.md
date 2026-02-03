@@ -1,82 +1,81 @@
 
-# Исправление стилей чата по макету Manus
+# Точное копирование дизайна блока ввода Manus
 
-## Точные параметры из скриншота Manus
+## Анализ скриншота
 
-### Типографика
-- Основной текст: **16px** (text-base)
-- Межстрочный интервал: **1.6** (leading-relaxed)
-- Заголовок "manus/Strata": **16px font-medium**
-- "Thinking process": **15px**, цвет muted
+### Структура блока ввода
 
-### Размеры контейнеров
-- Ширина контента: **640px** (max-w-[640px])
-- User bubble: без явной границы, просто тёмный фон
-- Поле ввода: более компактное, высота ~52-56px
+```text
+┌─────────────────────────────────────────────────────────────┐
+│  Assign a task or ask anything                              │
+│                                                             │
+│  [+]  [⚙]                                      [🎤]  [↑]    │
+├─────────────────────────────────────────────────────────────┤
+│  ⚙  Connect your tools to Strata                       ✕   │
+└─────────────────────────────────────────────────────────────┘
 
-### Визуальные отличия
-- Иконка Strata — без фона, просто иконка
-- Под ответом нет border-top перед кнопками
-- Кнопки Copy/Start agent/Create — просто иконки с текстом, очень лёгкие
+         [ Documents ]   [ Research ]   [ Agent Mode ]
+```
+
+### Элементы дизайна
+
+| Элемент | Спецификация |
+|---------|--------------|
+| Контейнер формы | max-w-3xl (768px), rounded-2xl, bg-card, border, shadow-lg |
+| Левые кнопки | Plus и Link2 — h-9 w-9, **bg-muted rounded-lg** |
+| Правые кнопки | Mic (микрофон) + ArrowUp (круглая) |
+| Интеграции | -mt-[22px], rounded-b-[22px], иконка Link2 |
+| Кнопки режимов | pill-style под блоком, gap-3 |
 
 ---
 
-## Изменения в DocumentsChatView.tsx
+## Изменения
 
-### 1. Типографика
+### 1. DocumentsChatView.tsx — Toolbar
+
+**Было:**
 ```tsx
-// Было:
-text-[15px] leading-[1.75]
-
-// Станет:
-text-base leading-relaxed  // 16px, line-height 1.625
+<Button className="h-9 w-9 rounded-lg text-muted-foreground hover:bg-transparent">
+  <Plus />
+</Button>
+<Button className="h-9 w-9 rounded-lg text-muted-foreground hover:bg-transparent">
+  <Sparkles />
+</Button>
 ```
 
-### 2. Ширина контента
+**Станет:**
 ```tsx
-// Было:
-max-w-[720px]
-
-// Станет:
-max-w-[640px]
+<Button className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80">
+  <Plus />
+</Button>
+<Button className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80">
+  <Link2 />  // иконка инструментов
+</Button>
 ```
 
-### 3. Иконка Strata — без фона
+### 2. Добавить иконку микрофона справа
+
 ```tsx
-// Было:
-<div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-  <Sparkles className="w-4 h-4 text-primary" />
+<div className="flex items-center gap-2">
+  <Button className="h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted">
+    <Mic />
+  </Button>
+  <Button className="h-10 w-10 rounded-full bg-foreground text-background">
+    <ArrowUp />
+  </Button>
 </div>
-
-// Станет:
-<Sparkles className="w-5 h-5 text-primary" />
 ```
 
-### 4. Action buttons — убрать border-top
-```tsx
-// Было:
-<div className="flex items-center gap-5 pt-3 border-t border-border/30">
+### 3. Иконка в интеграциях — Link2
 
-// Станет:
-<div className="flex items-center gap-4 pt-2">
+**Было:**
+```tsx
+<Plus className="w-4 h-4" />
 ```
 
-### 5. Поле ввода — более компактное
+**Станет:**
 ```tsx
-// Было:
-<div className="px-5 pt-4 pb-2">
-
-// Станет:
-<div className="px-4 py-3">
-```
-
-### 6. User bubble — уменьшить padding
-```tsx
-// Было:
-<div className="max-w-[85%] px-5 py-3.5 rounded-2xl ...">
-
-// Станет:
-<div className="max-w-[80%] px-4 py-3 rounded-xl ...">
+<Link2 className="w-4 h-4" />
 ```
 
 ---
@@ -85,9 +84,74 @@ max-w-[640px]
 
 | Файл | Изменение |
 |------|-----------|
-| DocumentsChatView.tsx | Шрифт 16px вместо 15px |
-| DocumentsChatView.tsx | Ширина 640px вместо 720px |
-| DocumentsChatView.tsx | Иконка Strata без wrapper |
-| DocumentsChatView.tsx | Убрать border-top у action buttons |
-| DocumentsChatView.tsx | Компактнее padding в поле ввода |
-| DocumentsChatView.tsx | Уменьшить округление user bubble |
+| DocumentsChatView.tsx | Plus и Link2 кнопки с bg-muted фоном |
+| DocumentsChatView.tsx | Добавить иконку Mic справа перед кнопкой отправки |
+| DocumentsChatView.tsx | Заменить Plus на Link2 в полоске интеграций |
+| DocumentsChatView.tsx | Импортировать Mic и Link2 из lucide-react |
+
+---
+
+## Техническая реализация
+
+Импорты:
+```tsx
+import { ArrowUp, Plus, ChevronDown, ArrowLeft, File, Folder, Copy, Sparkles, X, Mic, Link2 } from 'lucide-react';
+```
+
+Toolbar (левая часть):
+```tsx
+<div className="flex items-center gap-1">
+  <Button
+    type="button"
+    variant="ghost"
+    size="icon"
+    className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
+  >
+    <Plus className="w-5 h-5" />
+  </Button>
+  <Button
+    type="button"
+    variant="ghost"
+    size="icon"
+    className="h-9 w-9 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
+  >
+    <Link2 className="w-5 h-5" />
+  </Button>
+</div>
+```
+
+Toolbar (правая часть):
+```tsx
+<div className="flex items-center gap-2">
+  <Button
+    type="button"
+    variant="ghost"
+    size="icon"
+    className="h-9 w-9 rounded-lg text-muted-foreground hover:bg-muted"
+  >
+    <Mic className="w-5 h-5" />
+  </Button>
+  <Button
+    type="submit"
+    variant="ghost"
+    size="icon"
+    disabled={!input.trim() || isProcessing}
+    className={cn(
+      "h-10 w-10 rounded-full transition-all",
+      input.trim() && !isProcessing
+        ? "bg-foreground text-background hover:bg-foreground/90"
+        : "bg-muted text-muted-foreground/50"
+    )}
+  >
+    <ArrowUp className="w-5 h-5" />
+  </Button>
+</div>
+```
+
+Интеграции:
+```tsx
+<div className="flex items-center gap-2 text-sm text-muted-foreground">
+  <Link2 className="w-4 h-4" />
+  <span>Connect your tools to Strata</span>
+</div>
+```
