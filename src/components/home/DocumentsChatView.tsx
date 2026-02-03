@@ -96,7 +96,7 @@ const DocumentsChatView = ({
 
       {/* Messages Area - scrollable, takes remaining space */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-[720px] mx-auto px-8 py-10 pb-48">
+        <div className="max-w-[640px] mx-auto px-8 py-10 pb-48">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (
               <motion.div
@@ -110,8 +110,8 @@ const DocumentsChatView = ({
                 {message.role === 'user' ? (
                   /* User message - right aligned, dark bubble */
                   <div className="flex justify-end">
-                    <div className="max-w-[85%] px-5 py-3.5 rounded-2xl bg-[hsl(var(--muted)/0.6)] border border-border/50">
-                      <p className="text-[15px] text-foreground leading-relaxed">{message.content}</p>
+                    <div className="max-w-[80%] px-4 py-3 rounded-xl bg-[hsl(var(--muted)/0.6)]">
+                      <p className="text-base text-foreground leading-relaxed">{message.content}</p>
                     </div>
                   </div>
                 ) : (
@@ -119,10 +119,8 @@ const DocumentsChatView = ({
                   <div className="space-y-4">
                     {/* Strata header */}
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                      </div>
-                      <span className="text-[15px] font-medium text-foreground">Strata</span>
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      <span className="text-base font-medium text-foreground">Strata</span>
                       <Badge variant="outline" className="text-[11px] px-2 py-0.5 h-5 font-normal text-muted-foreground border-border/60">
                         Lite
                       </Badge>
@@ -144,12 +142,12 @@ const DocumentsChatView = ({
                     )}
                     
                     {/* Message content */}
-                    <div className="text-[15px] text-foreground leading-[1.75] whitespace-pre-wrap">
+                    <div className="text-base text-foreground leading-relaxed whitespace-pre-wrap">
                       {message.content}
                     </div>
 
                     {/* Action buttons row */}
-                    <div className="flex items-center gap-5 pt-3 border-t border-border/30">
+                    <div className="flex items-center gap-4 pt-2">
                       <button className="flex items-center gap-1.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                         <Copy className="w-4 h-4" />
                       </button>
@@ -178,10 +176,8 @@ const DocumentsChatView = ({
             >
               <div className="space-y-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                  </div>
-                  <span className="text-[15px] font-medium text-foreground">Strata</span>
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <span className="text-base font-medium text-foreground">Strata</span>
                   <Badge variant="outline" className="text-[11px] px-2 py-0.5 h-5 font-normal text-muted-foreground border-border/60">
                     Lite
                   </Badge>
@@ -204,11 +200,11 @@ const DocumentsChatView = ({
 
       {/* Fixed Input Area at bottom - Manus style */}
       <div className="fixed bottom-0 left-0 right-0 px-8 pb-8 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent">
-        <div className="max-w-[720px] mx-auto">
+        <div className="max-w-[640px] mx-auto">
           <form onSubmit={handleSubmit}>
             <div className="bg-[hsl(var(--muted)/0.5)] backdrop-blur-md border border-border/40 rounded-3xl overflow-hidden shadow-lg">
               {/* Input row */}
-              <div className="px-5 pt-4 pb-2">
+              <div className="px-4 py-3">
                 <Textarea
                   ref={textareaRef}
                   placeholder="Send message to Strata"
