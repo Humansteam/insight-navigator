@@ -119,6 +119,13 @@ const Home = () => {
                       return <Icon className="w-3.5 h-3.5" />;
                     })()}
                     <span className="text-xs font-medium">{modeConfig[activeMode].label}</span>
+                    <button
+                      type="button"
+                      onClick={() => setActiveMode(null)}
+                      className="ml-0.5 p-0.5 rounded-full hover:bg-foreground/10 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
                   </div>
                 )}
                 
