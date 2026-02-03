@@ -1,99 +1,85 @@
 
-# Реализация интерфейса выбора документов по скриншоту
 
-## Что будет сделано
+## Задача
+Стабилизировать высоту блока выбора документов и прикрепить пины выбранных файлов к нижней части блока.
 
-### Структура интерфейса
+## Изменения
+
+### 1. DocumentSelector - увеличить высоту списка до 7 файлов
+
+**Файл:** `src/components/home/DocumentSelector.tsx`
+
+Текущая высота списка `max-h-64` (256px) вмещает ~4 файла. Каждая строка файла занимает примерно 40px (py-2 + контент).
+
+**Изменение:**
+- Заменить `max-h-64` на `h-[280px]` - фиксированная высота для ~7 файлов
+- Это обеспечит постоянный размер блока независимо от количества файлов
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ Ask about your documents...                      [→]  │  │  ← Основной запрос
-│  ├───────────────────────────────────────────────────────┤  │
-│  │ (Documents)  (Research)  (Agent Mode)                 │  │  ← Кнопки режимов
-│  └───────────────────────────────────────────────────────┘  │
-│                                                             │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │ 🔍 Search documents...                                │  │  ← Локальный поиск
-│  ├───────────────────────────────────────────────────────┤  │
-│  │ ▸ Research Papers                               [□]   │  │
-│  │ ▸ Technical Reports                             [□]   │  │
-│  │ □ Executive Summary.pdf                               │  │
-│  │ □ Market Analysis 2024.xlsx                           │  │
-│  └───────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
+Строка 146:
+Было:  <div className="max-h-64 overflow-auto p-2">
+Будет: <div className="h-[280px] overflow-auto p-2">
 ```
 
-### Изменения
+### 2. Home.tsx - пины всегда прикреплены к нижней части блока
 
-1. **DocumentSelector** — добавить строку поиска для фильтрации документов
-   - Input с иконкой Search слева
-   - Placeholder: "Search documents..."
-   - Фильтрация по имени файла/папки в реальном времени
+**Файл:** `src/pages/Home.tsx`
 
-2. **Визуальные улучшения**
-   - Единый стиль карточки с rounded-2xl
-   - Отступы и границы как на скриншоте
-   - Чекбоксы справа от названий (как на Manus)
+Переместить пины выбранных документов внутрь контейнера с фиксированной высотой и отображать их всегда (включая режим Documents).
 
-## Техническая реализация
+**Изменения:**
 
-### Файлы для изменения:
-- `src/components/home/DocumentSelector.tsx` — добавить поиск и улучшить стиль
+1. Убрать условие `!activeMode` для показа пинов
+2. Переместить пины внутрь общего контейнера `min-h-[280px]`
+3. Использовать flex-col с justify-between для прижатия пинов к низу
 
-### DocumentSelector — новая структура:
-
-```tsx
-const DocumentSelector = ({ documents, selectedDocuments, onSelect }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
-
-  // Фильтрация документов по поисковому запросу
-  const filterDocuments = (docs: DocumentItem[], query: string): DocumentItem[] => {
-    if (!query.trim()) return docs;
-    
-    return docs.reduce((acc, doc) => {
-      if (doc.type === 'folder' && doc.children) {
-        const filteredChildren = filterDocuments(doc.children, query);
-        if (filteredChildren.length > 0 || doc.name.toLowerCase().includes(query.toLowerCase())) {
-          acc.push({ ...doc, children: filteredChildren });
-        }
-      } else if (doc.name.toLowerCase().includes(query.toLowerCase())) {
-        acc.push(doc);
-      }
-      return acc;
-    }, [] as DocumentItem[]);
-  };
-
-  const filteredDocuments = filterDocuments(documents, searchQuery);
-
-  return (
-    <div className="bg-card border border-border rounded-2xl overflow-hidden">
-      {/* Строка поиска документов */}
-      <div className="p-3 border-b border-border">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search documents..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 bg-muted/30 border-0"
-          />
-        </div>
-      </div>
-      
-      {/* Список документов */}
-      <div className="max-h-64 overflow-auto p-2">
-        {filteredDocuments.map(doc => renderDocumentItem(doc))}
-      </div>
+```text
+Структура:
+<div className="mt-4 min-h-[340px] flex flex-col">
+  {/* Контент режима (DocumentSelector / suggestions) */}
+  <div className="flex-1">
+    ...
+  </div>
+  
+  {/* Пины выбранных документов - всегда внизу */}
+  {selectedDocuments.length > 0 && (
+    <div className="flex flex-wrap justify-center gap-2 pt-4">
+      ...пины...
     </div>
-  );
-};
+  )}
+</div>
 ```
 
-### Ключевые улучшения:
+### Итоговая структура блока
 
-1. **Поиск** — фильтрует документы в реальном времени, включая вложенные в папки
-2. **Стиль** — rounded-2xl для единообразия с основным полем ввода
-3. **UX** — при поиске папки автоматически разворачиваются если в них есть совпадения
+```text
+┌──────────────────────────────────────┐
+│  Заголовок "Let's dive..."           │  ← фиксировано
+├──────────────────────────────────────┤
+│  [Documents ×]  Ask about your...  🔍 │  ← фиксировано
+├──────────────────────────────────────┤
+│  Documents  Research  Agent Mode     │  ← фиксировано
+├──────────────────────────────────────┤
+│  ┌────────────────────────────────┐  │
+│  │  🔍 Search documents...         │  │
+│  ├────────────────────────────────┤  │
+│  │  ☑ 📁 Research Papers          │  │
+│  │  ☑ 📁 Technical Reports        │  │
+│  │  ☐ 📄 Executive Summary.pdf    │  │  ← h-[280px] фиксированная
+│  │  ☐ 📄 Market Analysis 2024...  │  │
+│  │  ...                           │  │
+│  │  (scroll если нужно)           │  │
+│  └────────────────────────────────┘  │
+│                                      │
+│  [📁 Research Papers ×] [📁 Tech...×]│  ← пины всегда внизу
+└──────────────────────────────────────┘
+```
+
+## Технические детали
+
+| Файл | Изменение |
+|------|-----------|
+| `DocumentSelector.tsx` | `max-h-64` → `h-[280px]` для списка документов |
+| `Home.tsx` | Контейнер `min-h-[340px] flex flex-col`, пины внутри с `pt-4` |
+| `Home.tsx` | Убрать условие `&& !activeMode` для показа пинов |
+
