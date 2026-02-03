@@ -96,7 +96,7 @@ const DocumentsChatView = ({
 
       {/* Messages Area - scrollable, takes remaining space */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-3xl mx-auto px-6 py-8 pb-32">
+        <div className="max-w-[720px] mx-auto px-8 py-10 pb-48">
           <AnimatePresence mode="popLayout">
             {messages.map((message) => (
               <motion.div
@@ -105,25 +105,25 @@ const DocumentsChatView = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="mb-8"
+                className="mb-10"
               >
                 {message.role === 'user' ? (
                   /* User message - right aligned, dark bubble */
                   <div className="flex justify-end">
-                    <div className="max-w-[80%] px-4 py-3 rounded-2xl bg-card border border-border">
-                      <p className="text-sm text-foreground">{message.content}</p>
+                    <div className="max-w-[85%] px-5 py-3.5 rounded-2xl bg-[hsl(var(--muted)/0.6)] border border-border/50">
+                      <p className="text-[15px] text-foreground leading-relaxed">{message.content}</p>
                     </div>
                   </div>
                 ) : (
                   /* Assistant message - left aligned with Strata branding */
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {/* Strata header */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Sparkles className="w-4 h-4 text-primary" />
                       </div>
-                      <span className="font-medium text-foreground">Strata</span>
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                      <span className="text-[15px] font-medium text-foreground">Strata</span>
+                      <Badge variant="outline" className="text-[11px] px-2 py-0.5 h-5 font-normal text-muted-foreground border-border/60">
                         Lite
                       </Badge>
                     </div>
@@ -133,7 +133,7 @@ const DocumentsChatView = ({
                       <button
                         type="button"
                         onClick={() => setShowThinking(!showThinking)}
-                        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        className="flex items-center gap-1.5 text-[15px] text-muted-foreground hover:text-foreground transition-colors"
                       >
                         Thinking process
                         <ChevronDown className={cn(
@@ -144,23 +144,23 @@ const DocumentsChatView = ({
                     )}
                     
                     {/* Message content */}
-                    <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                    <div className="text-[15px] text-foreground leading-[1.75] whitespace-pre-wrap">
                       {message.content}
                     </div>
 
                     {/* Action buttons row */}
-                    <div className="flex items-center gap-4 pt-2">
-                      <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    <div className="flex items-center gap-5 pt-3 border-t border-border/30">
+                      <button className="flex items-center gap-1.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                         <Copy className="w-4 h-4" />
                       </button>
-                      <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      <button className="flex items-center gap-2 text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                         <Sparkles className="w-4 h-4" />
                         Start agent
                       </button>
-                      <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      <button className="flex items-center gap-1.5 text-[14px] text-muted-foreground hover:text-foreground transition-colors">
                         <Plus className="w-4 h-4" />
                         Create
-                        <ChevronDown className="w-3 h-3" />
+                        <ChevronDown className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -174,15 +174,15 @@ const DocumentsChatView = ({
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-8"
+              className="mb-10"
             >
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Sparkles className="w-4 h-4 text-primary" />
                   </div>
-                  <span className="font-medium text-foreground">Strata</span>
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                  <span className="text-[15px] font-medium text-foreground">Strata</span>
+                  <Badge variant="outline" className="text-[11px] px-2 py-0.5 h-5 font-normal text-muted-foreground border-border/60">
                     Lite
                   </Badge>
                 </div>
@@ -192,7 +192,7 @@ const DocumentsChatView = ({
                     <span className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                     <span className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
-                  <span className="text-sm text-muted-foreground">Thinking...</span>
+                  <span className="text-[15px] text-muted-foreground">Thinking...</span>
                 </div>
               </div>
             </motion.div>
@@ -203,12 +203,12 @@ const DocumentsChatView = ({
       </div>
 
       {/* Fixed Input Area at bottom - Manus style */}
-      <div className="fixed bottom-0 left-0 right-0 px-6 pb-6 pt-4 bg-gradient-to-t from-background via-background to-transparent">
-        <div className="max-w-3xl mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 px-8 pb-8 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent">
+        <div className="max-w-[720px] mx-auto">
           <form onSubmit={handleSubmit}>
-            <div className="bg-muted/80 backdrop-blur-sm border border-border rounded-2xl overflow-hidden">
+            <div className="bg-[hsl(var(--muted)/0.5)] backdrop-blur-md border border-border/40 rounded-3xl overflow-hidden shadow-lg">
               {/* Input row */}
-              <div className="px-4 py-3">
+              <div className="px-5 pt-4 pb-2">
                 <Textarea
                   ref={textareaRef}
                   placeholder="Send message to Strata"
@@ -217,21 +217,21 @@ const DocumentsChatView = ({
                   onKeyDown={handleKeyDown}
                   rows={1}
                   className={cn(
-                    "w-full min-h-[24px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
+                    "w-full min-h-[28px] max-h-[200px] p-0 border-0 bg-transparent resize-none",
                     "focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                    "placeholder:text-muted-foreground text-sm leading-relaxed"
+                    "placeholder:text-muted-foreground/70 text-[15px] leading-relaxed"
                   )}
                 />
               </div>
               
               {/* Bottom toolbar */}
-              <div className="flex items-center justify-between px-3 pb-3">
-                <div className="flex items-center gap-1">
+              <div className="flex items-center justify-between px-4 pb-4 pt-1">
+                <div className="flex items-center gap-0.5">
                   <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
                   >
                     <Plus className="w-5 h-5" />
                   </Button>
@@ -239,7 +239,7 @@ const DocumentsChatView = ({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
+                    className="h-9 w-9 rounded-lg text-muted-foreground hover:text-foreground hover:bg-transparent"
                   >
                     <Sparkles className="w-5 h-5" />
                   </Button>
@@ -251,10 +251,10 @@ const DocumentsChatView = ({
                   size="icon"
                   disabled={!input.trim() || isProcessing}
                   className={cn(
-                    "h-9 w-9 rounded-full transition-all",
+                    "h-10 w-10 rounded-full transition-all",
                     input.trim() && !isProcessing
-                      ? "bg-foreground text-background hover:bg-foreground/90"
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-foreground/90 text-background hover:bg-foreground"
+                      : "bg-muted/60 text-muted-foreground/50"
                   )}
                 >
                   <ArrowUp className="w-5 h-5" />
