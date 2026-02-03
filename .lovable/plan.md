@@ -1,180 +1,93 @@
 
-# Интерфейс чата для режима Documents
+# Исправление стилей чата по макету Manus
 
-## Обзор задачи
-Добавить полноценный интерфейс чата для режима "Documents" на главной странице. После отправки запроса пользователь переходит в режим диалога с AI-ассистентом, подобно интерфейсу Manus на скриншотах.
+## Точные параметры из скриншота Manus
 
-## Пользовательский сценарий
+### Типографика
+- Основной текст: **16px** (text-base)
+- Межстрочный интервал: **1.6** (leading-relaxed)
+- Заголовок "manus/Strata": **16px font-medium**
+- "Thinking process": **15px**, цвет muted
 
-```text
-+------------------------------------------+
-|  Начальное состояние (Documents Mode)    |
-|                                          |
-|       Let's dive into your knowledge     |
-|                                          |
-|   [Documents] Ask about your docs...  [>]|
-|                                          |
-|   +----------------------------------+   |
-|   | Search documents...              |   |
-|   | [ ] Research Papers              |   |
-|   | [ ] Technical Reports            |   |
-|   | ...                              |   |
-|   +----------------------------------+   |
-|                                          |
-|   [Doc1.pdf] [Doc2.pdf] [Doc3.pdf]       |
-+------------------------------------------+
-            |
-            | Отправка запроса
-            v
-+------------------------------------------+
-|  Режим чата (после первого сообщения)    |
-|                                          |
-|      +---------------------------+       |
-|      | расскажи про литиевые... |       | <- user
-|      +---------------------------+       |
-|                                          |
-|   [S] Strata                             |
-|   Thinking process v                     |
-|                                          |
-|   Анализирую документы...               |
-|   Найдено 3 релевантных раздела...      |
-|                                          |
-|   +----------------------------------+   |
-|   | Ask Strata...                    |   |
-|   | [+]                          [^] |   |
-|   +----------------------------------+   |
-+------------------------------------------+
+### Размеры контейнеров
+- Ширина контента: **640px** (max-w-[640px])
+- User bubble: без явной границы, просто тёмный фон
+- Поле ввода: более компактное, высота ~52-56px
+
+### Визуальные отличия
+- Иконка Strata — без фона, просто иконка
+- Под ответом нет border-top перед кнопками
+- Кнопки Copy/Start agent/Create — просто иконки с текстом, очень лёгкие
+
+---
+
+## Изменения в DocumentsChatView.tsx
+
+### 1. Типографика
+```tsx
+// Было:
+text-[15px] leading-[1.75]
+
+// Станет:
+text-base leading-relaxed  // 16px, line-height 1.625
 ```
 
-## Что будет реализовано
+### 2. Ширина контента
+```tsx
+// Было:
+max-w-[720px]
 
-### 1. Новый компонент DocumentsChatView
-Создание отдельного компонента для чата в режиме Documents:
-- Область сообщений со скроллом
-- Сообщения пользователя справа (в bubble)
-- Ответы AI слева с иконкой Strata
-- Индикатор "Thinking..." во время обработки
-- Поле ввода внизу в стиле Manus (кнопки +, микрофон опционально, отправить)
-
-### 2. Локальное состояние чата
-Для режима Documents будет использоваться локальный стейт сообщений:
-- `chatMessages` — массив сообщений
-- `isInChatMode` — флаг, переключающийся после первого сообщения
-- `isProcessing` — индикатор загрузки
-
-### 3. Переключение интерфейса в Home.tsx
-После отправки первого сообщения:
-- Скрыть заголовок "Let's dive into your knowledge"
-- Скрыть DocumentSelector
-- Показать полноэкранный интерфейс чата
-- Выбранные документы отображаются как контекст (опционально в хедере чата)
-
-## Технические детали
-
-### Структура файлов
-
-```text
-src/
-├── components/
-│   └── home/
-│       ├── DocumentSelector.tsx  (существует)
-│       └── DocumentsChatView.tsx (новый)
-├── pages/
-│   └── Home.tsx (модификация)
+// Станет:
+max-w-[640px]
 ```
 
-### Интерфейс сообщения
+### 3. Иконка Strata — без фона
+```tsx
+// Было:
+<div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+  <Sparkles className="w-4 h-4 text-primary" />
+</div>
 
-```typescript
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  isThinking?: boolean;
-}
+// Станет:
+<Sparkles className="w-5 h-5 text-primary" />
 ```
 
-### Состояние в Home.tsx
+### 4. Action buttons — убрать border-top
+```tsx
+// Было:
+<div className="flex items-center gap-5 pt-3 border-t border-border/30">
 
-```typescript
-const [isInChatMode, setIsInChatMode] = useState(false);
-const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-const [isProcessing, setIsProcessing] = useState(false);
-
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!query.trim()) return;
-  
-  // Добавить сообщение пользователя
-  setChatMessages(prev => [...prev, {
-    id: Date.now().toString(),
-    role: 'user',
-    content: query,
-    timestamp: new Date()
-  }]);
-  
-  // Переключиться в режим чата
-  setIsInChatMode(true);
-  setQuery('');
-  setIsProcessing(true);
-  
-  // Симуляция ответа AI
-  setTimeout(() => {
-    setChatMessages(prev => [...prev, {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: 'Анализирую выбранные документы...',
-      timestamp: new Date()
-    }]);
-    setIsProcessing(false);
-  }, 1500);
-};
+// Станет:
+<div className="flex items-center gap-4 pt-2">
 ```
 
-### UI компонента DocumentsChatView
+### 5. Поле ввода — более компактное
+```tsx
+// Было:
+<div className="px-5 pt-4 pb-2">
 
-Основные элементы:
-- Хедер с контекстом (выбранные документы)
-- ScrollArea для сообщений
-- Floating input container внизу
-- Анимации появления сообщений (framer-motion)
-
-### Стилизация в духе Manus
-
-```text
-Сообщения пользователя:
-┌─────────────────────────────────┐
-│  Сообщение справа в rounded box │  <- bg-card border
-└─────────────────────────────────┘
-
-Ответы AI:
-[S] Strata
-Thinking process ▼
-Текст ответа без фона, слева
+// Станет:
+<div className="px-4 py-3">
 ```
 
-## План реализации
+### 6. User bubble — уменьшить padding
+```tsx
+// Было:
+<div className="max-w-[85%] px-5 py-3.5 rounded-2xl ...">
 
-1. Создать `src/components/home/DocumentsChatView.tsx`
-   - Пропсы: `messages`, `onSendMessage`, `isProcessing`, `selectedDocuments`
-   - Рендеринг сообщений с анимацией
-   - Floating input с кнопками + и ArrowUp
+// Станет:
+<div className="max-w-[80%] px-4 py-3 rounded-xl ...">
+```
 
-2. Модифицировать `src/pages/Home.tsx`
-   - Добавить состояния `isInChatMode`, `chatMessages`
-   - Условный рендеринг: обычный интерфейс или DocumentsChatView
-   - Логика handleSubmit для перехода в режим чата
-   - Кнопка возврата к выбору документов
+---
 
-3. Стилизация
-   - Полноэкранный чат при активном режиме
-   - Сохранить хедер и футер
-   - Адаптировать под существующие темы
+## Полный список изменений
 
-## Особенности UX
-
-- Плавный переход в режим чата после первого сообщения
-- Возможность вернуться к выбору документов (кнопка "Back" или крестик в хедере)
-- Контекст выбранных документов виден в интерфейсе чата
-- Поле ввода всегда закреплено внизу
+| Файл | Изменение |
+|------|-----------|
+| DocumentsChatView.tsx | Шрифт 16px вместо 15px |
+| DocumentsChatView.tsx | Ширина 640px вместо 720px |
+| DocumentsChatView.tsx | Иконка Strata без wrapper |
+| DocumentsChatView.tsx | Убрать border-top у action buttons |
+| DocumentsChatView.tsx | Компактнее padding в поле ввода |
+| DocumentsChatView.tsx | Уменьшить округление user bubble |
