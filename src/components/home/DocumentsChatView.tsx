@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { DocumentItem } from './DocumentSelector';
+import { MarkdownRenderer } from '@/components/chat/MarkdownRenderer';
 
 export interface ChatMessage {
   id: string;
@@ -141,10 +141,8 @@ const DocumentsChatView = ({
                       </button>
                     )}
                     
-                    {/* Message content */}
-                    <div className="text-base text-foreground leading-relaxed whitespace-pre-wrap">
-                      {message.content}
-                    </div>
+                    {/* Message content - rendered markdown */}
+                    <MarkdownRenderer content={message.content} />
 
                     {/* Action buttons row */}
                     <div className="flex items-center gap-4 pt-2">
