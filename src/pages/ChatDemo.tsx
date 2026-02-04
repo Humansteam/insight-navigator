@@ -3,9 +3,8 @@
  * 
  * Показывает Agent Chat и Simple Chat режимы с разными типами блоков
  */
-
 import { useState, useRef, useEffect } from 'react';
-import { ArrowUp, Plus, Mic, Link2, X, Sparkles, Bot, MessageSquare, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { ArrowUp, Plus, Mic, Link2, X, Sparkles, Bot, MessageSquare, PanelRightOpen, PanelRightClose, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -224,6 +223,171 @@ const mockDocumentBlocks: AssistantBlock[] = [
   },
 ];
 
+// Corporate RAG mock data (HR Rocket case)
+const mockCorporateBlocks: AssistantBlock[] = [
+  {
+    id: 'corp1',
+    kind: 'text',
+    title: 'Анализ скорости ухудшения ситуации с кадрами в розничной торговле',
+    body: `На основе данных из загруженного документа **HR_Report_2024.pdf** (страницы 2-4) проведён анализ динамики соотношения кандидатов к вакансиям в секторе розничной торговли.
+
+### Ключевые выводы
+
+- Соотношение кандидат/вакансия снизилось с **2.6** до **1.5** за 24 месяца
+- Скорость снижения составляет **0.55 пункта в год**
+- Критическая отметка **1:1** будет достигнута в **ноябре-декабре 2025**`,
+  },
+  {
+    id: 'corp2',
+    kind: 'data-series',
+    title: 'Динамика hh-индекса в розничной торговле',
+    dataSeries: {
+      periods: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+      groups: [
+        { label: '2023', data: [2.6, 2.6, 2.8, 2.5, 2.3, 2.1, 2.0, 1.9, 1.8, 1.7, 1.6, 1.5] },
+        { label: '2024', data: [1.5, 1.6, 1.7, 1.5, 1.1, 1.1, 1.2, 1.3, 1.3, 1.4, 1.4, 1.5] }
+      ],
+      threshold: { value: 1.0, label: 'Критическая отметка' },
+      source: { page: 2, document: 'HR_Report_2024.pdf' }
+    }
+  },
+  {
+    id: 'corp3',
+    kind: 'text',
+    body: `### Данные 2023 года
+
+| Месяц | Значение |
+|-------|----------|
+| Январь | 2.6 |
+| Февраль | 2.6 |
+| Март | 2.8 |
+| Декабрь | 1.5 |
+
+### Данные 2024 года
+
+Показатель продолжает снижаться, достигая минимума **1.1** в мае-июне 2024.`,
+  },
+  {
+    id: 'corp4',
+    kind: 'calculation',
+    title: 'Расчёт скорости ухудшения',
+    calculation: {
+      formula: '(start - end) / months',
+      inputs: [
+        { label: 'Начало (янв 2023)', value: 2.6 },
+        { label: 'Конец (дек 2024)', value: 1.5 },
+        { label: 'Период', value: '24 мес' }
+      ],
+      result: { label: 'Скорость снижения', value: 0.046, unit: 'пункт/мес' },
+      steps: [
+        'Δ = 2.6 - 1.5 = 1.1 пункта',
+        '1.1 ÷ 24 = 0.046 пункта/месяц',
+        '0.046 × 12 = 0.55 пункта/год'
+      ]
+    }
+  },
+  {
+    id: 'corp5',
+    kind: 'forecast',
+    title: 'Прогноз достижения критической отметки',
+    forecast: {
+      current: { value: 1.5, label: 'Текущее значение', date: 'Декабрь 2024' },
+      target: { value: 1.0, label: 'Критическая точка 1:1' },
+      timeToTarget: '≈ 11 месяцев',
+      riskLevel: 'critical',
+      confidence: 85
+    }
+  },
+  {
+    id: 'corp6',
+    kind: 'text',
+    title: 'Последствия для стратегии HR Rocket',
+    body: `Достижение соотношения **1:1** означает, что на каждую вакансию приходится лишь один кандидат. Это создаёт:
+
+1. **Максимальную конкуренцию** работодателей за каждого соискателя
+2. **Резкий рост стоимости найма** — бюджеты на рекрутинг вырастут в 2-2.5 раза
+3. **Снижение требований** — компании вынуждены нанимать менее квалифицированных сотрудников`,
+  },
+  {
+    id: 'corp7',
+    kind: 'risk-list',
+    title: 'Критические вызовы',
+    risks: [
+      { 
+        level: 'critical', 
+        title: 'Острый дефицит кадров', 
+        description: 'Конкуренция за каждого кандидата максимально обострится'
+      },
+      { 
+        level: 'critical', 
+        title: 'Взрывной рост стоимости найма', 
+        impact: '+100-150% при соотношении 1:1'
+      },
+      { 
+        level: 'high', 
+        title: 'Снижение качества найма', 
+        description: 'Работодателям придётся соглашаться на менее квалифицированных кандидатов'
+      }
+    ]
+  },
+  {
+    id: 'corp8',
+    kind: 'strategy-card',
+    title: 'Стратегические приоритеты HR Rocket',
+    strategy: {
+      columns: [
+        {
+          title: 'Немедленные действия (2025)',
+          items: [
+            { text: 'Ускорить внедрение AI/ML функционала для автоматизации подбора', done: false },
+            { text: 'Расширить количество источников кандидатов', done: false },
+            { text: 'Усилить аналитику для выявления скрытых талантов', done: false }
+          ]
+        },
+        {
+          title: 'Среднесрочные меры',
+          items: [
+            { text: 'Развивать инструменты удержания кандидатов в воронке', done: false },
+            { text: 'Создавать базы потенциальных кандидатов заранее', done: false },
+            { text: 'Предлагать клиентам решения по employer branding', done: false }
+          ]
+        }
+      ],
+      urgency: 85,
+      timeframe: '2025-2027'
+    }
+  },
+  {
+    id: 'corp9',
+    kind: 'highlight-metrics',
+    title: 'Конкурентные преимущества платформы',
+    highlightMetrics: [
+      { label: 'Рост откликов', value: '+200%', trend: 'up', color: 'green' },
+      { label: 'Стоимость лида', value: '-30%', trend: 'down', color: 'green' },
+      { label: 'Целевая выручка', value: '2 млрд ₽', color: 'primary' },
+      { label: 'Горизонт', value: '2027', color: 'muted' }
+    ]
+  },
+  {
+    id: 'corp10',
+    kind: 'text',
+    body: `### Вывод
+
+При соотношении **1:1** платформа HR Rocket с возможностью увеличивать количество откликов до **200%** и снижать стоимость лида на **30%+** станет критически важным инструментом выживания для компаний в розничной торговле.
+
+> Это открывает возможности для агрессивного роста и достижения целевой выручки в **2 млрд руб.** к 2027 году.`,
+  },
+  {
+    id: 'corp11',
+    kind: 'source-reference',
+    sources: [
+      { documentName: 'HR_Report_2024.pdf', page: 2, section: 'Динамика рынка труда', confidence: 95 },
+      { documentName: 'HR_Report_2024.pdf', page: 4, section: 'Прогнозы', confidence: 88 },
+      { documentName: 'Market_Analysis_Q4.xlsx', section: 'Retail KPIs', confidence: 82 }
+    ]
+  }
+];
+
 const initialMessages: BlockMessage[] = [
   {
     id: 'm1',
@@ -242,7 +406,7 @@ const initialMessages: BlockMessage[] = [
 // === COMPONENT ===
 
 export default function ChatDemo() {
-  const [mode, setMode] = useState<'agent' | 'simple' | 'document'>('agent');
+  const [mode, setMode] = useState<'agent' | 'simple' | 'document' | 'corporate'>('corporate');
   const [messages, setMessages] = useState<BlockMessage[]>(initialMessages);
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -310,6 +474,18 @@ export default function ChatDemo() {
     }, 1200);
   };
 
+  const simulateCorporateResponse = () => {
+    setTimeout(() => {
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: 'assistant',
+        timestamp: new Date(),
+        blocks: mockCorporateBlocks,
+      }]);
+      setIsProcessing(false);
+    }, 1500);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isProcessing) return;
@@ -330,6 +506,8 @@ export default function ChatDemo() {
       simulateAgentResponse();
     } else if (mode === 'simple') {
       simulateSimpleResponse();
+    } else if (mode === 'corporate') {
+      simulateCorporateResponse();
     } else {
       simulateDocumentResponse();
     }
@@ -347,6 +525,7 @@ export default function ChatDemo() {
       case 'agent': return <Bot className="w-4 h-4" />;
       case 'simple': return <MessageSquare className="w-4 h-4" />;
       case 'document': return <Sparkles className="w-4 h-4" />;
+      case 'corporate': return <Building2 className="w-4 h-4" />;
     }
   };
 
@@ -355,6 +534,7 @@ export default function ChatDemo() {
       case 'agent': return 'Agent Chat';
       case 'simple': return 'Simple Chat';
       case 'document': return 'Document Q&A';
+      case 'corporate': return 'Corporate RAG';
     }
   };
 
@@ -372,6 +552,10 @@ export default function ChatDemo() {
             
             <Tabs value={mode} onValueChange={(v) => setMode(v as typeof mode)}>
               <TabsList className="h-8">
+                <TabsTrigger value="corporate" className="text-xs gap-1.5">
+                  <Building2 className="w-3.5 h-3.5" />
+                  Corporate
+                </TabsTrigger>
                 <TabsTrigger value="agent" className="text-xs gap-1.5">
                   <Bot className="w-3.5 h-3.5" />
                   Agent
