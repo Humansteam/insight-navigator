@@ -14,7 +14,15 @@ export type BlockKind =
   | 'insight'
   | 'metric-group'
   | 'timeline'
-  | 'tool-call';
+  | 'tool-call'
+  // Corporate RAG blocks
+  | 'data-series'
+  | 'calculation'
+  | 'forecast'
+  | 'strategy-card'
+  | 'risk-list'
+  | 'highlight-metrics'
+  | 'source-reference';
 
 export interface TableData {
   columns: string[];
@@ -55,6 +63,61 @@ export interface ToolCallData {
   duration?: number; // ms
 }
 
+// Corporate RAG data types
+export interface DataSeriesData {
+  periods: string[];
+  values?: number[];
+  groups?: { label: string; data: number[] }[];
+  threshold?: { value: number; label: string };
+  source?: { page?: number; document: string };
+}
+
+export interface CalculationData {
+  formula: string;
+  inputs: { label: string; value: number | string }[];
+  result: { label: string; value: number | string; unit?: string };
+  steps?: string[];
+}
+
+export interface ForecastData {
+  current: { value: number; label: string; date: string };
+  target: { value: number; label: string };
+  timeToTarget: string;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  confidence?: number;
+}
+
+export interface StrategyCardData {
+  columns: {
+    title: string;
+    items: { text: string; done?: boolean }[];
+  }[];
+  urgency?: number; // 0-100
+  timeframe?: string;
+}
+
+export interface RiskItem {
+  level: 'low' | 'medium' | 'high' | 'critical';
+  title: string;
+  description?: string;
+  impact?: string;
+}
+
+export interface HighlightMetricItem {
+  label: string;
+  value: string;
+  trend?: 'up' | 'down';
+  icon?: string;
+  color?: string;
+}
+
+export interface SourceReference {
+  documentName: string;
+  page?: number;
+  section?: string;
+  confidence?: number;
+}
+
 export interface AssistantBlock {
   id: string;
   kind: BlockKind;
@@ -69,6 +132,15 @@ export interface AssistantBlock {
   metrics?: MetricItem[];
   timeline?: TimelineEvent[];
   toolCall?: ToolCallData;
+  
+  // Corporate RAG data
+  dataSeries?: DataSeriesData;
+  calculation?: CalculationData;
+  forecast?: ForecastData;
+  strategy?: StrategyCardData;
+  risks?: RiskItem[];
+  highlightMetrics?: HighlightMetricItem[];
+  sources?: SourceReference[];
   
   // Metadata
   meta?: {

@@ -12,6 +12,13 @@ import { ListBlock } from './ListBlock';
 import { CodeBlock } from './CodeBlock';
 import { TimelineBlock } from './TimelineBlock';
 import { ToolCallBlock } from './ToolCallBlock';
+import { DataSeriesBlock } from './DataSeriesBlock';
+import { CalculationBlock } from './CalculationBlock';
+import { ForecastBlock } from './ForecastBlock';
+import { StrategyCardBlock } from './StrategyCardBlock';
+import { RiskListBlock } from './RiskListBlock';
+import { HighlightMetricsBlock } from './HighlightMetricsBlock';
+import { SourceReferenceBlock } from './SourceReferenceBlock';
 import type { AssistantBlock } from '@/types/chat-blocks';
 
 interface BlockRendererProps {
@@ -51,6 +58,27 @@ export function BlockRenderer({ block, onPaperClick, onOpenResults }: BlockRende
     
     case 'tool-call':
       return <ToolCallBlock block={block} onOpenResults={onOpenResults} />;
+    
+    case 'data-series':
+      return <DataSeriesBlock block={block} />;
+    
+    case 'calculation':
+      return <CalculationBlock block={block} />;
+    
+    case 'forecast':
+      return <ForecastBlock block={block} />;
+    
+    case 'strategy-card':
+      return <StrategyCardBlock block={block} />;
+    
+    case 'risk-list':
+      return <RiskListBlock block={block} />;
+    
+    case 'highlight-metrics':
+      return <HighlightMetricsBlock block={block} />;
+    
+    case 'source-reference':
+      return <SourceReferenceBlock block={block} />;
     
     default:
       return null;

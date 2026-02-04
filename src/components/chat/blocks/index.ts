@@ -9,3 +9,11 @@ export { ListBlock } from './ListBlock';
 export { CodeBlock } from './CodeBlock';
 export { TimelineBlock } from './TimelineBlock';
 export { ToolCallBlock } from './ToolCallBlock';
+// Corporate RAG blocks
+export { DataSeriesBlock } from './DataSeriesBlock';
+export { CalculationBlock } from './CalculationBlock';
+export { ForecastBlock } from './ForecastBlock';
+export { StrategyCardBlock } from './StrategyCardBlock';
+export { RiskListBlock } from './RiskListBlock';
+export { HighlightMetricsBlock } from './HighlightMetricsBlock';
+export { SourceReferenceBlock } from './SourceReferenceBlock';
