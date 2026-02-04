@@ -15,16 +15,13 @@ import { ArtifactRenderer } from './artifacts/ArtifactRenderer';
 import { AgentRibbon } from './artifacts/ToolCallCard';
 import { ReportFullscreen } from './artifacts/ReportArtifact';
 import type { 
-  StructuredMessage, 
   ProgressArtifact,
   MapPointsArtifact,
   SchemaArtifact,
   ExtractionArtifact,
   TopologyArtifact,
   ReportArtifact,
-  ToolCallArtifact,
-  SearchResultsArtifact,
-  ClusterInsightArtifact
+  ToolCallArtifact
 } from './artifacts/types';
 
 // === MOCK DATA ===
@@ -361,79 +358,6 @@ const mockToolCalls: ToolCallArtifact[] = [
   },
 ];
 
-const mockSearchResults: SearchResultsArtifact = {
-  type: 'search_results',
-  query: 'solid state battery electrolyte conductivity',
-  totalFound: 423,
-  results: [
-    {
-      id: 'r1',
-      title: 'Ultra-High Ionic Conductivity in Sulfide Solid Electrolytes',
-      year: 2023,
-      fwci: 4.2,
-      citations: 156,
-      countries: ['Japan', 'Korea'],
-    },
-    {
-      id: 'r2',
-      title: 'Polymer-Ceramic Composite Electrolytes for Safe Batteries',
-      year: 2023,
-      fwci: 3.1,
-      citations: 89,
-      countries: ['China', 'USA'],
-    },
-    {
-      id: 'r3',
-      title: 'Room-Temperature Lithium Superionic Conductors',
-      year: 2022,
-      fwci: 5.8,
-      citations: 234,
-      countries: ['Germany'],
-    },
-    {
-      id: 'r4',
-      title: 'Garnet-Type Oxide Electrolytes: Progress and Challenges',
-      year: 2023,
-      fwci: 2.7,
-      citations: 67,
-      countries: ['USA', 'UK'],
-    },
-    {
-      id: 'r5',
-      title: 'All-Solid-State Batteries: From Laboratory to Production',
-      year: 2022,
-      fwci: 3.9,
-      citations: 178,
-      countries: ['China', 'Japan'],
-    },
-  ],
-};
-
-const mockClusterInsight: ClusterInsightArtifact = {
-  type: 'cluster_insight',
-  clusterId: 'c3',
-  clusterLabel: 'Sulfide Glass Electrolytes',
-  technicalBrief: 'Sulfide-based solid electrolytes represent the highest-performing class of solid-state battery materials, achieving ionic conductivities comparable to liquid electrolytes. Key materials include Li₆PS₅Cl (argyrodite) and Li₁₀GeP₂S₁₂ (LGPS). Major challenges include air stability and interface compatibility with cathode materials.',
-  stats: {
-    paperCount: 198,
-    avgCitations: 89,
-    avgFwci: 4.2,
-    yearRange: [2018, 2024],
-  },
-  geoDistribution: [
-    { country: 'Japan', percentage: 34 },
-    { country: 'Korea', percentage: 28 },
-    { country: 'China', percentage: 22 },
-    { country: 'USA', percentage: 10 },
-    { country: 'Germany', percentage: 6 },
-  ],
-  topPapers: [
-    { id: 'tp1', title: 'Ultra-High Ionic Conductivity in Sulfide Solid Electrolytes', year: 2023, citations: 156 },
-    { id: 'tp2', title: 'Air-Stable Sulfide Electrolytes via Surface Modification', year: 2023, citations: 112 },
-    { id: 'tp3', title: 'Interface Engineering for Sulfide-Cathode Compatibility', year: 2022, citations: 98 },
-  ],
-};
-
 // === DEMO COMPONENT ===
 
 export function ArtifactsDemo() {
@@ -460,8 +384,6 @@ export function ArtifactsDemo() {
               <TabsTrigger value="topology">Topology</TabsTrigger>
               <TabsTrigger value="report">Report</TabsTrigger>
               <TabsTrigger value="tools">Tool Calls</TabsTrigger>
-              <TabsTrigger value="search">Search Results</TabsTrigger>
-              <TabsTrigger value="cluster">Cluster Insight</TabsTrigger>
             </TabsList>
 
             <TabsContent value="progress" className="space-y-4">
@@ -531,22 +453,6 @@ export function ArtifactsDemo() {
               >
                 Toggle Agent Ribbon
               </button>
-            </TabsContent>
-
-            <TabsContent value="search" className="space-y-4">
-              <h2 className="text-lg font-semibold">Search Results</h2>
-              <p className="text-sm text-muted-foreground">
-                Conversational dashboard с карточками, чартами и фильтрами
-              </p>
-              <ArtifactRenderer artifact={mockSearchResults} />
-            </TabsContent>
-
-            <TabsContent value="cluster" className="space-y-4">
-              <h2 className="text-lg font-semibold">Cluster Insight</h2>
-              <p className="text-sm text-muted-foreground">
-                Insight card с technical brief, stats и top papers
-              </p>
-              <ArtifactRenderer artifact={mockClusterInsight} />
             </TabsContent>
           </Tabs>
         </div>
