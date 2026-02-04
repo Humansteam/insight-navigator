@@ -9,6 +9,7 @@ import { JournalsProvider } from "@/contexts/JournalsContext";
 import Home from "./pages/Home";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import ChatDemo from "./pages/ChatDemo";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/chat" element={<ChatDemo />} />
                 <Route path="/research" element={<Index />} />
                 <Route path="/artifacts-demo" element={<ArtifactsDemo />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
