@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { FileText, Search, Bot, X, Folder, File, Plus, ArrowUp, Mic, Link2 } from 'lucide-react';
+import { FileText, Search, Bot, X, Folder, File, Plus, ArrowUp, Mic, Link2, PanelRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import DocumentSelector, { DocumentItem } from '@/components/home/DocumentSelector';
 import DocumentsChatView, { ChatMessage } from '@/components/home/DocumentsChatView';
+import DocumentContextPanel from '@/components/home/DocumentContextPanel';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 
 type Mode = 'documents' | 'research' | 'agent';
 
@@ -52,6 +54,7 @@ const Home = () => {
   const [isInChatMode, setIsInChatMode] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showContextPanel, setShowContextPanel] = useState(true);
 
   const handleModeSelect = (mode: Mode) => {
     if (activeMode === mode) {
@@ -167,27 +170,52 @@ const Home = () => {
   // Full-screen chat mode for Documents
   if (isInChatMode && activeMode === 'documents') {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen h-screen bg-background flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-border">
+        <header className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
               <span className="text-primary font-semibold text-sm">S</span>
             </div>
             <span className="text-lg font-medium text-foreground">Stata</span>
           </div>
-          <ThemeSwitcher />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setShowContextPanel(!showContextPanel)}
+            >
+              <PanelRight className={cn("w-4 h-4", showContextPanel && "text-primary")} />
+            </Button>
+            <ThemeSwitcher />
+          </div>
         </header>
 
-        {/* Chat View */}
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <DocumentsChatView
-            messages={chatMessages}
-            onSendMessage={handleChatMessage}
-            isProcessing={isProcessing}
-            selectedDocuments={selectedDocuments}
-            onBack={handleBackFromChat}
-          />
+        {/* Chat + Context Panel */}
+        <main className="flex-1 overflow-hidden">
+          <ResizablePanelGroup direction="horizontal">
+            {/* Chat Panel */}
+            <ResizablePanel defaultSize={showContextPanel ? 65 : 100} minSize={40}>
+              <DocumentsChatView
+                messages={chatMessages}
+                onSendMessage={handleChatMessage}
+                isProcessing={isProcessing}
+                selectedDocuments={selectedDocuments}
+                onBack={handleBackFromChat}
+              />
+            </ResizablePanel>
+
+            {/* Context Panel */}
+            {showContextPanel && (
+              <>
+                <ResizableHandle />
+                <ResizablePanel defaultSize={35} minSize={25} maxSize={50}>
+                  <DocumentContextPanel documents={selectedDocuments} />
+                </ResizablePanel>
+              </>
+            )}
+          </ResizablePanelGroup>
         </main>
       </div>
     );
