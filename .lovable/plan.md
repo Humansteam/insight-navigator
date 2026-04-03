@@ -1,464 +1,52 @@
 
 
-# План: Демо чата для Corporate RAG на /chat
+# Plan: Login/Registration Page in Lovable Split-Screen Style
 
-## Цель
-Обновить страницу `/chat` с новым режимом "Corporate RAG", демонстрирующим полноценный ответ AI на анализ корпоративных документов (PDF, Excel, презентации). Ответ должен сочетать **обычный markdown-текст** со **структурированными блоками**.
+## Goal
+Create a `/login` page with a two-panel split layout inspired by Lovable's login page (screenshot 3). Left panel has the auth form with "Strata" branding and tagline "See What Others Miss". Right panel shows an interactive chat-style input prompt area with a gradient/cosmic background.
 
----
+## Layout
 
-## Что будет сделано
-
-### 1. Новые типы блоков
-
-Расширение `src/types/chat-blocks.ts`:
-
-```
-BlockKind += 
-  | 'data-series'        // временной ряд с графиком
-  | 'calculation'        // формула/расчёт  
-  | 'forecast'           // прогноз с progress-bar
-  | 'strategy-card'      // колонки приоритетов
-  | 'risk-list'          // риски с уровнями
-  | 'highlight-metrics'  // крупные KPI-карточки
-  | 'source-reference'   // ссылки на документы
-```
-
-### 2. Новые компоненты блоков
-
-Создание в `src/components/chat/blocks/`:
-
-| Компонент | Описание |
-|-----------|----------|
-| `DataSeriesBlock.tsx` | Временной ряд + мини-график (Recharts AreaChart) |
-| `CalculationBlock.tsx` | Формула с шагами расчёта |
-| `ForecastBlock.tsx` | Прогресс-бар с датами и уровнем риска |
-| `StrategyCardBlock.tsx` | Grid колонок с чекбоксами |
-| `RiskListBlock.tsx` | Список с цветовыми индикаторами |
-| `HighlightMetricsBlock.tsx` | Крупные KPI-карточки |
-| `SourceReferenceBlock.tsx` | Footer со ссылками на источники |
-
-### 3. Демо-мок данные HR Rocket
-
-Создание полного ответа, который чередует:
-- **Текстовые блоки** (`kind: 'text'`) с markdown-контентом
-- **Структурированные блоки** (таблицы, графики, метрики)
-
-### 4. Структура ответа
-
-```
-┌─────────────────────────────────────────────────┐
-│ 📝 TEXT: Заголовок + введение (markdown)       │
-├─────────────────────────────────────────────────┤
-│ 📊 DATA-SERIES: Динамика hh-индекса           │
-├─────────────────────────────────────────────────┤
-│ 📝 TEXT: Анализ данных (markdown с списками)  │
-├─────────────────────────────────────────────────┤
-│ 🧮 CALCULATION: Расчёт скорости ухудшения     │
-├─────────────────────────────────────────────────┤
-│ 🎯 FORECAST: Прогноз достижения 1:1           │
-├─────────────────────────────────────────────────┤
-│ 📝 TEXT: Последствия для стратегии (markdown) │
-├─────────────────────────────────────────────────┤
-│ ⚠️ RISK-LIST: Критические вызовы              │
-├─────────────────────────────────────────────────┤
-│ 📋 STRATEGY-CARD: Приоритеты (2 колонки)      │
-├─────────────────────────────────────────────────┤
-│ 💎 HIGHLIGHT-METRICS: KPI платформы           │
-├─────────────────────────────────────────────────┤
-│ 📝 TEXT: Заключение (markdown)                │
-├─────────────────────────────────────────────────┤
-│ 📎 SOURCE-REFERENCE: Ссылки на документы      │
-└─────────────────────────────────────────────────┘
+```text
+┌──────────────────────────┬──────────────────────────┐
+│                          │                          │
+│   [Strata Logo]          │                          │
+│                          │     (gradient/cosmic     │
+│   Log in                 │      background)         │
+│   See What Others Miss   │                          │
+│                          │                          │
+│   [Continue with Google] │   ┌──────────────────┐   │
+│   [Continue with GitHub] │   │ Ask Strata to     │   │
+│                          │   │ analyze your docs │⬆│ │
+│   ─── OR ───             │   └──────────────────┘   │
+│                          │                          │
+│   Email: [___________]   │                          │
+│   Password: [________]   │                          │
+│                          │                          │
+│   [    Log in    ]       │                          │
+│                          │                          │
+│   Don't have an account? │                          │
+│   Create your account    │                          │
+│                          │                          │
+└──────────────────────────┴──────────────────────────┘
 ```
 
----
+## Files to Create/Modify
 
-## Технические детали
+| File | Action |
+|------|--------|
+| `src/pages/Login.tsx` | Create - split-screen login page |
+| `src/App.tsx` | Add `/login` route |
 
-### Пример мок-данных с текстом
+## Technical Details
 
-```typescript
-const mockCorporateRAGBlocks: AssistantBlock[] = [
-  // 1. Текстовое введение
-  {
-    id: 'intro',
-    kind: 'text',
-    title: 'Анализ скорости ухудшения ситуации с кадрами в розничной торговле',
-    body: `На основе данных из загруженного документа **HR_Report_2024.pdf** (страницы 2-4) проведён анализ динамики соотношения кандидатов к вакансиям в секторе розничной торговли.
+- **Left panel**: White/light background, max-w-md form centered vertically. Logo "S" + "Strata" at top. "Log in" heading. "See What Others Miss" subtitle in muted text. Google/GitHub OAuth buttons (outlined). Divider "OR". Email + Password inputs. Primary "Log in" button. "Create your account" link at bottom.
 
-### Ключевые выводы
+- **Right panel**: Dark gradient background (deep navy to purple/pink, similar to Lovable's style but with the cosmic/space theme from the Strata brand). A floating chat input bar centered in the lower portion: rounded-full container with placeholder text "Ask Strata to analyze your documents..." and a circular send button. Subtle animated gradient or particle effect for visual appeal.
 
-- Соотношение кандидат/вакансия снизилось с **2.6** до **1.5** за 24 месяца
-- Скорость снижения составляет **0.55 пункта в год**
-- Критическая отметка **1:1** будет достигнута в **ноябре-декабре 2025**`,
-  },
-  
-  // 2. График временного ряда
-  {
-    id: 'chart1',
-    kind: 'data-series',
-    title: 'Динамика hh-индекса в розничной торговле',
-    dataSeries: {
-      periods: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
-      groups: [
-        { label: '2023', data: [2.6, 2.6, 2.8, 2.5, 2.3, 2.1, 2.0, 1.9, 1.8, 1.7, 1.6, 1.5] },
-        { label: '2024', data: [1.5, 1.6, 1.7, 1.5, 1.1, 1.1, 1.2, 1.3, 1.3, 1.4, 1.4, 1.5] }
-      ],
-      threshold: { value: 1.0, label: 'Критическая отметка' },
-      source: { page: 2, document: 'HR_Report_2024.pdf' }
-    }
-  },
+- **Responsive**: On mobile (<768px), hide right panel, show only the form full-width.
 
-  // 3. Текстовый блок с данными
-  {
-    id: 'data-text',
-    kind: 'text',
-    body: `### Данные 2023 года
+- **No real auth**: Mock form only, buttons log to console. This is a UI demo.
 
-| Месяц | Значение |
-|-------|----------|
-| Январь | 2.6 |
-| Февраль | 2.6 |
-| Март | 2.8 |
-| Декабрь | 1.5 |
-
-### Данные 2024 года
-
-Показатель продолжает снижаться, достигая минимума **1.1** в мае-июне 2024.`,
-  },
-
-  // 4. Расчёт
-  {
-    id: 'calc1',
-    kind: 'calculation',
-    title: 'Расчёт скорости ухудшения',
-    calculation: {
-      formula: '(start - end) / months',
-      inputs: [
-        { label: 'Начало (янв 2023)', value: 2.6 },
-        { label: 'Конец (дек 2024)', value: 1.5 },
-        { label: 'Период', value: '24 мес' }
-      ],
-      result: { label: 'Скорость снижения', value: 0.046, unit: 'пункт/мес' },
-      steps: [
-        'Δ = 2.6 - 1.5 = 1.1 пункта',
-        '1.1 ÷ 24 = 0.046 пункта/месяц',
-        '0.046 × 12 = 0.55 пункта/год'
-      ]
-    }
-  },
-
-  // 5. Прогноз
-  {
-    id: 'forecast1',
-    kind: 'forecast',
-    title: 'Прогноз достижения критической отметки',
-    forecast: {
-      current: { value: 1.5, label: 'Текущее значение', date: 'Декабрь 2024' },
-      target: { value: 1.0, label: 'Критическая точка 1:1' },
-      timeToTarget: '≈ 11 месяцев',
-      riskLevel: 'critical',
-      confidence: 85
-    }
-  },
-
-  // 6. Текст о последствиях
-  {
-    id: 'consequences-text',
-    kind: 'text',
-    title: 'Последствия для стратегии HR Rocket',
-    body: `Достижение соотношения **1:1** означает, что на каждую вакансию приходится лишь один кандидат. Это создаёт:
-
-1. **Максимальную конкуренцию** работодателей за каждого соискателя
-2. **Резкий рост стоимости найма** — бюджеты на рекрутинг вырастут в 2-2.5 раза
-3. **Снижение требований** — компании вынуждены нанимать менее квалифицированных сотрудников`,
-  },
-
-  // 7. Риски
-  {
-    id: 'risks1',
-    kind: 'risk-list',
-    title: 'Критические вызовы',
-    risks: [
-      { 
-        level: 'critical', 
-        title: 'Острый дефицит кадров', 
-        description: 'Конкуренция за каждого кандидата максимально обострится'
-      },
-      { 
-        level: 'critical', 
-        title: 'Взрывной рост стоимости найма', 
-        impact: '+100-150% при соотношении 1:1'
-      },
-      { 
-        level: 'high', 
-        title: 'Снижение качества найма', 
-        description: 'Работодателям придётся соглашаться на менее квалифицированных кандидатов'
-      }
-    ]
-  },
-
-  // 8. Стратегия
-  {
-    id: 'strategy1',
-    kind: 'strategy-card',
-    title: 'Стратегические приоритеты HR Rocket',
-    strategy: {
-      columns: [
-        {
-          title: 'Немедленные действия (2025)',
-          items: [
-            { text: 'Ускорить внедрение AI/ML функционала для автоматизации подбора', done: false },
-            { text: 'Расширить количество источников кандидатов', done: false },
-            { text: 'Усилить аналитику для выявления скрытых талантов', done: false }
-          ]
-        },
-        {
-          title: 'Среднесрочные меры',
-          items: [
-            { text: 'Развивать инструменты удержания кандидатов в воронке', done: false },
-            { text: 'Создавать базы потенциальных кандидатов заранее', done: false },
-            { text: 'Предлагать клиентам решения по employer branding', done: false }
-          ]
-        }
-      ],
-      urgency: 85,
-      timeframe: '2025-2027'
-    }
-  },
-
-  // 9. KPI
-  {
-    id: 'kpi1',
-    kind: 'highlight-metrics',
-    title: 'Конкурентные преимущества платформы',
-    highlightMetrics: [
-      { label: 'Рост откликов', value: '+200%', trend: 'up', color: 'green' },
-      { label: 'Стоимость лида', value: '-30%', trend: 'down', color: 'green' },
-      { label: 'Целевая выручка', value: '2 млрд ₽', color: 'primary' },
-      { label: 'Горизонт', value: '2027', color: 'muted' }
-    ]
-  },
-
-  // 10. Заключение
-  {
-    id: 'conclusion',
-    kind: 'text',
-    body: `### Вывод
-
-При соотношении **1:1** платформа HR Rocket с возможностью увеличивать количество откликов до **200%** и снижать стоимость лида на **30%+** станет критически важным инструментом выживания для компаний в розничной торговле.
-
-> Это открывает возможности для агрессивного роста и достижения целевой выручки в **2 млрд руб.** к 2027 году.`,
-  },
-
-  // 11. Источники
-  {
-    id: 'sources',
-    kind: 'source-reference',
-    sources: [
-      { documentName: 'HR_Report_2024.pdf', page: 2, section: 'Динамика рынка труда', confidence: 95 },
-      { documentName: 'HR_Report_2024.pdf', page: 4, section: 'Прогнозы', confidence: 88 },
-      { documentName: 'Market_Analysis_Q4.xlsx', section: 'Retail KPIs', confidence: 82 }
-    ]
-  }
-];
-```
-
-### Визуальный компонент DataSeriesBlock
-
-```tsx
-export function DataSeriesBlock({ block }: DataSeriesBlockProps) {
-  const { dataSeries } = block;
-  
-  return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-4">
-      <h3 className="text-sm font-medium text-foreground">{block.title}</h3>
-      
-      {/* Recharts AreaChart */}
-      <ResponsiveContainer width="100%" height={180}>
-        <AreaChart data={transformData(dataSeries)}>
-          <defs>
-            <linearGradient id="gradient2023" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <XAxis dataKey="period" tick={{ fontSize: 12 }} />
-          <YAxis domain={[0, 3]} tick={{ fontSize: 12 }} />
-          <ReferenceLine y={1.0} stroke="hsl(var(--destructive))" strokeDasharray="4 4" />
-          <Area type="monotone" dataKey="2023" fill="url(#gradient2023)" stroke="hsl(var(--primary))" />
-          <Area type="monotone" dataKey="2024" fill="url(#gradient2024)" stroke="hsl(var(--chart-2))" />
-          <Tooltip />
-        </AreaChart>
-      </ResponsiveContainer>
-      
-      {/* Legend + Source */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex gap-4">
-          <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 bg-primary rounded" /> 2023
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-3 h-1 bg-chart-2 rounded" /> 2024
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-3 h-0.5 bg-destructive rounded" style={{borderStyle: 'dashed'}} /> Критич.
-          </span>
-        </div>
-        <span>Источник: стр. {dataSeries.source?.page}</span>
-      </div>
-    </div>
-  );
-}
-```
-
-### Визуальный компонент ForecastBlock
-
-```tsx
-export function ForecastBlock({ block }: ForecastBlockProps) {
-  const { forecast } = block;
-  const progress = ((forecast.current.value - forecast.target.value) / forecast.current.value) * 100;
-  
-  const riskColors = {
-    low: 'bg-green-500',
-    medium: 'bg-yellow-500', 
-    high: 'bg-orange-500',
-    critical: 'bg-red-500'
-  };
-
-  return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-4">
-      <h3 className="text-sm font-medium text-foreground">{block.title}</h3>
-      
-      {/* Progress bar */}
-      <div className="relative">
-        <div className="h-3 bg-muted rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full transition-all"
-            style={{ width: `${100 - progress}%` }}
-          />
-        </div>
-        
-        {/* Markers */}
-        <div className="flex justify-between mt-2 text-xs">
-          <div className="text-center">
-            <div className="font-medium text-foreground">{forecast.current.value}</div>
-            <div className="text-muted-foreground">{forecast.current.date}</div>
-          </div>
-          <div className="text-center text-muted-foreground">
-            {forecast.timeToTarget}
-          </div>
-          <div className="text-center">
-            <div className="font-medium text-destructive">{forecast.target.value}</div>
-            <div className="text-muted-foreground">{forecast.target.label}</div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Risk badge */}
-      <div className={cn(
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium",
-        riskColors[forecast.riskLevel],
-        "text-white"
-      )}>
-        ⚠️ Уровень риска: {forecast.riskLevel.toUpperCase()}
-        {forecast.confidence && ` (${forecast.confidence}% уверенность)`}
-      </div>
-    </div>
-  );
-}
-```
-
----
-
-## Изменения в файлах
-
-| Файл | Действие |
-|------|----------|
-| `src/types/chat-blocks.ts` | Расширить BlockKind + добавить интерфейсы данных |
-| `src/components/chat/blocks/DataSeriesBlock.tsx` | Создать (график временного ряда) |
-| `src/components/chat/blocks/CalculationBlock.tsx` | Создать (формула с шагами) |
-| `src/components/chat/blocks/ForecastBlock.tsx` | Создать (прогноз с прогресс-баром) |
-| `src/components/chat/blocks/StrategyCardBlock.tsx` | Создать (колонки приоритетов) |
-| `src/components/chat/blocks/RiskListBlock.tsx` | Создать (риски с уровнями) |
-| `src/components/chat/blocks/HighlightMetricsBlock.tsx` | Создать (крупные KPI) |
-| `src/components/chat/blocks/SourceReferenceBlock.tsx` | Создать (ссылки на документы) |
-| `src/components/chat/blocks/BlockRenderer.tsx` | Добавить новые case'ы |
-| `src/components/chat/blocks/index.ts` | Экспортировать новые компоненты |
-| `src/pages/ChatDemo.tsx` | Добавить режим "Corporate" + мок-данные |
-
----
-
-## Результат
-
-Пользователь увидит чередование текста и интерактивных блоков:
-
-```
-┌────────────────────────────────────────────────────────┐
-│ 🤖 Strata · Corporate RAG                             │
-├────────────────────────────────────────────────────────┤
-│                                                        │
-│ ## Анализ скорости ухудшения ситуации с кадрами       │
-│                                                        │
-│ На основе данных из **HR_Report_2024.pdf**...          │
-│                                                        │
-│ ### Ключевые выводы                                    │
-│ • Соотношение снизилось с **2.6** до **1.5**          │
-│ • Скорость снижения: **0.55 пункта/год**              │
-│ • Критическая отметка: **ноябрь-декабрь 2025**        │
-│                                                        │
-│ ┌─ 📊 Динамика hh-индекса ────────────────────────┐   │
-│ │  ▁▂▃▄▅▆▇█                                       │   │
-│ │  [AreaChart с двумя линиями + threshold]        │   │
-│ │  ■ 2023  ■ 2024  ─ ─ Критич.                   │   │
-│ └─────────────────────────────────────────────────┘   │
-│                                                        │
-│ ┌─ 🧮 Расчёт скорости ────────────────────────────┐   │
-│ │ Δ = 2.6 - 1.5 = 1.1                             │   │
-│ │ 1.1 ÷ 24 = **0.046** пункта/мес                 │   │
-│ └─────────────────────────────────────────────────┘   │
-│                                                        │
-│ ┌─ 🎯 Прогноз ────────────────────────────────────┐   │
-│ │ 1.5 ━━━━━━━━━━━━━━━━━━━ 1.0                     │   │
-│ │     ≈ 11 месяцев до критической точки           │   │
-│ │ 🔴 CRITICAL RISK (85% confidence)               │   │
-│ └─────────────────────────────────────────────────┘   │
-│                                                        │
-│ ## Последствия для стратегии HR Rocket                │
-│                                                        │
-│ 1. **Максимальная конкуренция** работодателей...      │
-│ 2. **Резкий рост стоимости найма**...                 │
-│                                                        │
-│ ┌─ ⚠️ Критические вызовы ─────────────────────────┐   │
-│ │ 🔴 Острый дефицит кадров                        │   │
-│ │ 🔴 Рост стоимости +100-150%                     │   │
-│ │ 🟠 Снижение качества найма                      │   │
-│ └─────────────────────────────────────────────────┘   │
-│                                                        │
-│ ┌─ 🎯 Стратегические приоритеты ──────────────────┐   │
-│ │ Немедленные (2025) │ Среднесрочные              │   │
-│ │ □ AI/ML            │ □ Удержание                │   │
-│ │ □ Источники        │ □ Базы кандидатов          │   │
-│ │ □ Аналитика        │ □ Employer branding        │   │
-│ │                                                 │   │
-│ │ Срочность: ████████░░ 85%                      │   │
-│ └─────────────────────────────────────────────────┘   │
-│                                                        │
-│ ┌─ 💎 Конкурентные преимущества ──────────────────┐   │
-│ │ ↑+200%      ↓-30%      2 млрд ₽      2027       │   │
-│ │ Отклики    Лид        Выручка       Срок        │   │
-│ └─────────────────────────────────────────────────┘   │
-│                                                        │
-│ ### Вывод                                              │
-│                                                        │
-│ При соотношении **1:1** платформа HR Rocket...         │
-│                                                        │
-│ > Это открывает возможности для достижения             │
-│ > целевой выручки в **2 млрд руб.** к 2027 году.       │
-│                                                        │
-│ ─────────────────────────────────────────────────────  │
-│ 📎 HR_Report_2024.pdf стр.2,4 · Market_Analysis.xlsx  │
-└────────────────────────────────────────────────────────┘
-```
+- **Styling**: Uses existing theme CSS variables. Right panel uses custom gradient matching the deep-space theme colors (dark blues, cyans, subtle purples).
 
