@@ -29,6 +29,7 @@ const App = () => (
                 <Route path="/chat" element={<ChatDemo />} />
                 <Route path="/research" element={<Index />} />
                 <Route path="/artifacts-demo" element={<ArtifactsDemo />} />
+                <Route path="/login" element={<Login />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
