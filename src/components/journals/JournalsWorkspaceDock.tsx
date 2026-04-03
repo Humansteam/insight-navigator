@@ -56,7 +56,7 @@ export const JournalsWorkspaceProvider = ({ children }: { children: React.ReactN
   // Content state per journal to avoid re-renders
   const [contents, setContents] = useState<Record<string, string>>({});
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activeJournal = activeTabId ? getJournalById(activeTabId) ?? null : null;
 

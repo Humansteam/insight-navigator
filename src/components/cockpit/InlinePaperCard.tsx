@@ -9,7 +9,7 @@ interface InlinePaperCardProps {
 
 export const InlinePaperCard = ({ paper, index }: InlinePaperCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const keyFindings = paper.dimensions?.['Key Findings']?.value || paper.abstract || '—';
   const fullText = paper.abstract || keyFindings;
