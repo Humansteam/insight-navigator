@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ChatDemo from "./pages/ChatDemo";
+import Login from "./pages/Login";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
 
 const queryClient = new QueryClient();

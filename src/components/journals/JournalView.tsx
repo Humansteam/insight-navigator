@@ -25,7 +25,7 @@ export const JournalView = ({ journal, onBack }: JournalViewProps) => {
   const [isPreview, setIsPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Sync content when journal updates from external source
   useEffect(() => {

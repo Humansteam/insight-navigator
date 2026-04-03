@@ -26,7 +26,7 @@ const Index = () => {
   const reportContentRef = useRef<HTMLDivElement>(null);
   
   // Debounce timer for graph hover (only show details after 300ms)
-  const graphHoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const graphHoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const handleGraphHover = useCallback((id: string | null) => {
     // Clear any pending timer
