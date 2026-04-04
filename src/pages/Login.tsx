@@ -165,12 +165,7 @@ const Login = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">
-                S
-              </div>
-              <span className="text-3xl font-semibold text-white tracking-tight">Strata</span>
-            </div>
+            <span className="text-3xl font-semibold text-white tracking-tight">Strata</span>
             <p className="text-white/50 text-sm tracking-[0.2em] uppercase">See What Others Miss</p>
           </motion.div>
 
