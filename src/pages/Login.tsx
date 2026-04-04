@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUp, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowUp, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,23 +22,31 @@ const Login = () => {
   return (
     <div className="flex min-h-screen">
       {/* Left Panel — Auth Form */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-12 bg-background">
-        <div className="w-full max-w-md space-y-8">
-          {/* Logo */}
-
+      <div className="w-full md:w-[45%] flex flex-col justify-center items-center px-8 lg:px-16 py-12 bg-background relative">
+        {/* Subtle gradient accent */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        
+        <motion.div
+          className="w-full max-w-[420px] space-y-7 relative z-10"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           {/* Heading */}
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">
-              {isSignUp ? 'Create your account' : 'Log in'}
+            <h1 className="text-3xl font-bold text-foreground tracking-tight">
+              {isSignUp ? 'Create your account' : 'Welcome back'}
             </h1>
-            <p className="text-muted-foreground text-base">See What Others Miss</p>
+            <p className="text-muted-foreground text-sm">
+              {isSignUp ? 'Get started with Strata in seconds' : 'Sign in to continue to Strata'}
+            </p>
           </div>
 
           {/* OAuth Buttons */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             <Button
               variant="outline"
-              className="w-full h-11 justify-center gap-3 text-sm font-medium"
+              className="w-full h-12 justify-center gap-3 text-sm font-medium rounded-xl border-border/60 hover:bg-accent/50 transition-all"
               onClick={() => console.log('Google OAuth')}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -51,7 +59,7 @@ const Login = () => {
             </Button>
             <Button
               variant="outline"
-              className="w-full h-11 justify-center gap-3 text-sm font-medium"
+              className="w-full h-12 justify-center gap-3 text-sm font-medium rounded-xl border-border/60 hover:bg-accent/50 transition-all"
               onClick={() => console.log('GitHub OAuth')}
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -64,52 +72,52 @@ const Login = () => {
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
+              <span className="w-full border-t border-border/50" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">OR</span>
+              <span className="bg-background px-3 text-muted-foreground/60 tracking-wider text-[11px]">or continue with email</span>
             </div>
           </div>
 
           {/* Email/Password Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 h-11"
+                  className="pl-11 h-12 rounded-xl border-border/60 bg-accent/30 focus:bg-background transition-colors"
                 />
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 pr-10 h-11"
+                  className="pl-11 pr-11 h-12 rounded-xl border-border/60 bg-accent/30 focus:bg-background transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
-            <Button type="submit" className="w-full h-11 text-sm font-medium">
-              {isSignUp ? 'Create account' : 'Log in'}
+            <Button type="submit" className="w-full h-12 text-sm font-semibold rounded-xl mt-2">
+              {isSignUp ? 'Create account' : 'Sign in'}
             </Button>
           </form>
 
@@ -120,84 +128,130 @@ const Login = () => {
               onClick={() => setIsSignUp(!isSignUp)}
               className="text-primary hover:underline font-medium"
             >
-              {isSignUp ? 'Log in' : 'Create your account'}
+              {isSignUp ? 'Sign in' : 'Create account'}
             </button>
           </p>
+        </motion.div>
+
+        {/* Footer */}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+          <p className="text-[11px] text-muted-foreground/40">© 2026 Strata · Privacy · Terms</p>
         </div>
       </div>
 
-      {/* Right Panel — Visual / Chat Preview */}
-      <div className="hidden md:flex w-1/2 relative overflow-hidden">
-        {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(230,40%,8%)] via-[hsl(260,50%,15%)] to-[hsl(280,60%,20%)]" />
+      {/* Right Panel — Visual / Brand */}
+      <div className="hidden md:flex w-[55%] relative overflow-hidden">
+        {/* Multi-layer gradient background */}
+        <div className="absolute inset-0 bg-[hsl(230,45%,6%)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(230,40%,10%)] via-[hsl(255,45%,12%)] to-[hsl(280,50%,8%)]" />
         
-        {/* Animated orbs */}
+        {/* Large animated glow orbs */}
         <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.4), transparent 70%)' }}
-          animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-          initial={{ top: '10%', left: '20%' }}
+          className="absolute w-[600px] h-[600px] rounded-full"
+          style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 60%)' }}
+          animate={{ x: [0, 60, 0], y: [0, -40, 0], scale: [1, 1.2, 1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ top: '-10%', left: '10%' }}
         />
         <motion.div
-          className="absolute w-[400px] h-[400px] rounded-full opacity-15"
-          style={{ background: 'radial-gradient(circle, hsl(280 60% 50% / 0.3), transparent 70%)' }}
-          animate={{ x: [0, -30, 0], y: [0, 40, 0], scale: [1, 1.15, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          initial={{ bottom: '15%', right: '10%' }}
+          className="absolute w-[500px] h-[500px] rounded-full"
+          style={{ background: 'radial-gradient(circle, hsl(280 60% 40% / 0.12), transparent 60%)' }}
+          animate={{ x: [0, -40, 0], y: [0, 50, 0], scale: [1, 1.15, 1] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ bottom: '-5%', right: '5%' }}
+        />
+        <motion.div
+          className="absolute w-[300px] h-[300px] rounded-full"
+          style={{ background: 'radial-gradient(circle, hsl(200 80% 50% / 0.08), transparent 60%)' }}
+          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ top: '40%', right: '30%' }}
         />
 
-        {/* Grid pattern overlay */}
+        {/* Dot grid overlay */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: 'linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
+            backgroundImage: 'radial-gradient(circle, hsl(0 0% 100%) 1px, transparent 1px)',
+            backgroundSize: '32px 32px',
           }}
         />
 
+        {/* Noise texture */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.5\'/%3E%3C/svg%3E")' }} />
+
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-8">
-          {/* Strata Logo + Tagline */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-10">
+          {/* Strata branding */}
           <motion.div
-            className="flex flex-col items-center gap-4 mb-12"
-            initial={{ opacity: 0, y: 20 }}
+            className="flex flex-col items-center gap-5 mb-16"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
           >
-            <span className="text-3xl font-semibold text-white tracking-tight">Strata</span>
-            <p className="text-white/50 text-sm tracking-[0.2em] uppercase">See What Others Miss</p>
+            <motion.div
+              className="flex items-center gap-2 mb-1"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <Sparkles className="w-5 h-5 text-primary/70" />
+              <span className="text-4xl font-bold text-white tracking-tight">Strata</span>
+            </motion.div>
+            <div className="flex items-center gap-3">
+              <div className="h-px w-8 bg-gradient-to-r from-transparent to-white/20" />
+              <p className="text-white/40 text-xs tracking-[0.3em] uppercase font-medium">
+                See What Others Miss
+              </p>
+              <div className="h-px w-8 bg-gradient-to-l from-transparent to-white/20" />
+            </div>
           </motion.div>
 
           {/* Chat input mock */}
           <motion.div
-            className="w-full max-w-lg"
+            className="w-full max-w-md"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            <div className="flex items-center gap-3 bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-2xl px-5 py-3.5 shadow-2xl">
-              <span className="flex-1 text-white/40 text-sm">
-                Ask Strata to analyze your documents...
-              </span>
-              <div className="h-10 w-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
-                <ArrowUp className="w-4 h-4 text-white/50" />
+            <div className="relative group">
+              {/* Glow behind input */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-purple-500/10 to-primary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              
+              <div className="relative flex items-center gap-3 bg-white/[0.06] backdrop-blur-2xl border border-white/[0.1] rounded-2xl px-5 py-4 shadow-2xl shadow-black/20">
+                <span className="flex-1 text-white/35 text-sm">
+                  Ask Strata to analyze your documents...
+                </span>
+                <div className="h-9 w-9 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                  <ArrowUp className="w-4 h-4 text-primary/70" />
+                </div>
               </div>
             </div>
 
             {/* Example chips */}
-            <div className="flex flex-wrap gap-2 mt-4 justify-center">
-              {['Market analysis', 'Financial report', 'Competitive landscape'].map((chip) => (
-                <span
+            <motion.div
+              className="flex flex-wrap gap-2 mt-5 justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              {['Market analysis', 'Financial report', 'Competitive landscape', 'Risk assessment'].map((chip, i) => (
+                <motion.span
                   key={chip}
-                  className="px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.1] text-white/40 text-xs"
+                  className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-white/30 text-xs hover:bg-white/[0.08] hover:text-white/50 cursor-default transition-all"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9 + i * 0.1 }}
                 >
                   {chip}
-                </span>
+                </motion.span>
               ))}
-            </div>
+            </motion.div>
           </motion.div>
         </div>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(230,45%,4%)] to-transparent" />
       </div>
     </div>
   );
