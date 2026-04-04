@@ -25,12 +25,6 @@ const Login = () => {
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-12 bg-background">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
-              S
-            </div>
-            <span className="text-2xl font-semibold text-foreground tracking-tight">Strata</span>
-          </div>
 
           {/* Heading */}
           <div className="space-y-2">
@@ -163,16 +157,22 @@ const Login = () => {
         />
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-end w-full pb-24 px-8">
-          {/* Tagline */}
-          <motion.p
-            className="text-white/60 text-sm tracking-widest uppercase mb-16"
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-8">
+          {/* Strata Logo + Tagline */}
+          <motion.div
+            className="flex flex-col items-center gap-4 mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Your AI Research Partner
-          </motion.p>
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">
+                S
+              </div>
+              <span className="text-3xl font-semibold text-white tracking-tight">Strata</span>
+            </div>
+            <p className="text-white/50 text-sm tracking-[0.2em] uppercase">See What Others Miss</p>
+          </motion.div>
 
           {/* Chat input mock */}
           <motion.div
