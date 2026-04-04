@@ -25,12 +25,6 @@ const Login = () => {
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-12 bg-background">
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
-              S
-            </div>
-            <span className="text-2xl font-semibold text-foreground tracking-tight">Strata</span>
-          </div>
 
           {/* Heading */}
           <div className="space-y-2">
