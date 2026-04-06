@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ChatDemo from "./pages/ChatDemo";
 import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
 
 const queryClient = new QueryClient();
