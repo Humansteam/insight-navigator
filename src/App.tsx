@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ChatDemo from "./pages/ChatDemo";
 import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
                 <Route path="/research" element={<Index />} />
                 <Route path="/artifacts-demo" element={<ArtifactsDemo />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/onboarding" element={<Onboarding />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
