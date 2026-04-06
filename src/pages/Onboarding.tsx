@@ -41,7 +41,7 @@ const AUTHORITIES = [
 ];
 
 const STEPS_META = [
-  { num: 1, title: 'WHAT DO YOU DO?', sub: 'Tell us in a sentence or two — we'll tailor everything to you.' },
+  { num: 1, title: 'WHAT DO YOU DO?', sub: "Tell us in a sentence or two — we'll tailor everything to you." },
   { num: 2, title: 'PICK YOUR TOPICS', sub: 'Choose at least 2 areas you want Strata to track for you.' },
   { num: 3, title: 'VOICES YOU TRUST', sub: 'Optional — helps us prioritize the right sources.' },
 ];
