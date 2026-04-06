@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, ArrowRight, Plus, User, BookOpen, Users } from 'lucide-react';
+import { Sparkles, ArrowUp, ArrowRight, Plus, User, BookOpen, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -43,36 +42,10 @@ const AUTHORITIES = [
   { name: 'Demis Hassabis', domain: 'AI' },
 ];
 
-// ── Types ─────────────────────────────────────────────
-
-interface Message {
-  id: string;
-  role: 'assistant' | 'user';
-  content: string;
-  widget?: 'step1' | 'step2' | 'step3' | 'summary';
-}
-
 interface OnboardingData {
   context: string;
   topics: string[];
   authorities: string[];
-}
-
-// ── Typing indicator ──────────────────────────────────
-
-function TypingDots() {
-  return (
-    <div className="flex items-center gap-1 px-4 py-3">
-      {[0, 1, 2].map((i) => (
-        <motion.span
-          key={i}
-          className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50"
-          animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
-        />
-      ))}
-    </div>
-  );
 }
 
 // ── Summary card ──────────────────────────────────────
@@ -102,14 +75,21 @@ function SummaryCard({ icon: Icon, title, items }: {
   );
 }
 
+// ── Step labels ───────────────────────────────────────
+
+const STEP_QUESTIONS = [
+  { label: 'Step 1 of 3', question: 'What do you do?', sub: 'Describe your role in a couple of sentences' },
+  { label: 'Step 2 of 3', question: 'Which topics matter to you?', sub: 'Select at least 2 topics you want to track' },
+  { label: 'Step 3 of 3', question: 'Whose thinking do you trust?', sub: 'Optional — helps prioritize sources' },
+];
+
 // ── Main component ────────────────────────────────────
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [step, setStep] = useState(0);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [step, setStep] = useState(0); // 0=loading, 1-3=steps, 4=summary
   const [isTyping, setIsTyping] = useState(true);
   const [data, setData] = useState<OnboardingData>({ context: '', topics: [], authorities: [] });
 
@@ -119,85 +99,56 @@ const Onboarding = () => {
   const [customTopic, setCustomTopic] = useState('');
   const [selectedAuthorities, setSelectedAuthorities] = useState<string[]>([]);
 
-  // Scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
-    }
-  }, [messages, isTyping, step]);
-
-  // Initial message
+  // Initial loading
   useEffect(() => {
     const timer = setTimeout(() => {
-      setMessages([{
-        id: '1',
-        role: 'assistant',
-        content: "Hi! I'm your Strata analyst. Let's set things up so I can find what matters to you.\n\nWhat do you do? Describe in a couple of sentences.",
-        widget: 'step1',
-      }]);
       setIsTyping(false);
       setStep(1);
-    }, 1200);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  const addAssistantMessage = useCallback((content: string, widget?: Message['widget']) => {
+  // Auto-focus textarea on step 1
+  useEffect(() => {
+    if (step === 1 && textareaRef.current) {
+      setTimeout(() => textareaRef.current?.focus(), 300);
+    }
+  }, [step]);
+
+  // Auto-resize textarea
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContextInput(e.target.value);
+    const el = e.target;
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+  };
+
+  const transitionToStep = useCallback((nextStep: number) => {
     setIsTyping(true);
     setTimeout(() => {
-      setMessages((prev) => [...prev, {
-        id: Date.now().toString(),
-        role: 'assistant',
-        content,
-        widget,
-      }]);
       setIsTyping(false);
-    }, 800 + Math.random() * 600);
+      setStep(nextStep);
+    }, 600);
   }, []);
 
   // ── Handlers ──
 
   const handleStep1Submit = () => {
     if (!contextInput.trim()) return;
-    const text = contextInput.trim();
-    setData((d) => ({ ...d, context: text }));
-    setMessages((prev) => [...prev, { id: Date.now().toString(), role: 'user', content: text }]);
-    setStep(2);
-    addAssistantMessage(
-      "Got it! Now let's pick topics you want to track. I've highlighted a few that might be relevant based on what you said.",
-      'step2'
-    );
+    setData((d) => ({ ...d, context: contextInput.trim() }));
+    transitionToStep(2);
   };
 
   const handleStep2Submit = () => {
     if (selectedTopics.length < 2) return;
-    const topicsList = selectedTopics.join(', ');
     setData((d) => ({ ...d, topics: selectedTopics }));
-    setMessages((prev) => [...prev, { id: Date.now().toString(), role: 'user', content: topicsList }]);
-    setStep(3);
-    addAssistantMessage(
-      "Great choices! Last step — whose thinking do you trust? This helps me prioritize sources. You can skip this if you'd like.",
-      'step3'
-    );
+    transitionToStep(3);
   };
 
   const handleStep3Submit = (skip = false) => {
     const authorities = skip ? [] : selectedAuthorities;
     setData((d) => ({ ...d, authorities }));
-    if (!skip && authorities.length > 0) {
-      setMessages((prev) => [...prev, {
-        id: Date.now().toString(),
-        role: 'user',
-        content: authorities.join(', '),
-      }]);
-    } else {
-      setMessages((prev) => [...prev, {
-        id: Date.now().toString(),
-        role: 'user',
-        content: 'Skipped',
-      }]);
-    }
-    setStep(4);
-    addAssistantMessage("All set! Here's your profile summary:", 'summary');
+    transitionToStep(4);
   };
 
   const toggleTopic = (topic: string) => {
@@ -232,22 +183,24 @@ const Onboarding = () => {
     return suggestions.length > 0 ? suggestions : ['AI / ML', 'Startups', 'Product Management'];
   })();
 
+  const currentQ = step >= 1 && step <= 3 ? STEP_QUESTIONS[step - 1] : null;
+
   // ── Render ──
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       {/* Header with gradient orb */}
-      <div className="relative w-full flex flex-col items-center pt-12 pb-6">
+      <div className="relative flex flex-col items-center mb-8">
         {/* Gradient orb */}
         <motion.div
-          className="absolute w-[300px] h-[300px] rounded-full opacity-20 -top-20"
+          className="absolute w-[400px] h-[400px] rounded-full opacity-15 -top-44"
           style={{ background: 'radial-gradient(circle, hsl(var(--primary) / 0.5), transparent 70%)' }}
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
 
         <div className="relative z-10 flex flex-col items-center gap-3">
-          <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">
+          <div className="h-11 w-11 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
             S
           </div>
           <h1 className="text-2xl font-bold text-foreground">Welcome to Strata</h1>
@@ -255,233 +208,268 @@ const Onboarding = () => {
         </div>
 
         {/* Progress dots */}
-        <div className="flex gap-2 mt-6">
+        <div className="flex gap-2 mt-5">
           {[1, 2, 3].map((s) => (
             <div
               key={s}
               className={cn(
-                'w-2 h-2 rounded-full transition-all duration-300',
-                step >= s ? 'bg-primary w-6' : 'bg-muted-foreground/30'
+                'h-1.5 rounded-full transition-all duration-500',
+                step >= s ? 'bg-primary w-8' : 'bg-muted-foreground/20 w-1.5'
               )}
             />
           ))}
         </div>
       </div>
 
-      {/* Chat area */}
-      <div
-        ref={scrollRef}
-        className="flex-1 w-full max-w-lg px-4 pb-8 overflow-y-auto space-y-4"
-        style={{ maxHeight: 'calc(100vh - 200px)' }}
-      >
-        <AnimatePresence mode="popLayout">
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className={cn(
-                'flex',
-                msg.role === 'user' ? 'justify-end' : 'justify-start'
-              )}
-            >
-              {msg.role === 'assistant' ? (
-                <div className="max-w-[90%] space-y-3">
-                  {/* AI bubble */}
-                  <div className="flex items-start gap-2.5">
-                    <div className="shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5">
-                      <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    </div>
-                    <div className="rounded-2xl rounded-tl-sm bg-card border border-border px-4 py-3 text-sm text-foreground leading-relaxed whitespace-pre-line">
-                      {msg.content}
-                    </div>
-                  </div>
-
-                  {/* Widgets */}
-                  {msg.widget === 'step1' && step === 1 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="ml-9 space-y-3"
-                    >
-                      <Textarea
-                        placeholder='Example: "Building an AI product for analysts" or "Working at a VC fund, looking at deeptech"'
-                        value={contextInput}
-                        onChange={(e) => setContextInput(e.target.value)}
-                        className="min-h-[80px] text-sm bg-background resize-none"
-                        rows={3}
-                      />
-                      <Button
-                        onClick={handleStep1Submit}
-                        disabled={!contextInput.trim()}
-                        className="gap-2"
-                      >
-                        Continue <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </motion.div>
-                  )}
-
-                  {msg.widget === 'step2' && step === 2 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="ml-9 space-y-3"
-                    >
-                      {/* Suggested hint */}
-                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                        <Sparkles className="w-3 h-3 text-primary" />
-                        Suggested based on your profile
-                      </p>
-
-                      {/* Topic chips */}
-                      <div className="flex flex-wrap gap-2">
-                        {TOPICS.map((topic) => {
-                          const isSuggested = suggestedTopics.includes(topic.label);
-                          const isSelected = selectedTopics.includes(topic.label);
-                          return (
-                            <button
-                              key={topic.label}
-                              onClick={() => toggleTopic(topic.label)}
-                              className={cn(
-                                'px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border',
-                                isSelected
-                                  ? 'bg-primary text-primary-foreground border-primary'
-                                  : isSuggested
-                                    ? 'bg-primary/5 text-primary border-primary/30 border-dashed'
-                                    : 'bg-card text-muted-foreground border-border hover:border-primary/30'
-                              )}
-                            >
-                              {topic.emoji} {topic.label}
-                            </button>
-                          );
-                        })}
-
-                        {/* Custom topics */}
-                        {selectedTopics.filter((t) => !TOPICS.find((tt) => tt.label === t)).map((t) => (
-                          <button
-                            key={t}
-                            onClick={() => toggleTopic(t)}
-                            className="px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground border border-primary"
-                          >
-                            ✦ {t}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Custom topic input */}
-                      <div className="flex gap-2">
-                        <Input
-                          placeholder="Add your own topic..."
-                          value={customTopic}
-                          onChange={(e) => setCustomTopic(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && addCustomTopic()}
-                          className="text-sm h-9 bg-background"
-                        />
-                        <Button size="sm" variant="outline" onClick={addCustomTopic} disabled={!customTopic.trim()}>
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
-
-                      <Button
-                        onClick={handleStep2Submit}
-                        disabled={selectedTopics.length < 2}
-                        className="gap-2"
-                      >
-                        Continue ({selectedTopics.length} selected) <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </motion.div>
-                  )}
-
-                  {msg.widget === 'step3' && step === 3 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="ml-9 space-y-3"
-                    >
-                      <div className="flex flex-wrap gap-2">
-                        {AUTHORITIES.map((auth) => {
-                          const isSelected = selectedAuthorities.includes(auth.name);
-                          return (
-                            <button
-                              key={auth.name}
-                              onClick={() => toggleAuthority(auth.name)}
-                              className={cn(
-                                'px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border flex items-center gap-1.5',
-                                isSelected
-                                  ? 'bg-primary text-primary-foreground border-primary'
-                                  : 'bg-card text-muted-foreground border-border hover:border-primary/30'
-                              )}
-                            >
-                              {auth.name}
-                              <span className={cn(
-                                'text-[10px]',
-                                isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground/60'
-                              )}>
-                                · {auth.domain}
-                              </span>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button onClick={() => handleStep3Submit(false)} disabled={selectedAuthorities.length === 0} className="gap-2">
-                          Complete setup <ArrowRight className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" onClick={() => handleStep3Submit(true)} className="text-muted-foreground">
-                          Skip this step
-                        </Button>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {msg.widget === 'summary' && step === 4 && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="ml-9 space-y-3"
-                    >
-                      <SummaryCard icon={User} title="You" items={[data.context]} />
-                      <SummaryCard icon={BookOpen} title="Tracking" items={data.topics} />
-                      {data.authorities.length > 0 && (
-                        <SummaryCard icon={Users} title="Voices" items={data.authorities} />
-                      )}
-
-                      <Button onClick={() => navigate('/')} className="gap-2 w-full mt-2">
-                        Go to your feed <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </motion.div>
-                  )}
-                </div>
-              ) : (
-                <div className="max-w-[75%] rounded-2xl rounded-tr-sm bg-primary text-primary-foreground px-4 py-2.5 text-sm">
-                  {msg.content}
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {isTyping && (
+      {/* Main input card — Manus style */}
+      <AnimatePresence mode="wait">
+        {isTyping ? (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-start gap-2.5"
+            key="typing"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="w-full max-w-3xl"
           >
-            <div className="shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-            </div>
-            <div className="rounded-2xl rounded-tl-sm bg-card border border-border px-3 py-2">
-              <TypingDots />
+            <div className="rounded-2xl border border-border bg-card shadow-lg p-6 flex items-center justify-center">
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                <span>Setting things up...</span>
+              </div>
             </div>
           </motion.div>
-        )}
-      </div>
+        ) : step >= 1 && step <= 3 ? (
+          <motion.div
+            key={`step-${step}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-3xl"
+          >
+            <div className="rounded-2xl border border-border bg-card shadow-lg overflow-hidden">
+              {/* Question header inside card */}
+              <div className="px-5 pt-5 pb-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium">{currentQ?.label}</span>
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">{currentQ?.question}</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">{currentQ?.sub}</p>
+              </div>
+
+              {/* Step 1 — Textarea */}
+              {step === 1 && (
+                <div className="px-5 pb-2">
+                  <textarea
+                    ref={textareaRef}
+                    value={contextInput}
+                    onChange={handleTextareaChange}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleStep1Submit(); }
+                    }}
+                    placeholder='Building an AI product for analysts...'
+                    className="w-full resize-none bg-transparent text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none min-h-[60px] leading-relaxed"
+                    rows={2}
+                  />
+                </div>
+              )}
+
+              {/* Step 2 — Topics */}
+              {step === 2 && (
+                <div className="px-5 pb-2 space-y-3">
+                  {/* Suggested hint */}
+                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                    <Sparkles className="w-3 h-3 text-primary" />
+                    Suggested based on your profile
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {TOPICS.map((topic) => {
+                      const isSuggested = suggestedTopics.includes(topic.label);
+                      const isSelected = selectedTopics.includes(topic.label);
+                      return (
+                        <button
+                          key={topic.label}
+                          onClick={() => toggleTopic(topic.label)}
+                          className={cn(
+                            'px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border',
+                            isSelected
+                              ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                              : isSuggested
+                                ? 'bg-primary/5 text-primary border-primary/30 border-dashed hover:bg-primary/10'
+                                : 'bg-background text-muted-foreground border-border hover:border-primary/30 hover:bg-muted/50'
+                          )}
+                        >
+                          {topic.emoji} {topic.label}
+                        </button>
+                      );
+                    })}
+                    {/* Custom topics */}
+                    {selectedTopics.filter((t) => !TOPICS.find((tt) => tt.label === t)).map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => toggleTopic(t)}
+                        className="px-3 py-1.5 rounded-full text-xs font-medium bg-primary text-primary-foreground border border-primary"
+                      >
+                        ✦ {t}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom topic input row */}
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Add your own topic..."
+                      value={customTopic}
+                      onChange={(e) => setCustomTopic(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addCustomTopic()}
+                      className="text-sm h-9 bg-background flex-1"
+                    />
+                    <Button size="sm" variant="outline" onClick={addCustomTopic} disabled={!customTopic.trim()} className="h-9 w-9 p-0">
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3 — Authorities */}
+              {step === 3 && (
+                <div className="px-5 pb-2 space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    {AUTHORITIES.map((auth) => {
+                      const isSelected = selectedAuthorities.includes(auth.name);
+                      return (
+                        <button
+                          key={auth.name}
+                          onClick={() => toggleAuthority(auth.name)}
+                          className={cn(
+                            'px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border flex items-center gap-1.5',
+                            isSelected
+                              ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                              : 'bg-background text-muted-foreground border-border hover:border-primary/30 hover:bg-muted/50'
+                          )}
+                        >
+                          {auth.name}
+                          <span className={cn(
+                            'text-[10px]',
+                            isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground/50'
+                          )}>
+                            · {auth.domain}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Toolbar row — Manus style */}
+              <div className="px-4 py-3 flex items-center justify-between border-t border-border/50">
+                <div className="flex items-center gap-2">
+                  {step === 2 && selectedTopics.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {selectedTopics.length} selected
+                    </span>
+                  )}
+                  {step === 3 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleStep3Submit(true)}
+                      className="text-xs text-muted-foreground h-8"
+                    >
+                      Skip this step
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {step === 3 && selectedAuthorities.length > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {selectedAuthorities.length} selected
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (step === 1) handleStep1Submit();
+                      else if (step === 2) handleStep2Submit();
+                      else if (step === 3) handleStep3Submit(false);
+                    }}
+                    disabled={
+                      (step === 1 && !contextInput.trim()) ||
+                      (step === 2 && selectedTopics.length < 2) ||
+                      (step === 3 && selectedAuthorities.length === 0)
+                    }
+                    className={cn(
+                      'h-10 w-10 rounded-full flex items-center justify-center transition-all duration-200',
+                      ((step === 1 && contextInput.trim()) ||
+                       (step === 2 && selectedTopics.length >= 2) ||
+                       (step === 3 && selectedAuthorities.length > 0))
+                        ? 'bg-foreground text-background hover:opacity-80'
+                        : 'bg-muted text-muted-foreground cursor-not-allowed'
+                    )}
+                  >
+                    <ArrowUp className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Hint chips below card */}
+            {step === 1 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-wrap gap-2 mt-3 justify-center"
+              >
+                {['Building an AI product', 'VC fund, deeptech focus', 'Product lead at SaaS', 'Data analyst in fintech'].map((hint) => (
+                  <button
+                    key={hint}
+                    onClick={() => setContextInput(hint)}
+                    className="px-3 py-1.5 rounded-full bg-card/60 border border-border text-muted-foreground text-xs hover:border-primary/30 hover:text-foreground transition-colors"
+                  >
+                    {hint}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </motion.div>
+        ) : step === 4 ? (
+          <motion.div
+            key="summary"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="w-full max-w-3xl"
+          >
+            <div className="rounded-2xl border border-border bg-card shadow-lg p-6 space-y-4">
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">All set!</h2>
+                  <p className="text-sm text-muted-foreground">Here's your profile summary</p>
+                </div>
+              </div>
+
+              <SummaryCard icon={User} title="You" items={[data.context]} />
+              <SummaryCard icon={BookOpen} title="Tracking" items={data.topics} />
+              {data.authorities.length > 0 && (
+                <SummaryCard icon={Users} title="Voices" items={data.authorities} />
+              )}
+
+              <Button onClick={() => navigate('/')} className="gap-2 w-full mt-2" size="lg">
+                Go to your feed <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 };
