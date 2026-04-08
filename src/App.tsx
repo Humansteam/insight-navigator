@@ -13,6 +13,7 @@ import ChatDemo from "./pages/ChatDemo";
 import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
+import Signal from "./pages/Signal";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
                 <Route path="/artifacts-demo" element={<ArtifactsDemo />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/signal" element={<Signal />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
