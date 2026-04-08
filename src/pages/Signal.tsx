@@ -315,9 +315,9 @@ export default function Signal() {
 
           {/* ═══ SLIDE 2: TIMELINE СЖАТИЯ ═══ */}
           <div
-            ref={setSlideRef(1)}
+            ref={setSlideRef(2)}
             className="flex flex-col justify-center"
-            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[1], transition: "opacity 0.2s ease" }}
+            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[2], transition: "opacity 0.2s ease" }}
           >
             <Mono color="rgba(232,93,58,0.6)">
               <Dot color="#e85d3a" /> хронология · 5 дней
