@@ -99,8 +99,8 @@ export default function Signal() {
     return () => obs.disconnect();
   }, []);
 
-  const SLIDE_COUNT = 5;
-  const slideColors = ["#7c5cdb", "#e85d3a", "#5caade", "#9b7fe8", "#c8a050"];
+  const SLIDE_COUNT = 6;
+  const slideColors = ["#c4aff8", "#7c5cdb", "#e85d3a", "#5caade", "#9b7fe8", "#c8a050"];
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: "#080705" }}>
