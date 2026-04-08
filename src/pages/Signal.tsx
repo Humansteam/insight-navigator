@@ -44,10 +44,24 @@ const VOICES = [
 export default function Signal() {
   const drumRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [opacities, setOpacities] = useState([1, 0.08, 0.08, 0.08, 0.08]);
+  const [opacities, setOpacities] = useState([1, 0.08, 0.08, 0.08, 0.08, 0.08]);
   const [active, setActive] = useState(0);
   const [expandedVoice, setExpandedVoice] = useState<number | null>(null);
   const [expandedSource, setExpandedSource] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
+
+  // Fake audio progress
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setAudioProgress((p) => {
+        if (p >= 100) { setIsPlaying(false); return 0; }
+        return p + 0.5;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
 
   const setSlideRef = useCallback(
     (idx: number) => (el: HTMLDivElement | null) => {
