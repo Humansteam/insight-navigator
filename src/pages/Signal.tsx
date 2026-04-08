@@ -151,108 +151,106 @@ export default function Signal() {
           {/* Top fade */}
           <div className="sticky top-0 left-0 right-0 z-10 pointer-events-none" style={{ height: 50, background: "linear-gradient(to bottom, #0e0b09, transparent)", marginBottom: -50 }} />
 
-          {/* ═══ SLIDE 0: AUDIO SUMMARY ═══ */}
+          {/* ═══ SLIDE 0: НОВОСТЬ + ПЛЕЕР ═══ */}
           <div
             ref={setSlideRef(0)}
             className="flex flex-col justify-center"
             style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[0], transition: "opacity 0.2s ease" }}
           >
-            <Mono color="rgba(196,175,248,0.6)">
-              <Dot color="#c4aff8" /> саммари · аудио
+            <Mono color="rgba(124,92,219,0.6)">
+              <Dot color="#7c5cdb" /> новость · signal
             </Mono>
 
-            <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0d8", lineHeight: 1.3, marginTop: 10 }}>
-              Мы проанализировали <span style={{ color: "#c4aff8" }}>27 источников</span> за 3 дня
-            </div>
+            <h1 style={{ fontSize: 21, fontWeight: 700, color: "#f0ece8", lineHeight: 1.22, letterSpacing: "-0.025em", marginTop: 8 }}>
+              <span style={{ color: "#9b7fe8" }}>Open-source</span> как оружие: Meta строит{" "}
+              <span style={{ color: "#9b7fe8" }}>закрытую</span> экосистему через открытый код
+            </h1>
 
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.18)", marginTop: 4, letterSpacing: "0.04em" }}>
-              2 мин 40 сек · сгенерировано AI
-            </div>
-
-            {/* Audio player card */}
-            <div
-              style={{
-                marginTop: 14,
-                background: "linear-gradient(135deg, rgba(124,92,219,0.08), rgba(196,175,248,0.04))",
-                border: "1px solid rgba(196,175,248,0.12)",
-                borderRadius: 14, padding: "16px 14px",
-              }}
-            >
-              {/* Waveform visualization */}
-              <div className="flex items-end gap-[2px] justify-center" style={{ height: 36, marginBottom: 12 }}>
-                {Array.from({ length: 40 }).map((_, i) => {
-                  const h = Math.sin(i * 0.4) * 12 + Math.random() * 8 + 8;
-                  const filled = (i / 40) * 100 < audioProgress;
-                  return (
-                    <div
-                      key={i}
-                      style={{
-                        width: 3, borderRadius: 2,
-                        height: h,
-                        background: filled ? "#c4aff8" : "rgba(255,255,255,0.08)",
-                        transition: "background 0.15s",
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              {/* Play button + progress */}
-              <div className="flex items-center gap-3">
-                <div
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="flex items-center justify-center flex-shrink-0"
-                  style={{
-                    width: 40, height: 40, borderRadius: "50%",
-                    background: isPlaying ? "rgba(196,175,248,0.2)" : "rgba(124,92,219,0.25)",
-                    border: `1px solid ${isPlaying ? "rgba(196,175,248,0.3)" : "rgba(124,92,219,0.4)"}`,
-                    cursor: "pointer", fontSize: 16, color: "#c4aff8",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  {isPlaying ? "⏸" : "▶"}
-                </div>
-                <div className="flex-1">
-                  {/* Progress bar */}
-                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ width: `${audioProgress}%`, height: "100%", background: "#c4aff8", borderRadius: 2, transition: "width 0.1s linear" }} />
-                  </div>
-                  <div className="flex justify-between" style={{ marginTop: 4 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)" }}>
-                      {Math.floor(audioProgress * 1.6 / 100)}:{String(Math.floor((audioProgress * 1.6) % 60)).padStart(2, "0")}
-                    </span>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)" }}>2:40</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Summary text preview */}
-            <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.35)", lineHeight: 1.65 }}>
-              Meta переходит к гибридной open-source стратегии: открытые модели как инструмент захвата экосистемы при сохранении закрытого ядра. Три ключевых автора в базе знаний расходятся в оценке — от «это контроль» до «это прогресс».
-            </div>
-
-            {/* Key stats */}
-            <div className="flex gap-2 flex-wrap" style={{ marginTop: 10 }}>
+            {/* Scale badges */}
+            <div className="flex items-center gap-1.5 flex-wrap" style={{ marginTop: 8 }}>
               {[
-                { value: "27", label: "источников" },
-                { value: "5", label: "событий" },
-                { value: "3", label: "позиции" },
-                { value: "86%", label: "согласие" },
-              ].map((s, i) => (
-                <div key={i} style={{
-                  flex: 1, minWidth: 60,
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.04)",
-                  borderRadius: 8, padding: "6px 8px", textAlign: "center",
+                { label: "27 источников", color: "#a088e8" },
+                { label: "5 событий", color: "#5caade" },
+                { label: "3 позиции", color: "#e88a6a" },
+              ].map((b, i) => (
+                <span key={i} style={{
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
+                  padding: "2px 7px", borderRadius: 6,
+                  background: b.color + "12", color: b.color + "aa",
+                  letterSpacing: "0.04em",
                 }}>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: "#c4aff8" }}>{s.value}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)", letterSpacing: "0.04em" }}>{s.label}</div>
-                </div>
+                  {b.label}
+                </span>
               ))}
             </div>
 
-            <ScrollHint text="погрузиться в детали" />
+            {/* Body text */}
+            <div style={{ marginTop: 10, fontSize: 12.5, color: "#c0b8b0", lineHeight: 1.65 }}>
+              Meta переходит к гибридной open-source стратегии — открытые модели снаружи, закрытое ядро внутри. Компания нанимает Alexandr Wang и запускает гибридную лицензию для Llama 4. Это не уступка сообществу — это захват стандарта.
+            </div>
+
+            {/* Inline audio player */}
+            <div
+              className="flex items-center gap-2.5"
+              style={{
+                marginTop: 12,
+                background: "rgba(124,92,219,0.06)",
+                border: "1px solid rgba(124,92,219,0.1)",
+                borderRadius: 10, padding: "8px 10px",
+              }}
+            >
+              <div
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="flex items-center justify-center flex-shrink-0"
+                style={{
+                  width: 32, height: 32, borderRadius: "50%",
+                  background: isPlaying ? "rgba(196,175,248,0.2)" : "rgba(124,92,219,0.2)",
+                  border: `1px solid ${isPlaying ? "rgba(196,175,248,0.3)" : "rgba(124,92,219,0.35)"}`,
+                  cursor: "pointer", fontSize: 13, color: "#c4aff8",
+                }}
+              >
+                {isPlaying ? "⏸" : "▶"}
+              </div>
+
+              <div className="flex-1">
+                {/* Compact waveform */}
+                <div className="flex items-center gap-[1.5px]" style={{ height: 20 }}>
+                  {Array.from({ length: 35 }).map((_, i) => {
+                    const h = Math.sin(i * 0.45) * 6 + Math.random() * 4 + 4;
+                    const filled = (i / 35) * 100 < audioProgress;
+                    return (
+                      <div
+                        key={i}
+                        style={{
+                          width: 2.5, borderRadius: 1.5,
+                          height: h,
+                          background: filled ? "#c4aff8" : "rgba(255,255,255,0.08)",
+                          transition: "background 0.15s",
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex justify-between" style={{ marginTop: 2 }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)" }}>
+                    {Math.floor(audioProgress * 1.6 / 100)}:{String(Math.floor((audioProgress * 1.6) % 60)).padStart(2, "0")}
+                  </span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)" }}>2:40 · AI саммари</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Source row */}
+            <div className="flex items-center gap-1.5 flex-wrap" style={{ marginTop: 10 }}>
+              {["Axios", "Reuters", "The Verge", "+4"].map((s, i) => (
+                <span key={i} className="flex items-center gap-1">
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "inline-block" }} />
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.18)", letterSpacing: "0.04em" }}>{s}</span>
+                </span>
+              ))}
+            </div>
+
+            <ScrollHint text="анализ и детали" />
           </div>
 
           {/* ═══ SLIDE 1: ТЕЗИС + КОНФЛИКТ ═══ */}
