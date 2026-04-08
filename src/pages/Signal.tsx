@@ -463,9 +463,9 @@ export default function Signal() {
 
           {/* ═══ SLIDE 4: ИСТОЧНИКИ (провал вглубь) ═══ */}
           <div
-            ref={setSlideRef(3)}
+            ref={setSlideRef(4)}
             className="flex flex-col justify-center"
-            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[3], transition: "opacity 0.2s ease" }}
+            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[4], transition: "opacity 0.2s ease" }}
           >
             <Mono color="rgba(155,127,232,0.6)">
               <Dot color="#9b7fe8" /> 27 источников · кластер
