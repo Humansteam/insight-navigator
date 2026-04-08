@@ -151,11 +151,115 @@ export default function Signal() {
           {/* Top fade */}
           <div className="sticky top-0 left-0 right-0 z-10 pointer-events-none" style={{ height: 50, background: "linear-gradient(to bottom, #0e0b09, transparent)", marginBottom: -50 }} />
 
-          {/* ═══ SLIDE 1: ТЕЗИС + КОНФЛИКТ ═══ */}
+          {/* ═══ SLIDE 0: AUDIO SUMMARY ═══ */}
           <div
             ref={setSlideRef(0)}
             className="flex flex-col justify-center"
             style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[0], transition: "opacity 0.2s ease" }}
+          >
+            <Mono color="rgba(196,175,248,0.6)">
+              <Dot color="#c4aff8" /> саммари · аудио
+            </Mono>
+
+            <div style={{ fontSize: 16, fontWeight: 600, color: "#e8e0d8", lineHeight: 1.3, marginTop: 10 }}>
+              Мы проанализировали <span style={{ color: "#c4aff8" }}>27 источников</span> за 3 дня
+            </div>
+
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.18)", marginTop: 4, letterSpacing: "0.04em" }}>
+              2 мин 40 сек · сгенерировано AI
+            </div>
+
+            {/* Audio player card */}
+            <div
+              style={{
+                marginTop: 14,
+                background: "linear-gradient(135deg, rgba(124,92,219,0.08), rgba(196,175,248,0.04))",
+                border: "1px solid rgba(196,175,248,0.12)",
+                borderRadius: 14, padding: "16px 14px",
+              }}
+            >
+              {/* Waveform visualization */}
+              <div className="flex items-end gap-[2px] justify-center" style={{ height: 36, marginBottom: 12 }}>
+                {Array.from({ length: 40 }).map((_, i) => {
+                  const h = Math.sin(i * 0.4) * 12 + Math.random() * 8 + 8;
+                  const filled = (i / 40) * 100 < audioProgress;
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        width: 3, borderRadius: 2,
+                        height: h,
+                        background: filled ? "#c4aff8" : "rgba(255,255,255,0.08)",
+                        transition: "background 0.15s",
+                      }}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* Play button + progress */}
+              <div className="flex items-center gap-3">
+                <div
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{
+                    width: 40, height: 40, borderRadius: "50%",
+                    background: isPlaying ? "rgba(196,175,248,0.2)" : "rgba(124,92,219,0.25)",
+                    border: `1px solid ${isPlaying ? "rgba(196,175,248,0.3)" : "rgba(124,92,219,0.4)"}`,
+                    cursor: "pointer", fontSize: 16, color: "#c4aff8",
+                    transition: "all 0.2s",
+                  }}
+                >
+                  {isPlaying ? "⏸" : "▶"}
+                </div>
+                <div className="flex-1">
+                  {/* Progress bar */}
+                  <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, overflow: "hidden" }}>
+                    <div style={{ width: `${audioProgress}%`, height: "100%", background: "#c4aff8", borderRadius: 2, transition: "width 0.1s linear" }} />
+                  </div>
+                  <div className="flex justify-between" style={{ marginTop: 4 }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)" }}>
+                      {Math.floor(audioProgress * 1.6 / 100)}:{String(Math.floor((audioProgress * 1.6) % 60)).padStart(2, "0")}
+                    </span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)" }}>2:40</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Summary text preview */}
+            <div style={{ marginTop: 14, fontSize: 12, color: "rgba(255,255,255,0.35)", lineHeight: 1.65 }}>
+              Meta переходит к гибридной open-source стратегии: открытые модели как инструмент захвата экосистемы при сохранении закрытого ядра. Три ключевых автора в базе знаний расходятся в оценке — от «это контроль» до «это прогресс».
+            </div>
+
+            {/* Key stats */}
+            <div className="flex gap-2 flex-wrap" style={{ marginTop: 10 }}>
+              {[
+                { value: "27", label: "источников" },
+                { value: "5", label: "событий" },
+                { value: "3", label: "позиции" },
+                { value: "86%", label: "согласие" },
+              ].map((s, i) => (
+                <div key={i} style={{
+                  flex: 1, minWidth: 60,
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.04)",
+                  borderRadius: 8, padding: "6px 8px", textAlign: "center",
+                }}>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: "#c4aff8" }}>{s.value}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.15)", letterSpacing: "0.04em" }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+
+            <ScrollHint text="погрузиться в детали" />
+          </div>
+
+          {/* ═══ SLIDE 1: ТЕЗИС + КОНФЛИКТ ═══ */}
+          <div
+            ref={setSlideRef(1)}
+            className="flex flex-col justify-center"
+            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[1], transition: "opacity 0.2s ease" }}
           >
             <Mono color="rgba(124,92,219,0.6)">
               <Dot color="#7c5cdb" /> тезис · ai industry
