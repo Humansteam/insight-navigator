@@ -13,6 +13,7 @@ import ChatDemo from "./pages/ChatDemo";
 import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
+import Signal from "./pages/Signal";
 
 const queryClient = new QueryClient();
 
