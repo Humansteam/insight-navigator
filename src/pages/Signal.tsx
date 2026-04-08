@@ -536,9 +536,9 @@ export default function Signal() {
 
           {/* ═══ SLIDE 5: ВОПРОС ═══ */}
           <div
-            ref={setSlideRef(4)}
+            ref={setSlideRef(5)}
             className="flex flex-col justify-center gap-3"
-            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[4], transition: "opacity 0.2s ease" }}
+            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 18px", opacity: opacities[5], transition: "opacity 0.2s ease" }}
           >
             <Mono color="rgba(200,160,80,0.6)">
               <Dot color="#c8a050" /> вопрос · сдвиг
