@@ -138,7 +138,7 @@ export default function Signal() {
   const drumRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
   const SLIDE_COUNT = 4; // 3 screens + spacer
-  const [opacities, setOpacities] = useState(Array(SLIDE_COUNT).fill(0.06).map((_, i) => i === 0 ? 1 : 0.06));
+  const [opacities, setOpacities] = useState<number[]>([1, 0.06, 0.06, 0.06]);
   const [active, setActive] = useState(0);
 
   // Lens overlay
