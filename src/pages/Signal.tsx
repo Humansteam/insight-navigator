@@ -50,13 +50,13 @@ const LENS_VOICES: Record<string, Array<{
     {
       initials: "AI", name: "AI Synthesis", role: "12 источников · 4 страны",
       quote: "Open-source AI становится инструментом технологического суверенитета.",
-      full: "Китай (DeepSeek, Qwen), EU (Mistral), и США (Meta, Google) строят параллельные open-source экосистемы. Каждая привязана к регуляторной среде своего региона.",
+      full: "Китай (DeepSeek, Qwen), EU (Mistral), и США (Meta, Google) строят параллельные open-source экосистемы.",
       type: "synthesis", color: "#e88a6a",
     },
     {
       initials: "EU", name: "EU AI Office", role: "Regulatory Statement",
       quote: "Open-source AI не освобождает от ответственности за harm.",
-      full: "Позиция EU AI Act: open-source модели категории high-risk подлежат тем же требованиям, что и закрытые. Открытость кода ≠ открытость от регуляции.",
+      full: "Позиция EU AI Act: open-source модели категории high-risk подлежат тем же требованиям, что и закрытые.",
       type: "verbatim", source: "EU AI Office, Apr 2026", color: "#5caade",
     },
   ],
@@ -64,13 +64,13 @@ const LENS_VOICES: Record<string, Array<{
     {
       initials: "TG", name: "Timnit Gebru", role: "DAIR Institute",
       quote: "Open-washing — новая форма корпоративного greenwashing.",
-      full: "Называть модель 'open-source' при закрытых данных обучения — это манипуляция термином. Настоящая открытость требует прозрачности всего пайплайна.",
+      full: "Называть модель 'open-source' при закрытых данных обучения — это манипуляция термином.",
       type: "verbatim", source: "DAIR Report, Mar 2026", color: "#e85d3a",
     },
     {
       initials: "AI", name: "AI Synthesis", role: "5 источников",
       quote: "Этический парадокс: больше открытости может означать больше вреда.",
-      full: "Открытые модели демократизируют доступ, но одновременно упрощают создание deepfakes, дезинформации и кибероружия. Баланс между доступностью и безопасностью остаётся нерешённым.",
+      full: "Открытые модели демократизируют доступ, но одновременно упрощают создание deepfakes и дезинформации.",
       type: "synthesis", color: "#c8a050",
     },
   ],
@@ -79,19 +79,17 @@ const LENS_VOICES: Record<string, Array<{
 const SOURCE_LOGOS = [
   { name: "Reuters", fact: "Meta нанимает Alexandr Wang" },
   { name: "Axios", fact: "Гибридная лицензия Llama 4" },
-  { name: "The Verge", fact: "Google отвечает — Gemma остаётся открытой" },
-  { name: "TechCrunch", fact: "Scale AI partnership details" },
-  { name: "Wired", fact: "EU позиция по open-source AI" },
-  { name: "Ars Technica", fact: "Hugging Face анализ лицензий" },
-  { name: "FT", fact: "Экономика open-source AI моделей" },
+  { name: "The Verge", fact: "Gemma остаётся открытой" },
+  { name: "TechCrunch", fact: "Scale AI partnership" },
+  { name: "Wired", fact: "EU позиция по open-source" },
+  { name: "Ars Technica", fact: "Анализ лицензий" },
+  { name: "FT", fact: "Экономика open-source AI" },
 ];
 
 const BULLETS = [
   "Meta переходит к гибридной лицензии — Llama 4 open-weight, но с закрытым inference stack",
   "Alexandr Wang (Scale AI) присоединяется к Meta AI — сигнал о data moat стратегии",
-  "Google отвечает: Gemma остаётся полностью открытой, позиционируя себя как «истинный open-source»",
-  "EU AI Office впервые запрашивает позицию по регуляции open-source моделей",
-  "Hugging Face публикует первый Open Source AI License Index",
+  "Google отвечает: Gemma остаётся полностью открытой",
 ];
 
 const TRANSCRIPT_SEGMENTS = [
@@ -99,28 +97,27 @@ const TRANSCRIPT_SEGMENTS = [
   { time: 8, text: "Компания объявила о найме Александра Вана из Scale AI и одновременно анонсировала гибридную лицензию для Llama 4.", speaker: null, speakerColor: null },
   { time: 18, text: "Что это значит на практике?", speaker: null, speakerColor: null },
   { time: 22, text: "Open-source снижает барьер входа. Но закрытость ядра сохраняет leverage.", speaker: "Andrej Karpathy", speakerColor: "#5caade" },
-  { time: 35, text: "Мы видим классический паттерн platform capture — Android был «открытым», но Google Play Store закрыт.", speaker: null, speakerColor: null },
-  { time: 48, text: "Кто устанавливает правила платформы — тот и выигрывает. Это не про открытость, это про контроль.", speaker: "Peter Thiel", speakerColor: "#e85d3a" },
-  { time: 62, text: "Параллельно, Китай строит свою экосистему. DeepSeek и Qwen формируют альтернативный центр притяжения.", speaker: null, speakerColor: null },
-  { time: 75, text: "Мы публикуем модели чтобы ускорить исследования. Это не уступка — это стратегия ускорения.", speaker: "Yann LeCun", speakerColor: "#50b478" },
-  { time: 88, text: "Вопрос не в том, открыт ли код. Вопрос — кто контролирует данные, инфраструктуру и стандарты.", speaker: null, speakerColor: null },
-  { time: 100, text: "Через 5 лет «open-source AI» может означать нечто совершенно иное, чем сегодня.", speaker: null, speakerColor: null },
+  { time: 35, text: "Мы видим классический паттерн platform capture.", speaker: null, speakerColor: null },
+  { time: 48, text: "Кто устанавливает правила платформы — тот и выигрывает.", speaker: "Peter Thiel", speakerColor: "#e85d3a" },
+  { time: 62, text: "Параллельно, Китай строит свою экосистему.", speaker: null, speakerColor: null },
+  { time: 75, text: "Мы публикуем модели чтобы ускорить исследования.", speaker: "Yann LeCun", speakerColor: "#50b478" },
+  { time: 88, text: "Вопрос — кто контролирует данные, инфраструктуру и стандарты.", speaker: null, speakerColor: null },
+  { time: 100, text: "Через 5 лет «open-source AI» может означать нечто совершенно иное.", speaker: null, speakerColor: null },
 ];
 
 const SMART_PROMPTS = [
-  "Мы обсудили технологию, но не этику. Спросить Timnit Gebru?",
+  "Спросить про этику — что думает Timnit Gebru?",
   "Сравнить лицензию Llama 4 с Apache 2.0",
-  "Исторические прецеденты: Java → Android",
 ];
 
 const MEANING_MAP_NODES = [
-  { id: "center", label: "Open-source\nкак оружие", x: 50, y: 50, size: 28, color: "#9b7fe8", type: "thesis" as const },
-  { id: "f1", label: "Llama 4\nлицензия", x: 22, y: 30, size: 16, color: "#7c5cdb", type: "fact" as const },
-  { id: "f2", label: "Scale AI\nнайм", x: 78, y: 25, size: 14, color: "#7c5cdb", type: "fact" as const },
-  { id: "f3", label: "Gemma\nopen", x: 80, y: 65, size: 14, color: "#5caade", type: "fact" as const },
-  { id: "o1", label: "Thiel:\nконтроль", x: 20, y: 70, size: 16, color: "#e85d3a", type: "opinion" as const },
-  { id: "o2", label: "LeCun:\nпрогресс", x: 65, y: 82, size: 14, color: "#50b478", type: "opinion" as const },
-  { id: "c1", label: "Захват\nстандарта", x: 35, y: 82, size: 15, color: "#c8a050", type: "conclusion" as const },
+  { id: "center", label: "Open-source\nкак оружие", x: 50, y: 50, size: 28, color: "#9b7fe8" },
+  { id: "f1", label: "Llama 4\nлицензия", x: 22, y: 30, size: 16, color: "#7c5cdb" },
+  { id: "f2", label: "Scale AI\nнайм", x: 78, y: 25, size: 14, color: "#7c5cdb" },
+  { id: "f3", label: "Gemma\nopen", x: 80, y: 65, size: 14, color: "#5caade" },
+  { id: "o1", label: "Thiel:\nконтроль", x: 20, y: 70, size: 16, color: "#e85d3a" },
+  { id: "o2", label: "LeCun:\nпрогресс", x: 65, y: 82, size: 14, color: "#50b478" },
+  { id: "c1", label: "Захват\nстандарта", x: 35, y: 82, size: 15, color: "#c8a050" },
 ];
 
 const MEANING_MAP_EDGES = [
@@ -129,35 +126,26 @@ const MEANING_MAP_EDGES = [
   { from: "f1", to: "o1" }, { from: "o1", to: "c1" }, { from: "o2", to: "c1" },
 ];
 
-/* ═══════════════════════════════════════════════
-   SIGNAL PAGE — Apple/Ive: Signal → Synthesis → Rabbit Hole
-   Lenses as persistent pins above input bar
-   ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════ */
 
 export default function Signal() {
   const drumRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const SLIDE_COUNT = 4; // 3 screens + spacer
-  const [opacities, setOpacities] = useState<number[]>([1, 0.06, 0.06, 0.06]);
+  const SLIDE_COUNT = 4;
+  const [opacities, setOpacities] = useState<number[]>([1, 0.08, 0.08, 0.08]);
   const [active, setActive] = useState(0);
 
-  // Lens overlay
   const [activeLens, setActiveLens] = useState<string | null>(null);
   const [expandedVoice, setExpandedVoice] = useState<number | null>(null);
 
-  // Audio
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
   const totalDuration = 110;
   const currentTime = (audioProgress / 100) * totalDuration;
 
-  // Sources expanded
   const [sourcesExpanded, setSourcesExpanded] = useState(false);
-
-  // Meaning map
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
-  // Waveform bars (stable across renders)
   const waveformRef = useRef(Array.from({ length: 40 }, (_, i) => Math.sin(i * 0.4) * 5 + Math.random() * 3 + 3));
 
   useEffect(() => {
@@ -187,7 +175,7 @@ export default function Signal() {
           const next = [...prev];
           entries.forEach((e) => {
             const idx = slides.indexOf(e.target as HTMLDivElement);
-            if (idx !== -1) next[idx] = Math.max(0.06, e.intersectionRatio);
+            if (idx !== -1) next[idx] = Math.max(0.08, e.intersectionRatio);
           });
           return next;
         });
@@ -207,39 +195,46 @@ export default function Signal() {
   const currentLensVoices = activeLens ? (LENS_VOICES[activeLens] || []) : [];
   const slideColors = ["#9b7fe8", "#c4aff8", "#c8a050"];
 
+  // Common styles
+  const bg = "#111111";
+  const cardBg = "#1a1a1a";
+  const cardBorder = "rgba(255,255,255,0.08)";
+  const textPrimary = "#f5f5f5";
+  const textSecondary = "rgba(255,255,255,0.65)";
+  const textTertiary = "rgba(255,255,255,0.4)";
+  const textMuted = "rgba(255,255,255,0.25)";
+
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: "#060504" }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: "#080808" }}>
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
           width: 380,
           height: 780,
           borderRadius: 48,
-          background: "#0c0a08",
-          border: "0.5px solid rgba(255,255,255,0.04)",
-          boxShadow: "0 60px 120px rgba(0,0,0,0.9), inset 0 0.5px 0 rgba(255,255,255,0.02)",
+          background: bg,
+          border: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.8)",
         }}
       >
         {/* Status bar */}
-        <div className="flex-shrink-0 flex justify-between items-center" style={{ padding: "16px 28px 0", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "rgba(255,255,255,0.12)" }}>
+        <div className="flex-shrink-0 flex justify-between items-center" style={{ padding: "14px 28px 0", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: textTertiary }}>
           <span>09:41</span>
-          <span style={{ fontSize: 8, letterSpacing: "0.08em" }}>●●● 5G</span>
+          <span style={{ fontSize: 9 }}>●●● 5G</span>
         </div>
 
-        {/* Nav — minimal */}
-        <div className="flex-shrink-0 flex items-center gap-3" style={{ padding: "10px 24px 12px", borderBottom: "0.5px solid rgba(255,255,255,0.03)" }}>
-          <span style={{ fontSize: 20, color: "rgba(255,255,255,0.1)", cursor: "pointer", fontWeight: 300 }}>‹</span>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#e8e0d8", letterSpacing: "-0.03em", flex: 1 }}>Signal</span>
-          {/* Progress dots */}
+        {/* Nav */}
+        <div className="flex-shrink-0 flex items-center gap-3" style={{ padding: "10px 24px 12px", borderBottom: `1px solid ${cardBorder}` }}>
+          <span style={{ fontSize: 22, color: textTertiary, cursor: "pointer", fontWeight: 300 }}>‹</span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: textPrimary, letterSpacing: "-0.02em", flex: 1 }}>Signal</span>
           <div className="flex items-center gap-1.5">
             {[0, 1, 2].map((i) => (
               <div key={i} style={{
-                width: active === i ? 16 : 4,
-                height: 4,
-                borderRadius: 2,
-                background: active === i ? slideColors[i] : "rgba(255,255,255,0.06)",
+                width: active === i ? 18 : 5,
+                height: 5,
+                borderRadius: 3,
+                background: active === i ? slideColors[i] : "rgba(255,255,255,0.1)",
                 transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                boxShadow: active === i ? `0 0 8px ${slideColors[i]}25` : "none",
               }} />
             ))}
           </div>
@@ -251,76 +246,74 @@ export default function Signal() {
           className="flex-1 relative"
           style={{ overflowY: "auto", scrollSnapType: "y mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}
         >
-          {/* Top fade */}
-          <div className="sticky top-0 left-0 right-0 z-10 pointer-events-none" style={{ height: 32, background: "linear-gradient(to bottom, #0c0a08, transparent)", marginBottom: -32 }} />
+          <div className="sticky top-0 left-0 right-0 z-10 pointer-events-none" style={{ height: 24, background: `linear-gradient(to bottom, ${bg}, transparent)`, marginBottom: -24 }} />
 
           {/* ═══════════ SCREEN 1: THE SIGNAL ═══════════ */}
           <div
             ref={setSlideRef(0)}
             className="flex flex-col justify-center"
-            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 24px", opacity: opacities[0], transition: "opacity 0.2s ease" }}
+            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "16px 24px", opacity: opacities[0], transition: "opacity 0.2s ease" }}
           >
-            {/* Trending indicator */}
-            <div className="flex items-center gap-2" style={{ marginBottom: 14 }}>
-              <div style={{ position: "relative", width: 6, height: 6 }}>
-                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#e85d3a" }} />
+            {/* Trending */}
+            <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
+              <div style={{ position: "relative", width: 7, height: 7 }}>
+                <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#ef4444" }} />
                 <motion.div
-                  animate={{ scale: [1, 2, 1], opacity: [0.6, 0, 0.6] }}
+                  animate={{ scale: [1, 2.2, 1], opacity: [0.7, 0, 0.7] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-                  style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#e85d3a" }}
+                  style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "#ef4444" }}
                 />
               </div>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: "#e88a6a", letterSpacing: "0.02em" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "#ef4444", fontWeight: 500 }}>
                 В тренде
               </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.12)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textTertiary }}>
                 обсуждения растут · 3 дня · 4 страны
               </span>
             </div>
 
             {/* Headline */}
-            <h1 style={{ fontSize: 22, fontWeight: 700, color: "#f0ece8", lineHeight: 1.2, letterSpacing: "-0.04em", margin: 0 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: textPrimary, lineHeight: 1.2, letterSpacing: "-0.03em", margin: 0 }}>
               Open-source как оружие
             </h1>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", lineHeight: 1.5, marginTop: 6, letterSpacing: "-0.01em" }}>
+            <p style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5, marginTop: 6 }}>
               Meta строит закрытую экосистему через открытый код
             </p>
 
-            {/* Source compression bar */}
+            {/* Source compression */}
             <div
               onClick={() => setSourcesExpanded(!sourcesExpanded)}
               style={{
-                marginTop: 16, padding: "10px 14px", borderRadius: 12,
-                background: "rgba(255,255,255,0.015)",
-                border: "0.5px solid rgba(255,255,255,0.04)",
+                marginTop: 14, padding: "10px 14px", borderRadius: 12,
+                background: cardBg, border: `1px solid ${cardBorder}`,
                 cursor: "pointer",
               }}
             >
               <div className="flex items-center gap-3" style={{ marginBottom: 6 }}>
-                <div style={{ flex: 1, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.04)", position: "relative", overflow: "hidden" }}>
+                <div style={{ flex: 1, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", position: "relative", overflow: "hidden" }}>
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: "90%" }}
                     transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-                    style={{ height: "100%", borderRadius: 2, background: "rgba(155,127,232,0.35)" }}
+                    style={{ height: "100%", borderRadius: 2, background: "rgba(155,127,232,0.5)" }}
                   />
                 </div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textSecondary, flexShrink: 0 }}>
                   27 из 30
                 </span>
               </div>
               <div className="flex items-center gap-1.5 flex-wrap">
                 {SOURCE_LOGOS.slice(0, sourcesExpanded ? SOURCE_LOGOS.length : 3).map((s, i) => (
                   <span key={i} style={{
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
-                    color: "rgba(255,255,255,0.18)", letterSpacing: "-0.01em",
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+                    color: textTertiary,
                   }}>
                     {s.name}{i < (sourcesExpanded ? SOURCE_LOGOS.length : 3) - 1 ? " ·" : ""}
                   </span>
                 ))}
                 {!sourcesExpanded && (
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(155,127,232,0.4)" }}>
-                    +24
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: "#9b7fe8" }}>
+                    +24 ↓
                   </span>
                 )}
               </div>
@@ -333,11 +326,11 @@ export default function Signal() {
                     transition={{ type: "spring", damping: 25, stiffness: 300 }}
                     style={{ overflow: "hidden" }}
                   >
-                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: "0.5px solid rgba(255,255,255,0.04)" }}>
+                    <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${cardBorder}` }}>
                       {SOURCE_LOGOS.map((s, i) => (
-                        <div key={i} className="flex items-center justify-between" style={{ padding: "3px 0" }}>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.2)" }}>{s.name}</span>
-                          <span style={{ fontSize: 8, color: "rgba(255,255,255,0.1)", maxWidth: "60%", textAlign: "right" }}>{s.fact}</span>
+                        <div key={i} className="flex items-center justify-between" style={{ padding: "4px 0" }}>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textSecondary }}>{s.name}</span>
+                          <span style={{ fontSize: 9, color: textTertiary }}>{s.fact}</span>
                         </div>
                       ))}
                     </div>
@@ -347,56 +340,54 @@ export default function Signal() {
             </div>
 
             {/* Key facts */}
-            <div className="flex flex-col gap-2" style={{ marginTop: 14 }}>
-              {BULLETS.slice(0, 3).map((b, i) => (
-                <div key={i} className="flex items-start gap-2.5" style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", lineHeight: 1.55 }}>
-                  <span style={{ width: 3, height: 3, borderRadius: "50%", background: "rgba(155,127,232,0.4)", marginTop: 6, flexShrink: 0 }} />
+            <div className="flex flex-col gap-2.5" style={{ marginTop: 14 }}>
+              {BULLETS.map((b, i) => (
+                <div key={i} className="flex items-start gap-2.5" style={{ fontSize: 12, color: textSecondary, lineHeight: 1.55 }}>
+                  <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#9b7fe8", marginTop: 6, flexShrink: 0 }} />
                   <span>{b}</span>
                 </div>
               ))}
             </div>
 
-            {/* Audio player — inline */}
+            {/* Audio player */}
             <div
               className="flex items-center gap-3"
               style={{
-                marginTop: 16, padding: "10px 14px", borderRadius: 16,
-                background: "rgba(255,255,255,0.015)",
-                border: "0.5px solid rgba(255,255,255,0.04)",
+                marginTop: 16, padding: "12px 14px", borderRadius: 14,
+                background: cardBg, border: `1px solid ${cardBorder}`,
               }}
             >
               <div
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="flex items-center justify-center flex-shrink-0"
                 style={{
-                  width: 32, height: 32, borderRadius: "50%",
-                  background: isPlaying ? "rgba(155,127,232,0.12)" : "rgba(255,255,255,0.03)",
-                  border: "0.5px solid rgba(155,127,232,0.15)",
-                  cursor: "pointer", color: "#c4aff8", fontSize: 12,
-                  transition: "all 0.2s",
+                  width: 36, height: 36, borderRadius: "50%",
+                  background: isPlaying ? "rgba(155,127,232,0.2)" : "rgba(155,127,232,0.1)",
+                  border: "1px solid rgba(155,127,232,0.25)",
+                  cursor: "pointer", color: "#c4aff8", fontSize: 13,
                 }}
               >
                 {isPlaying ? "❚❚" : "▶"}
               </div>
               <div className="flex-1">
-                <div className="flex items-end gap-[1.5px]" style={{ height: 20 }}>
+                <div className="flex items-end gap-[1.5px]" style={{ height: 22 }}>
                   {waveformRef.current.map((h, i) => {
                     const filled = (i / 40) * 100 < audioProgress;
                     return (
                       <div key={i} style={{
-                        width: 2, borderRadius: 1, height: h,
-                        background: filled ? "rgba(196,175,248,0.6)" : "rgba(255,255,255,0.04)",
+                        width: 2.5, borderRadius: 1, height: h,
+                        background: filled ? "#c4aff8" : "rgba(255,255,255,0.08)",
                         transition: "background 0.1s",
                       }} />
                     );
                   })}
                 </div>
-                <div className="flex justify-between" style={{ marginTop: 3 }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.1)" }}>
+                <div className="flex justify-between" style={{ marginTop: 4 }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textTertiary }}>
                     {Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, "0")}
                   </span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.08)" }}>
-                    1:50
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textMuted }}>
+                    1:50 · AI анализ
                   </span>
                 </div>
               </div>
@@ -409,53 +400,51 @@ export default function Signal() {
           <div
             ref={setSlideRef(1)}
             className="flex flex-col"
-            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 24px", opacity: opacities[1], transition: "opacity 0.2s ease" }}
+            style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "16px 24px", opacity: opacities[1], transition: "opacity 0.2s ease" }}
           >
-            {/* Sticky mini-player */}
+            {/* Mini-player */}
             <div
               className="flex items-center gap-2.5"
               style={{
-                padding: "8px 12px", borderRadius: 12, marginBottom: 12,
-                background: "rgba(255,255,255,0.015)",
-                border: "0.5px solid rgba(196,175,248,0.06)",
+                padding: "8px 12px", borderRadius: 10, marginBottom: 12,
+                background: cardBg, border: `1px solid ${cardBorder}`,
               }}
             >
               <div
                 onClick={() => setIsPlaying(!isPlaying)}
                 className="flex items-center justify-center flex-shrink-0"
                 style={{
-                  width: 24, height: 24, borderRadius: "50%",
-                  background: "rgba(155,127,232,0.08)",
-                  border: "0.5px solid rgba(155,127,232,0.12)",
-                  cursor: "pointer", color: "#c4aff8", fontSize: 9,
+                  width: 26, height: 26, borderRadius: "50%",
+                  background: "rgba(155,127,232,0.12)",
+                  border: "1px solid rgba(155,127,232,0.2)",
+                  cursor: "pointer", color: "#c4aff8", fontSize: 10,
                 }}
               >
                 {isPlaying ? "❚❚" : "▶"}
               </div>
               <div className="flex-1">
-                <div className="flex items-end gap-[1px]" style={{ height: 12 }}>
+                <div className="flex items-end gap-[1px]" style={{ height: 14 }}>
                   {waveformRef.current.slice(0, 30).map((h, i) => (
                     <div key={i} style={{
-                      width: 1.5, borderRadius: 0.5, height: h * 0.6,
-                      background: (i / 30) * 100 < audioProgress ? "rgba(196,175,248,0.5)" : "rgba(255,255,255,0.03)",
+                      width: 2, borderRadius: 0.5, height: h * 0.65,
+                      background: (i / 30) * 100 < audioProgress ? "rgba(196,175,248,0.6)" : "rgba(255,255,255,0.06)",
                     }} />
                   ))}
                 </div>
               </div>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(255,255,255,0.1)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: textTertiary }}>
                 {Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, "0")} / 1:50
               </span>
             </div>
 
-            {/* Interactive transcript */}
+            {/* Transcript */}
             <div style={{
-              flex: 1, borderRadius: 16, padding: "12px 14px",
-              background: "rgba(255,255,255,0.01)",
-              border: "0.5px solid rgba(255,255,255,0.03)",
+              flex: 1, borderRadius: 14, padding: "14px 16px",
+              background: cardBg, border: `1px solid ${cardBorder}`,
               overflowY: "auto", scrollbarWidth: "none",
             }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.08)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
-                транскрипт
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: textTertiary, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+                транскрипт · интерактивный
               </div>
               {TRANSCRIPT_SEGMENTS.map((seg, i) => {
                 const isActive = currentTime >= seg.time && (i === TRANSCRIPT_SEGMENTS.length - 1 || currentTime < TRANSCRIPT_SEGMENTS[i + 1].time);
@@ -464,27 +453,27 @@ export default function Signal() {
                     key={i}
                     onClick={() => setAudioProgress((seg.time / totalDuration) * 100)}
                     style={{
-                      padding: "5px 8px",
+                      padding: "6px 10px",
                       borderRadius: 8,
-                      background: isActive ? "rgba(196,175,248,0.04)" : "transparent",
-                      borderLeft: isActive ? "2px solid rgba(196,175,248,0.3)" : "2px solid transparent",
+                      background: isActive ? "rgba(196,175,248,0.08)" : "transparent",
+                      borderLeft: isActive ? "2px solid #c4aff8" : "2px solid transparent",
                       transition: "all 0.3s",
-                      marginBottom: 2,
+                      marginBottom: 3,
                       cursor: "pointer",
                     }}
                   >
                     {seg.speaker && (
                       <span style={{
-                        fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
+                        fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
                         color: seg.speakerColor || "#9b7fe8",
-                        letterSpacing: "0.02em", display: "block", marginBottom: 2,
+                        fontWeight: 500, display: "block", marginBottom: 2,
                       }}>
                         {seg.speaker}
                       </span>
                     )}
                     <span style={{
-                      fontSize: 11, lineHeight: 1.6,
-                      color: isActive ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.15)",
+                      fontSize: 12, lineHeight: 1.6,
+                      color: isActive ? textPrimary : textTertiary,
                       transition: "color 0.3s",
                     }}>
                       {seg.text}
@@ -493,25 +482,26 @@ export default function Signal() {
                 );
               })}
 
-              {/* Meaning map — below transcript */}
-              <div style={{ marginTop: 16, paddingTop: 12, borderTop: "0.5px solid rgba(255,255,255,0.03)" }}>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.08)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+              {/* Meaning map */}
+              <div style={{ marginTop: 16, paddingTop: 14, borderTop: `1px solid ${cardBorder}` }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: textTertiary, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
                   карта смыслов
                 </div>
                 <div style={{
-                  position: "relative", height: 140,
+                  position: "relative", height: 150,
                   borderRadius: 12, overflow: "hidden",
+                  background: "rgba(155,127,232,0.03)",
+                  border: `1px solid rgba(155,127,232,0.08)`,
                 }}>
                   <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
                     {MEANING_MAP_EDGES.map((edge, i) => {
                       const from = MEANING_MAP_NODES.find(n => n.id === edge.from)!;
                       const to = MEANING_MAP_NODES.find(n => n.id === edge.to)!;
                       return (
-                        <line
-                          key={i}
+                        <line key={i}
                           x1={`${from.x}%`} y1={`${from.y}%`}
                           x2={`${to.x}%`} y2={`${to.y}%`}
-                          stroke="rgba(155,127,232,0.06)" strokeWidth={0.5}
+                          stroke="rgba(155,127,232,0.12)" strokeWidth={0.5}
                         />
                       );
                     })}
@@ -526,17 +516,16 @@ export default function Signal() {
                         transform: "translate(-50%, -50%)",
                         width: node.size * 2, height: node.size * 2,
                         borderRadius: "50%",
-                        background: selectedNode === node.id ? node.color + "18" : node.color + "08",
-                        border: `0.5px solid ${node.color}${selectedNode === node.id ? "35" : "12"}`,
+                        background: selectedNode === node.id ? node.color + "30" : node.color + "14",
+                        border: `1px solid ${node.color}${selectedNode === node.id ? "50" : "25"}`,
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        cursor: "pointer", transition: "all 0.3s",
-                        boxShadow: selectedNode === node.id ? `0 0 16px ${node.color}15` : "none",
+                        cursor: "pointer", transition: "all 0.2s",
                       }}
                     >
                       <span style={{
                         fontFamily: "'JetBrains Mono', monospace",
-                        fontSize: node.id === "center" ? 6 : 5,
-                        color: node.color + (selectedNode === node.id ? "cc" : "60"),
+                        fontSize: node.id === "center" ? 7 : 6,
+                        color: node.color,
                         textAlign: "center", lineHeight: 1.2,
                         whiteSpace: "pre-line",
                       }}>
@@ -545,16 +534,15 @@ export default function Signal() {
                     </div>
                   ))}
                 </div>
-                {/* Legend */}
                 <div className="flex items-center gap-3" style={{ marginTop: 6 }}>
                   {[
                     { label: "факт", color: "#7c5cdb" },
                     { label: "мнение", color: "#e85d3a" },
                     { label: "вывод", color: "#c8a050" },
                   ].map((l, i) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <span style={{ width: 4, height: 4, borderRadius: "50%", background: l.color + "50", display: "inline-block" }} />
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 6, color: "rgba(255,255,255,0.1)" }}>{l.label}</span>
+                    <div key={i} className="flex items-center gap-1.5">
+                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: l.color, display: "inline-block" }} />
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: textTertiary }}>{l.label}</span>
                     </div>
                   ))}
                 </div>
@@ -570,40 +558,41 @@ export default function Signal() {
             className="flex flex-col justify-center gap-4"
             style={{ scrollSnapAlign: "center", minHeight: "100%", padding: "20px 24px", opacity: opacities[2], transition: "opacity 0.2s ease" }}
           >
-            {/* Provocative question */}
             <div style={{
               padding: "24px 20px", borderRadius: 16,
-              background: "linear-gradient(135deg, rgba(200,160,80,0.03), rgba(155,127,232,0.02))",
-              border: "0.5px solid rgba(200,160,80,0.08)",
+              background: "linear-gradient(135deg, rgba(200,160,80,0.08), rgba(155,127,232,0.05))",
+              border: "1px solid rgba(200,160,80,0.15)",
             }}>
-              <div style={{ fontSize: 16, color: "#e8e0d8", lineHeight: 1.55, fontStyle: "italic", letterSpacing: "-0.02em" }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, letterSpacing: "0.1em", textTransform: "uppercase", color: "#c8a050", marginBottom: 12, opacity: 0.7 }}>
+                вопрос для размышления
+              </div>
+              <div style={{ fontSize: 17, color: textPrimary, lineHeight: 1.5, fontStyle: "italic", letterSpacing: "-0.01em" }}>
                 Если открытость — это механизм захвата, а не ценность — не станет ли «независимый open-source» через 5 лет оксюмороном?
               </div>
-              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.15)", lineHeight: 1.5, marginTop: 14 }}>
-                В данных нет однозначного ответа. 43% источников видят консолидацию, 31% — фрагментацию, 26% — гибридный сценарий.
+              <div style={{ fontSize: 11, color: textTertiary, lineHeight: 1.5, marginTop: 14 }}>
+                43% источников видят консолидацию, 31% — фрагментацию, 26% — гибридный сценарий.
               </div>
             </div>
 
-            {/* Save to brain */}
+            {/* Save */}
             <div style={{
               padding: "12px 16px", borderRadius: 12,
-              background: "rgba(255,255,255,0.01)",
-              border: "0.5px solid rgba(80,180,120,0.08)",
-              display: "flex", alignItems: "center", gap: 10,
+              background: cardBg, border: "1px solid rgba(80,180,120,0.15)",
+              display: "flex", alignItems: "center", gap: 12,
               cursor: "pointer",
             }}>
               <div style={{
-                width: 28, height: 28, borderRadius: "50%",
-                background: "rgba(80,180,120,0.06)",
-                border: "0.5px solid rgba(80,180,120,0.12)",
+                width: 32, height: 32, borderRadius: "50%",
+                background: "rgba(80,180,120,0.1)",
+                border: "1px solid rgba(80,180,120,0.2)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: "rgba(80,180,120,0.5)",
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: "#50b478",
               }}>
                 +
               </div>
               <div>
-                <div style={{ fontSize: 11, color: "rgba(80,180,120,0.5)", fontWeight: 500 }}>Сохранить в базу знаний</div>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.08)", marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: "#50b478", fontWeight: 500 }}>Сохранить в базу знаний</div>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: textTertiary, marginTop: 2 }}>
                   инсайт + связи
                 </div>
               </div>
@@ -612,34 +601,31 @@ export default function Signal() {
             {/* Next signal */}
             <div style={{
               padding: "14px 16px", borderRadius: 12,
-              background: "rgba(255,255,255,0.01)",
-              border: "0.5px solid rgba(155,127,232,0.06)",
+              background: cardBg, border: `1px solid ${cardBorder}`,
               cursor: "pointer",
             }}>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.08)", marginBottom: 6 }}>
-                следующий signal
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, letterSpacing: "0.06em", textTransform: "uppercase", color: textTertiary, marginBottom: 6 }}>
+                следующий signal →
               </div>
-              <div style={{ fontSize: 13, color: "rgba(255,255,255,0.25)", lineHeight: 1.5, letterSpacing: "-0.01em" }}>
-                Почему <span style={{ color: "rgba(155,127,232,0.6)" }}>китайский open-source</span> неизбежен
+              <div style={{ fontSize: 14, color: textSecondary, lineHeight: 1.5 }}>
+                Почему <span style={{ color: "#9b7fe8" }}>китайский open-source</span> неизбежен
               </div>
-              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.06)", marginTop: 4 }}>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: textMuted, marginTop: 4 }}>
                 19 источников · 2 дня
               </div>
             </div>
           </div>
 
-          {/* Bottom spacer */}
+          {/* Spacer */}
           <div ref={setSlideRef(3)} style={{ scrollSnapAlign: "center", minHeight: "1px" }} />
 
-          {/* Bottom fade */}
-          <div className="sticky bottom-0 left-0 right-0 z-10 pointer-events-none" style={{ height: 32, background: "linear-gradient(to top, #0c0a08, transparent)", marginTop: -32 }} />
+          <div className="sticky bottom-0 left-0 right-0 z-10 pointer-events-none" style={{ height: 24, background: `linear-gradient(to top, ${bg}, transparent)`, marginTop: -24 }} />
         </div>
 
-        {/* ═══════════ LENS HALF-SHEET OVERLAY ═══════════ */}
+        {/* ═══════════ LENS OVERLAY ═══════════ */}
         <AnimatePresence>
           {activeLens && (
             <>
-              {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -647,11 +633,10 @@ export default function Signal() {
                 onClick={() => { setActiveLens(null); setExpandedVoice(null); }}
                 style={{
                   position: "absolute", inset: 0, zIndex: 30,
-                  background: "rgba(0,0,0,0.4)",
-                  backdropFilter: "blur(4px)",
+                  background: "rgba(0,0,0,0.5)",
+                  backdropFilter: "blur(6px)",
                 }}
               />
-              {/* Sheet */}
               <motion.div
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
@@ -665,30 +650,27 @@ export default function Signal() {
                 }}
                 style={{
                   position: "absolute",
-                  bottom: 80, left: 0, right: 0,
-                  maxHeight: "60%",
+                  bottom: 85, left: 0, right: 0,
+                  maxHeight: "55%",
                   zIndex: 31,
-                  background: "rgba(14,12,10,0.95)",
+                  background: "rgba(20,20,20,0.97)",
                   backdropFilter: "blur(20px)",
-                  borderTop: "0.5px solid rgba(255,255,255,0.06)",
-                  borderRadius: "24px 24px 0 0",
+                  borderTop: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: "20px 20px 0 0",
                   padding: "12px 20px 20px",
                   overflowY: "auto",
                   scrollbarWidth: "none",
                 }}
               >
-                {/* Drag handle */}
-                <div className="flex justify-center" style={{ marginBottom: 12 }}>
-                  <div style={{ width: 32, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.08)" }} />
+                <div className="flex justify-center" style={{ marginBottom: 10 }}>
+                  <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(255,255,255,0.12)" }} />
                 </div>
 
-                {/* Lens title */}
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: LENSES.find(l => l.id === activeLens)?.color || "#fff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12, opacity: 0.6 }}>
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: LENSES.find(l => l.id === activeLens)?.color, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 14 }}>
                   {LENSES.find(l => l.id === activeLens)?.label} линза
                 </div>
 
-                {/* Voice cards */}
-                <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-3">
                   {currentLensVoices.map((v, i) => (
                     <motion.div
                       key={i}
@@ -697,37 +679,36 @@ export default function Signal() {
                       transition={{ delay: i * 0.08 }}
                       onClick={() => setExpandedVoice(expandedVoice === i ? null : i)}
                       style={{
-                        background: "rgba(255,255,255,0.015)",
-                        border: `0.5px solid ${expandedVoice === i ? v.color + "20" : "rgba(255,255,255,0.03)"}`,
+                        background: "rgba(255,255,255,0.03)",
+                        border: `1px solid ${expandedVoice === i ? v.color + "30" : cardBorder}`,
                         borderRadius: 12,
                         padding: "12px 14px",
                         cursor: "pointer",
-                        transition: "border-color 0.2s",
                       }}
                     >
                       <div className="flex items-center gap-2.5" style={{ marginBottom: 6 }}>
                         <div className="flex items-center justify-center flex-shrink-0" style={{
-                          width: 28, height: 28, borderRadius: "50%",
-                          background: v.color + "0a", border: `0.5px solid ${v.color}18`,
-                          fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: v.color + "80",
+                          width: 30, height: 30, borderRadius: "50%",
+                          background: v.color + "14", border: `1px solid ${v.color}25`,
+                          fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: v.color,
                         }}>
                           {v.initials}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div style={{ fontSize: 11, fontWeight: 500, color: "rgba(255,255,255,0.45)" }}>{v.name}</div>
-                          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.12)" }}>{v.role}</div>
+                          <div style={{ fontSize: 12, fontWeight: 500, color: textSecondary }}>{v.name}</div>
+                          <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: textTertiary }}>{v.role}</div>
                         </div>
                         <span style={{
-                          fontFamily: "'JetBrains Mono', monospace", fontSize: 6,
-                          padding: "2px 6px", borderRadius: 4,
-                          background: v.type === "verbatim" ? "rgba(80,180,120,0.06)" : "rgba(155,127,232,0.06)",
-                          color: v.type === "verbatim" ? "rgba(80,180,120,0.5)" : "rgba(155,127,232,0.5)",
-                          letterSpacing: "0.06em", textTransform: "uppercase",
+                          fontFamily: "'JetBrains Mono', monospace", fontSize: 7,
+                          padding: "2px 7px", borderRadius: 4,
+                          background: v.type === "verbatim" ? "rgba(80,180,120,0.1)" : "rgba(155,127,232,0.1)",
+                          color: v.type === "verbatim" ? "#50b478" : "#9b7fe8",
+                          letterSpacing: "0.04em", textTransform: "uppercase",
                         }}>
                           {v.type === "verbatim" ? "ЦИТАТА" : "СИНТЕЗ"}
                         </span>
                       </div>
-                      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", lineHeight: 1.55 }}>
+                      <div style={{ fontSize: 12, color: textSecondary, lineHeight: 1.55 }}>
                         «{v.quote}»
                       </div>
                       <AnimatePresence>
@@ -738,15 +719,15 @@ export default function Signal() {
                             exit={{ height: 0, opacity: 0 }}
                             style={{ overflow: "hidden" }}
                           >
-                            <div style={{ marginTop: 8, paddingTop: 8, borderTop: "0.5px solid rgba(255,255,255,0.03)" }}>
-                              <div style={{ fontSize: 10, color: "rgba(255,255,255,0.2)", lineHeight: 1.6 }}>{v.full}</div>
+                            <div style={{ marginTop: 8, paddingTop: 8, borderTop: `1px solid ${cardBorder}` }}>
+                              <div style={{ fontSize: 11, color: textTertiary, lineHeight: 1.6 }}>{v.full}</div>
                               {v.source && (
-                                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: v.color + "60", marginTop: 6 }}>
+                                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: v.color, marginTop: 6, opacity: 0.7 }}>
                                   {v.source}
                                 </div>
                               )}
                               {v.links?.map((link, li) => (
-                                <div key={li} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 7, color: "rgba(255,255,255,0.1)", marginTop: 3 }}>
+                                <div key={li} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 8, color: textMuted, marginTop: 3 }}>
                                   → {link}
                                 </div>
                               ))}
@@ -763,8 +744,7 @@ export default function Signal() {
         </AnimatePresence>
 
         {/* ═══════════ INPUT BAR + LENS PINS ═══════════ */}
-        <div className="flex-shrink-0 relative z-20" style={{ background: "#0c0a08", borderTop: "0.5px solid rgba(255,255,255,0.03)" }}>
-          {/* Smart prompts — show when deep */}
+        <div className="flex-shrink-0 relative z-20" style={{ background: bg, borderTop: `1px solid ${cardBorder}` }}>
           <AnimatePresence>
             {active >= 1 && !activeLens && (
               <motion.div
@@ -774,18 +754,14 @@ export default function Signal() {
                 style={{ overflow: "hidden" }}
               >
                 <div className="flex flex-col gap-1" style={{ padding: "6px 20px 0" }}>
-                  {SMART_PROMPTS.slice(0, 2).map((p, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        fontSize: 9, color: "rgba(255,255,255,0.15)",
-                        padding: "6px 10px", borderRadius: 8,
-                        background: "rgba(255,255,255,0.01)",
-                        border: "0.5px solid rgba(255,255,255,0.03)",
-                        cursor: "pointer",
-                        lineHeight: 1.4,
-                      }}
-                    >
+                  {SMART_PROMPTS.map((p, i) => (
+                    <div key={i} style={{
+                      fontSize: 10, color: textTertiary,
+                      padding: "6px 10px", borderRadius: 8,
+                      background: "rgba(255,255,255,0.02)",
+                      border: `1px solid ${cardBorder}`,
+                      cursor: "pointer", lineHeight: 1.4,
+                    }}>
                       {p}
                     </div>
                   ))}
@@ -804,13 +780,12 @@ export default function Signal() {
                   setExpandedVoice(null);
                 }}
                 style={{
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
-                  padding: "4px 10px", borderRadius: 8,
-                  background: activeLens === lens.id ? lens.color + "12" : "rgba(255,255,255,0.015)",
-                  border: `0.5px solid ${activeLens === lens.id ? lens.color + "25" : "rgba(255,255,255,0.04)"}`,
-                  color: activeLens === lens.id ? lens.color : "rgba(255,255,255,0.15)",
+                  fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+                  padding: "5px 12px", borderRadius: 8,
+                  background: activeLens === lens.id ? lens.color + "18" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${activeLens === lens.id ? lens.color + "35" : cardBorder}`,
+                  color: activeLens === lens.id ? lens.color : textTertiary,
                   cursor: "pointer", transition: "all 0.2s",
-                  letterSpacing: "0.02em",
                 }}
               >
                 {lens.label}
@@ -821,16 +796,16 @@ export default function Signal() {
           {/* Input */}
           <div className="flex gap-2 items-center" style={{ padding: "8px 20px 22px" }}>
             <div className="flex-1" style={{
-              background: "rgba(255,255,255,0.015)", border: "0.5px solid rgba(255,255,255,0.04)",
-              borderRadius: 20, padding: "9px 14px",
-              fontSize: 11, color: "rgba(255,255,255,0.12)",
+              background: "rgba(255,255,255,0.03)", border: `1px solid ${cardBorder}`,
+              borderRadius: 20, padding: "10px 14px",
+              fontSize: 12, color: textTertiary,
             }}>
               Задать вопрос...
             </div>
             <div className="flex items-center justify-center flex-shrink-0" style={{
-              width: 34, height: 34, borderRadius: "50%",
-              background: "rgba(155,127,232,0.08)", border: "0.5px solid rgba(155,127,232,0.15)",
-              fontSize: 14, color: "rgba(196,175,248,0.5)", cursor: "pointer",
+              width: 36, height: 36, borderRadius: "50%",
+              background: "rgba(155,127,232,0.12)", border: "1px solid rgba(155,127,232,0.25)",
+              fontSize: 15, color: "#c4aff8", cursor: "pointer",
             }}>
               ↑
             </div>
@@ -841,16 +816,16 @@ export default function Signal() {
   );
 }
 
-/* ── Helpers ── */
-
 function ScrollHint({ text }: { text: string }) {
   return (
     <div className="flex items-center gap-1.5" style={{
-      fontFamily: "'JetBrains Mono', monospace", fontSize: 8,
-      color: "rgba(255,255,255,0.07)", letterSpacing: "0.04em", marginTop: 14,
+      fontFamily: "'JetBrains Mono', monospace", fontSize: 9,
+      color: textMutedColor, letterSpacing: "0.04em", marginTop: 14,
     }}>
       <motion.span animate={{ y: [0, 3, 0] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}>↓</motion.span>
       {text}
     </div>
   );
 }
+
+const textMutedColor = "rgba(255,255,255,0.2)";
