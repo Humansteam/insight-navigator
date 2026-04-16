@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import LedgerDashboard from '@/components/admin/LedgerDashboard';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { 
@@ -181,7 +182,14 @@ function GlassTable({ headers, children }: { headers: string[]; children: React.
 // DASHBOARD
 // ══════════════════════════════════════════
 function DashboardSection() {
-  const { glass, text, slotColor, statusColor } = useT();
+  const { glass, text, slotColor, statusColor, isLedger } = useT();
+
+  // Ledger theme → Ledgerix-style accounting dashboard
+  if (isLedger) {
+    return <LedgerDashboard />;
+  }
+
+  // Dark theme → original KPI cards + tables
   const cardsToday = mockFeedCards.filter(c => Date.now() - new Date(c.created_at).getTime() < 86400000).length;
   const activeClusters = mockClusters.filter(c => c.status === 'open').length;
   const activeRSS = mockRSSSources.filter(s => s.status === 'active').length;
