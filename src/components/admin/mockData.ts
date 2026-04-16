@@ -463,3 +463,100 @@ export const mockSettings = {
     llm: { provider: 'anthropic', api_key: '***' },
   },
 };
+
+// ── Monitoring Mock Data ──
+
+export const mockKPISparklines = {
+  cards: [
+    { day: 'Apr 10', count: 4 }, { day: 'Apr 11', count: 6 }, { day: 'Apr 12', count: 3 },
+    { day: 'Apr 13', count: 5 }, { day: 'Apr 14', count: 7 }, { day: 'Apr 15', count: 5 },
+    { day: 'Apr 16', count: 3 },
+  ],
+  clusters: [
+    { day: 'Apr 10', count: 12 }, { day: 'Apr 11', count: 18 }, { day: 'Apr 12', count: 15 },
+    { day: 'Apr 13', count: 8 }, { day: 'Apr 14', count: 22 }, { day: 'Apr 15', count: 19 },
+    { day: 'Apr 16', count: 14 },
+  ],
+  cost: [
+    { day: 'Apr 10', amount: 0.08 }, { day: 'Apr 11', amount: 0.12 }, { day: 'Apr 12', amount: 0.05 },
+    { day: 'Apr 13', amount: 0.06 }, { day: 'Apr 14', amount: 0.09 }, { day: 'Apr 15', amount: 0.07 },
+    { day: 'Apr 16', amount: 0.04 },
+  ],
+  quality: [
+    { day: 'Apr 10', pct: 62 }, { day: 'Apr 11', pct: 71 }, { day: 'Apr 12', pct: 58 },
+    { day: 'Apr 13', pct: 66 }, { day: 'Apr 14', pct: 75 }, { day: 'Apr 15', pct: 67 },
+    { day: 'Apr 16', pct: 57 },
+  ],
+};
+
+export const mockIngestFunnel = [
+  { batch_id: '04-12_21', ingested: 890, quality_passed: 670, embedded: 670 },
+  { batch_id: '04-13_21', ingested: 380, quality_passed: 250, embedded: 248 },
+  { batch_id: '04-14_15', ingested: 1102, quality_passed: 830, embedded: 830 },
+  { batch_id: '04-15_test', ingested: 456, quality_passed: 320, embedded: 320 },
+  { batch_id: '04-15_21', ingested: 942, quality_passed: 704, embedded: 704 },
+];
+
+export const mockCardsTimeline = [
+  { day: 'Apr 10', saved: 4, read: 3, bookmarked: 1 },
+  { day: 'Apr 11', saved: 6, read: 5, bookmarked: 2 },
+  { day: 'Apr 12', saved: 3, read: 2, bookmarked: 0 },
+  { day: 'Apr 13', saved: 5, read: 4, bookmarked: 1 },
+  { day: 'Apr 14', saved: 7, read: 5, bookmarked: 3 },
+  { day: 'Apr 15', saved: 5, read: 4, bookmarked: 2 },
+  { day: 'Apr 16', saved: 3, read: 2, bookmarked: 1 },
+];
+
+export const mockClusterEvolution = [
+  { day: 'Apr 10', new_clusters: 12, evolved: 4 },
+  { day: 'Apr 11', new_clusters: 18, evolved: 7 },
+  { day: 'Apr 12', new_clusters: 15, evolved: 9 },
+  { day: 'Apr 13', new_clusters: 8, evolved: 5 },
+  { day: 'Apr 14', new_clusters: 22, evolved: 11 },
+  { day: 'Apr 15', new_clusters: 19, evolved: 8 },
+  { day: 'Apr 16', new_clusters: 14, evolved: 6 },
+];
+
+export const mockJoinRate = [
+  { batch_id: '04-12_21', join_pct: 16.3 },
+  { batch_id: '04-13_21', join_pct: 17.1 },
+  { batch_id: '04-14_15', join_pct: 18.2 },
+  { batch_id: '04-15_test', join_pct: 19.5 },
+  { batch_id: '04-15_21', join_pct: 17.3 },
+];
+
+export const mockQuoteRate = [
+  { day: 'Apr 10', hit_pct: 45 },
+  { day: 'Apr 11', hit_pct: 52 },
+  { day: 'Apr 12', hit_pct: 38 },
+  { day: 'Apr 13', hit_pct: 41 },
+  { day: 'Apr 14', hit_pct: 55 },
+  { day: 'Apr 15', hit_pct: 67 },
+  { day: 'Apr 16', hit_pct: 57 },
+];
+
+export const mockUserEventsDistribution = [
+  { action: 'read', count: 142 },
+  { action: 'save', count: 38 },
+  { action: 'skip', count: 27 },
+  { action: 'deep_dive', count: 15 },
+  { action: 'dismiss', count: 9 },
+];
+
+export const mockLLMCost = {
+  byDay: [
+    { day: 'Apr 10', 'claude-haiku': 0.02, 'claude-sonnet': 0.05, deepseek: 0.01 },
+    { day: 'Apr 11', 'claude-haiku': 0.03, 'claude-sonnet': 0.07, deepseek: 0.02 },
+    { day: 'Apr 12', 'claude-haiku': 0.01, 'claude-sonnet': 0.03, deepseek: 0.01 },
+    { day: 'Apr 13', 'claude-haiku': 0.02, 'claude-sonnet': 0.03, deepseek: 0.01 },
+    { day: 'Apr 14', 'claude-haiku': 0.02, 'claude-sonnet': 0.06, deepseek: 0.01 },
+    { day: 'Apr 15', 'claude-haiku': 0.02, 'claude-sonnet': 0.04, deepseek: 0.01 },
+    { day: 'Apr 16', 'claude-haiku': 0.01, 'claude-sonnet': 0.02, deepseek: 0.01 },
+  ],
+  total: 0.51,
+  detail: [
+    { model: 'claude-sonnet', calls: 42, prompt_tok: 128400, completion_tok: 45200, cost: 0.30 },
+    { model: 'claude-haiku', calls: 156, prompt_tok: 89200, completion_tok: 32100, cost: 0.13 },
+    { model: 'deepseek', calls: 89, prompt_tok: 54300, completion_tok: 18700, cost: 0.08 },
+  ],
+};
