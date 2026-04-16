@@ -2,11 +2,21 @@ import { useState } from 'react';
 import { 
   BarChart3, Layers, FolderTree, Radio, User, Quote, Users, 
   Activity, Settings, ChevronLeft, ChevronRight, Search, ExternalLink,
-  Check, X, ChevronDown, ChevronUp, CreditCard, Bell, Truck, BarChart2, Network
+  Check, X, ChevronDown, ChevronUp, CreditCard, Bell, Truck, BarChart2, Network,
+  RefreshCw, DollarSign
 } from 'lucide-react';
+import {
+  BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
+} from 'recharts';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
