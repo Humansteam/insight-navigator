@@ -15,12 +15,12 @@ import Onboarding from "./pages/Onboarding";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
 import Signal from "./pages/Signal";
 import Admin from "./pages/Admin";
-import AdminLedger from "./pages/AdminLedger";
+
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" themes={['light', 'dark', 'deep-space', 'strata', 'ledger']}>
+    <ThemeProvider attribute="class" defaultTheme="dark" themes={['light', 'dark', 'deep-space', 'strata']}>
       <JournalsProvider>
         <ChatProvider>
           <TooltipProvider>
@@ -36,7 +36,6 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/signal" element={<Signal />} />
                 <Route path="/admin" element={<Admin />} />
-                <Route path="/admin-ledger" element={<AdminLedger />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
