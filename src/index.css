@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Urbanist:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -187,6 +187,79 @@
     --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.5);
     --shadow-glow: 0 0 20px hsl(185 75% 50% / 0.3);
     --shadow-glow-sm: 0 0 8px hsl(185 75% 50% / 0.2);
+  }
+
+  /* Strata theme - Light, airy with teal-navy accents */
+  .strata {
+    --background: 153 43% 97%;
+    --background-deep: 153 30% 95%;
+    --background-elevated: 0 0% 100%;
+    --foreground: 205 51% 17%;
+    --foreground-muted: 207 30% 45%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 205 51% 17%;
+    --card-border: 153 20% 85%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 205 51% 17%;
+
+    --primary: 207 54% 23%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 207 54% 33%;
+    --primary-muted: 153 43% 91%;
+
+    --secondary: 153 30% 92%;
+    --secondary-foreground: 205 51% 25%;
+
+    --muted: 153 20% 93%;
+    --muted-foreground: 207 25% 50%;
+
+    --accent: 153 43% 91%;
+    --accent-foreground: 205 51% 17%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 160 60% 40%;
+    --warning: 40 90% 55%;
+
+    --border: 153 20% 85%;
+    --border-glow: 207 54% 33%;
+    --input: 153 20% 85%;
+    --input-background: 0 0% 100%;
+    --ring: 207 54% 23%;
+
+    --sidebar-background: 153 30% 95%;
+    --sidebar-foreground: 205 51% 17%;
+    --sidebar-primary: 207 54% 23%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 153 30% 90%;
+    --sidebar-accent-foreground: 205 51% 17%;
+    --sidebar-border: 153 20% 87%;
+    --sidebar-ring: 207 54% 23%;
+
+    --gradient-dark: linear-gradient(180deg, hsl(153 43% 97%) 0%, hsl(153 30% 95%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(153 43% 97%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(207 54% 23% / 0.08) 0%, transparent 70%);
+
+    --shadow-sm: 0 1px 3px hsl(207 54% 23% / 0.06);
+    --shadow-md: 0 4px 12px hsl(207 54% 23% / 0.08);
+    --shadow-lg: 0 8px 24px hsl(207 54% 23% / 0.12);
+    --shadow-input: 0 1px 3px hsl(207 54% 23% / 0.05);
+    --shadow-glow: 0 0 20px hsl(207 54% 23% / 0.15);
+    --shadow-glow-sm: 0 0 8px hsl(207 54% 23% / 0.1);
+
+    --font-sans: 'Urbanist', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    --data-china: 0 75% 55%;
+    --data-usa: 207 54% 23%;
+    --data-europe: 153 50% 40%;
+    --data-other: 207 25% 50%;
+
+    --confidence-high: 160 60% 40%;
+    --confidence-med: 40 90% 55%;
+    --confidence-low: 0 75% 55%;
   }
 
   * {

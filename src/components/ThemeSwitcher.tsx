@@ -1,4 +1,4 @@
-import { Moon, Sun, Sparkles } from 'lucide-react';
+import { Moon, Sun, Sparkles, Droplets } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import {
   DropdownMenu,
@@ -19,6 +19,8 @@ export const ThemeSwitcher = () => {
         return <Moon className="w-4 h-4" />;
       case 'deep-space':
         return <Sparkles className="w-4 h-4" />;
+      case 'strata':
+        return <Droplets className="w-4 h-4" />;
       default:
         return <Moon className="w-4 h-4" />;
     }
@@ -52,6 +54,13 @@ export const ThemeSwitcher = () => {
         >
           <Sparkles className="w-4 h-4 mr-2" />
           Deep Space
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => setTheme('strata')}
+          className={cn(theme === 'strata' && 'bg-accent')}
+        >
+          <Droplets className="w-4 h-4 mr-2" />
+          Strata
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

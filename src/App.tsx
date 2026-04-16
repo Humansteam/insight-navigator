@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" themes={['light', 'dark', 'deep-space']}>
+    <ThemeProvider attribute="class" defaultTheme="dark" themes={['light', 'dark', 'deep-space', 'strata']}>
       <JournalsProvider>
         <ChatProvider>
           <TooltipProvider>
