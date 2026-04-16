@@ -17,14 +17,11 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   mockFeedCards, mockClusters, mockRSSSources, mockPersons, mockQuotes, 
   mockUsers, mockPipelineRuns, mockUserEvents, mockCategories, mockSettings,
+  mockKPISparklines, mockIngestFunnel, mockCardsTimeline, mockClusterEvolution,
+  mockJoinRate, mockQuoteRate, mockUserEventsDistribution, mockLLMCost,
   type FeedCard, type EventCluster, type RSSSource, type Person, type Quote as QuoteType,
   type UserProfile, type PipelineRun, type UserEvent, type CategoryTree
 } from '@/components/admin/mockData';
