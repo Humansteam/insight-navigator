@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTheme } from 'next-themes';
 import { 
   BarChart3, Layers, FolderTree, Radio, User, Quote, Users, 
   Activity, Settings, ChevronLeft, ChevronRight, Search, ExternalLink,
