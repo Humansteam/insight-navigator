@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { 
   BarChart3, Layers, FolderTree, Radio, User, Quote, Users, 
   Activity, Settings, ChevronLeft, ChevronRight, Search, ExternalLink,
-  Check, X, ChevronDown, ChevronUp, CreditCard, Bell, Truck, BarChart2, Network
+  Check, X, ChevronDown, ChevronUp, CreditCard, Bell, Truck, BarChart2, Network,
+  RefreshCw, DollarSign
 } from 'lucide-react';
+import {
+  BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine
+} from 'recharts';
 import { cn } from '@/lib/utils';
 import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +20,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   mockFeedCards, mockClusters, mockRSSSources, mockPersons, mockQuotes, 
   mockUsers, mockPipelineRuns, mockUserEvents, mockCategories, mockSettings,
+  mockKPISparklines, mockIngestFunnel, mockCardsTimeline, mockClusterEvolution,
+  mockJoinRate, mockQuoteRate, mockUserEventsDistribution, mockLLMCost,
   type FeedCard, type EventCluster, type RSSSource, type Person, type Quote as QuoteType,
   type UserProfile, type PipelineRun, type UserEvent, type CategoryTree
 } from '@/components/admin/mockData';
@@ -131,12 +138,35 @@ function DetailPanel({ children, onClose, title }: { children: React.ReactNode; 
   );
 }
 
-function KPICard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
+function Sparkline({ data, dataKey, color = '#4ECDC4', height = 40 }: { data: Record<string, unknown>[]; dataKey: string; color?: string; height?: number }) {
   return (
-    <div className={cn(glass.card, 'p-5')}>
-      <div className={cn('text-xs uppercase tracking-wider mb-2', text.muted)}>{label}</div>
-      <div className={cn('text-3xl font-bold tracking-tight', text.primary)}>{value}</div>
-      {sub && <div className={cn('text-xs mt-2', text.secondary)}>{sub}</div>}
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={data} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id={`spark-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area type="monotone" dataKey={dataKey} stroke={color} fill={`url(#spark-${dataKey})`} strokeWidth={1.5} dot={false} />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+function KPICard({ label, value, sub, sparkData, sparkKey, sparkColor }: { label: string; value: string | number; sub?: string; sparkData?: Record<string, unknown>[]; sparkKey?: string; sparkColor?: string }) {
+  return (
+    <div className={cn(glass.card, 'p-5 flex flex-col justify-between')}>
+      <div>
+        <div className={cn('text-xs uppercase tracking-wider mb-2', text.muted)}>{label}</div>
+        <div className={cn('text-3xl font-bold tracking-tight', text.primary)}>{value}</div>
+        {sub && <div className={cn('text-xs mt-2', text.secondary)}>{sub}</div>}
+      </div>
+      {sparkData && sparkKey && (
+        <div className="mt-3 -mx-1">
+          <Sparkline data={sparkData} dataKey={sparkKey} color={sparkColor} />
+        </div>
+      )}
     </div>
   );
 }
@@ -158,48 +188,323 @@ function GlassTable({ headers, children }: { headers: string[]; children: React.
   );
 }
 
+// ── Chart helpers ──
+const CHART_COLORS = {
+  navy: '#163144',
+  teal: '#1B405B',
+  bright: '#4ECDC4',
+  mint: '#DFF3EB',
+  orange: '#E8A838',
+  coral: '#E85D4A',
+  purple: '#7B61FF',
+  gray: '#94A3B8',
+};
+
+const chartTooltipStyle = {
+  backgroundColor: 'rgba(10, 15, 28, 0.95)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: '10px',
+  fontSize: '12px',
+  color: '#fff',
+};
+
+function ChartCard({ title, subtitle, children, className }: { title: string; subtitle?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn(glass.card, 'p-5', className)}>
+      <div className="mb-4">
+        <div className={cn('text-sm font-medium', text.primary)}>{title}</div>
+        {subtitle && <div className={cn('text-xs mt-0.5', text.muted)}>{subtitle}</div>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════
-// DASHBOARD
+// DASHBOARD (Full Monitoring)
 // ══════════════════════════════════════════
 function DashboardSection() {
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
   const cardsToday = mockFeedCards.filter(c => Date.now() - new Date(c.created_at).getTime() < 86400000).length;
   const activeClusters = mockClusters.filter(c => c.status === 'open').length;
   const activeRSS = mockRSSSources.filter(s => s.status === 'active').length;
   const lastRun = mockPipelineRuns[0];
   const quoteHitRate = lastRun ? Math.round((lastRun.metrics.quotes_attached / lastRun.metrics.cards_saved) * 100) : 0;
+  const currentJoinRate = mockJoinRate[mockJoinRate.length - 1]?.join_pct || 0;
+
+  const eventTotal = mockUserEventsDistribution.reduce((a, b) => a + b.count, 0);
+  const EVENT_COLORS: Record<string, string> = { read: CHART_COLORS.teal, save: CHART_COLORS.bright, skip: CHART_COLORS.gray, deep_dive: CHART_COLORS.purple, dismiss: CHART_COLORS.coral };
 
   return (
     <div className="space-y-8">
-      <h2 className={cn('text-xl', text.heading)}>Dashboard</h2>
-      <div className="grid grid-cols-4 gap-5">
-        <KPICard label="Cards Today" value={cardsToday} sub="last 24h" />
-        <KPICard label="Active Clusters" value={activeClusters} />
-        <KPICard label="RSS Health" value={`${activeRSS}/${mockRSSSources.length}`} sub="active feeds" />
-        <KPICard label="Quote Hit Rate" value={`${quoteHitRate}%`} sub="last pipeline run" />
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className={cn('text-xl', text.heading)}>Strata Pipeline</h2>
+          <p className={cn('text-xs mt-1', text.muted)}>Real-time monitoring</p>
+        </div>
+        <button className={cn('h-8 w-8 rounded-xl flex items-center justify-center', glass.button)}>
+          <RefreshCw className="h-3.5 w-3.5" />
+        </button>
       </div>
+
+      {/* KPI Row — 5 cards */}
+      <div className="grid grid-cols-5 gap-4">
+        <KPICard label="Cards Today" value={cardsToday} sub="last 24h" sparkData={mockKPISparklines.cards} sparkKey="count" sparkColor={CHART_COLORS.bright} />
+        <KPICard label="Open Clusters" value={activeClusters} sparkData={mockKPISparklines.clusters} sparkKey="count" sparkColor={CHART_COLORS.bright} />
+        <KPICard label="RSS Active" value={`${activeRSS}/${mockRSSSources.length}`} sub="feed groups" />
+        <KPICard label="Quality Rate" value={`${quoteHitRate}%`} sub="last batch" sparkData={mockKPISparklines.quality} sparkKey="pct" sparkColor={CHART_COLORS.bright} />
+        <KPICard label="Week LLM Cost" value={`$${mockLLMCost.total.toFixed(2)}`} sub="7 day total" sparkData={mockKPISparklines.cost} sparkKey="amount" sparkColor={CHART_COLORS.orange} />
+      </div>
+
+      {/* Row 1: Ingest Funnel + Cards per Day */}
+      <div className="grid grid-cols-2 gap-5">
+        <ChartCard title="Ingest Funnel" subtitle="Articles per batch — ingested → passed → embedded">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={mockIngestFunnel} barGap={2} barCategoryGap={12}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="batch_id" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <Bar dataKey="ingested" fill={CHART_COLORS.navy} radius={[4, 4, 0, 0]} name="Ingested" />
+              <Bar dataKey="quality_passed" fill={CHART_COLORS.teal} radius={[4, 4, 0, 0]} name="Quality Passed" />
+              <Bar dataKey="embedded" fill={CHART_COLORS.bright} radius={[4, 4, 0, 0]} name="Embedded" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Cards Generated" subtitle="Saved (bar) · Read & Bookmarked (lines)">
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={mockCardsTimeline}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="day" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <Bar dataKey="saved" fill={CHART_COLORS.teal} radius={[4, 4, 0, 0]} name="Saved" />
+              <Line dataKey="read" stroke={CHART_COLORS.bright} strokeWidth={2} dot={{ fill: CHART_COLORS.bright, r: 3 }} name="Read" />
+              <Line dataKey="bookmarked" stroke={CHART_COLORS.orange} strokeWidth={2} dot={{ fill: CHART_COLORS.orange, r: 3 }} name="Bookmarked" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      </div>
+
+      {/* Row 2: Cluster Evolution + Cross-batch Join Rate */}
+      <div className="grid grid-cols-2 gap-5">
+        <ChartCard title="Cluster Evolution" subtitle="New vs evolved clusters per day">
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={mockClusterEvolution}>
+              <defs>
+                <linearGradient id="grad-new" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.teal} stopOpacity={0.2} />
+                  <stop offset="100%" stopColor={CHART_COLORS.teal} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="grad-evolved" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.bright} stopOpacity={0.2} />
+                  <stop offset="100%" stopColor={CHART_COLORS.bright} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="day" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <Area type="monotone" dataKey="new_clusters" stroke={CHART_COLORS.teal} fill="url(#grad-new)" strokeWidth={2} name="New" />
+              <Area type="monotone" dataKey="evolved" stroke={CHART_COLORS.bright} fill="url(#grad-evolved)" strokeWidth={2} name="Evolved" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Cross-batch Join Rate" subtitle="% articles joining existing clusters">
+          <div className="flex items-center gap-6">
+            {/* Gauge */}
+            <div className="relative w-[100px] h-[100px] shrink-0">
+              <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
+                <circle
+                  cx="50" cy="50" r="40" fill="none"
+                  stroke={currentJoinRate >= 15 ? CHART_COLORS.bright : currentJoinRate >= 5 ? CHART_COLORS.orange : CHART_COLORS.coral}
+                  strokeWidth="8" strokeLinecap="round"
+                  strokeDasharray={`${(currentJoinRate / 30) * 251.3} 251.3`}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className={cn('text-lg font-bold', text.primary)}>{currentJoinRate}%</span>
+                <span className={cn('text-[9px]', text.muted)}>current</span>
+              </div>
+            </div>
+            {/* Line trend */}
+            <div className="flex-1">
+              <ResponsiveContainer width="100%" height={100}>
+                <LineChart data={mockJoinRate}>
+                  <XAxis dataKey="batch_id" tick={{ fill: '#94A3B8', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis domain={[0, 25]} tick={{ fill: '#94A3B8', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={chartTooltipStyle} />
+                  <ReferenceLine y={15} stroke={CHART_COLORS.bright} strokeDasharray="4 4" strokeOpacity={0.5} />
+                  <ReferenceLine y={5} stroke={CHART_COLORS.coral} strokeDasharray="4 4" strokeOpacity={0.5} />
+                  <Line type="monotone" dataKey="join_pct" stroke={CHART_COLORS.teal} strokeWidth={2} dot={{ fill: CHART_COLORS.teal, r: 3 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </ChartCard>
+      </div>
+
+      {/* Row 3: Quote Hit Rate + User Activity */}
+      <div className="grid grid-cols-2 gap-5">
+        <ChartCard title="Quote Hit Rate" subtitle="% cards with person quotes attached">
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={mockQuoteRate}>
+              <defs>
+                <linearGradient id="grad-quote" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.bright} stopOpacity={0.15} />
+                  <stop offset="100%" stopColor={CHART_COLORS.bright} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="day" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <ReferenceLine y={40} stroke={CHART_COLORS.bright} strokeDasharray="4 4" strokeOpacity={0.4} label={{ value: '40%', position: 'right', fill: '#94A3B8', fontSize: 10 }} />
+              <ReferenceLine y={20} stroke={CHART_COLORS.orange} strokeDasharray="4 4" strokeOpacity={0.4} label={{ value: '20%', position: 'right', fill: '#94A3B8', fontSize: 10 }} />
+              <Area type="monotone" dataKey="hit_pct" stroke={CHART_COLORS.bright} fill="url(#grad-quote)" strokeWidth={2} dot={{ fill: CHART_COLORS.bright, r: 3 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="User Activity" subtitle={`${eventTotal} events total`}>
+          <div className="flex items-center gap-6">
+            {/* Donut */}
+            <div className="w-[140px] h-[140px] shrink-0 relative">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={mockUserEventsDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={2} dataKey="count" nameKey="action">
+                    {mockUserEventsDistribution.map((entry) => (
+                      <Cell key={entry.action} fill={EVENT_COLORS[entry.action] || CHART_COLORS.gray} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={chartTooltipStyle} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className={cn('text-lg font-bold', text.primary)}>{eventTotal}</span>
+                <span className={cn('text-[9px]', text.muted)}>total</span>
+              </div>
+            </div>
+            {/* Recent events */}
+            <div className="flex-1 space-y-1.5 max-h-[140px] overflow-y-auto">
+              {mockUserEvents.slice(0, 6).map(ev => (
+                <div key={ev.id} className="flex items-center gap-2 text-xs">
+                  <Badge variant="outline" className={cn('text-[9px] rounded-full px-2 shrink-0', actionColor[ev.action])}>{ev.action}</Badge>
+                  <span className="text-white/50 truncate">{ev.card_signal.slice(0, 40)}</span>
+                  <span className={cn('text-[10px] shrink-0 ml-auto', text.muted)}>{relativeTime(ev.created_at)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ChartCard>
+      </div>
+
+      {/* Row 4: LLM Cost */}
+      <ChartCard title="LLM Cost" subtitle={`$${mockLLMCost.total.toFixed(2)} total · Last 7 days`}>
+        <div className="space-y-5">
+          <ResponsiveContainer width="100%" height={180}>
+            <BarChart data={mockLLMCost.byDay}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+              <XAxis dataKey="day" tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: '#94A3B8', fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={v => `$${v}`} />
+              <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => `$${v.toFixed(4)}`} />
+              <Bar dataKey="claude-haiku" stackId="a" fill={CHART_COLORS.mint} radius={[0, 0, 0, 0]} name="Haiku" />
+              <Bar dataKey="claude-sonnet" stackId="a" fill={CHART_COLORS.teal} radius={[0, 0, 0, 0]} name="Sonnet" />
+              <Bar dataKey="deepseek" stackId="a" fill={CHART_COLORS.orange} radius={[4, 4, 0, 0]} name="DeepSeek" />
+            </BarChart>
+          </ResponsiveContainer>
+          {/* Detail table */}
+          <div className="overflow-hidden rounded-xl border border-white/[0.06]">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className={glass.tableHeader}>
+                  <th className={cn('text-left px-3 py-2 text-[10px] uppercase tracking-wider', text.muted)}>Model</th>
+                  <th className={cn('text-right px-3 py-2 text-[10px] uppercase tracking-wider', text.muted)}>Calls</th>
+                  <th className={cn('text-right px-3 py-2 text-[10px] uppercase tracking-wider', text.muted)}>Prompt Tok</th>
+                  <th className={cn('text-right px-3 py-2 text-[10px] uppercase tracking-wider', text.muted)}>Completion</th>
+                  <th className={cn('text-right px-3 py-2 text-[10px] uppercase tracking-wider', text.muted)}>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mockLLMCost.detail.map(row => (
+                  <tr key={row.model} className={glass.tableRow}>
+                    <td className={cn('px-3 py-2 font-mono', text.primary)}>{row.model}</td>
+                    <td className={cn('px-3 py-2 text-right', text.secondary)}>{row.calls}</td>
+                    <td className={cn('px-3 py-2 text-right', text.secondary)}>{row.prompt_tok.toLocaleString()}</td>
+                    <td className={cn('px-3 py-2 text-right', text.secondary)}>{row.completion_tok.toLocaleString()}</td>
+                    <td className={cn('px-3 py-2 text-right font-mono', text.primary)}>${row.cost.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ChartCard>
+
+      {/* Row 5: Latest Cards (expandable) */}
       <div>
         <h3 className={cn('text-sm font-medium mb-4', text.secondary)}>Latest Cards</h3>
-        <GlassTable headers={['Slot', 'Signal', 'Sources', 'Created']}>
-          {mockFeedCards.slice(0, 5).map(card => (
-            <tr key={card.id} className={glass.tableRow}>
-              <td className="px-4 py-3"><Badge variant="outline" className={cn('text-[10px] rounded-full px-2.5', slotColor[card.slot])}>{card.slot}</Badge></td>
-              <td className={cn('px-4 py-3 max-w-[300px] truncate', text.primary)}>{card.signal_text.slice(0, 80)}</td>
-              <td className={cn('px-4 py-3', text.secondary)}>{card.sources.length}</td>
-              <td className={cn('px-4 py-3 text-xs', text.muted)}>{relativeTime(card.created_at)}</td>
-            </tr>
+        <GlassTable headers={['Slot', 'Signal', 'Sources', 'Words', 'Quote', 'Cluster', 'Created']}>
+          {mockFeedCards.map(card => (
+            <>
+              <tr key={card.id} className={cn(glass.tableRow, 'cursor-pointer')} onClick={() => setExpandedCard(expandedCard === card.id ? null : card.id)}>
+                <td className="px-4 py-3"><Badge variant="outline" className={cn('text-[10px] rounded-full px-2.5', slotColor[card.slot])}>{card.slot}</Badge></td>
+                <td className={cn('px-4 py-3 max-w-[300px] truncate', text.primary)}>{card.signal_text.slice(0, 80)}</td>
+                <td className={cn('px-4 py-3 text-center', text.secondary)}>{card.sources.length}</td>
+                <td className={cn('px-4 py-3 text-center', text.secondary)}>{card.word_count}</td>
+                <td className="px-4 py-3 text-center">{card.quote ? <Check className="h-3.5 w-3.5 text-emerald-400/70 mx-auto" /> : <span className={text.muted}>—</span>}</td>
+                <td className="px-4 py-3 text-xs text-cyan-400/70 truncate max-w-[120px]">{card.cluster_topic}</td>
+                <td className={cn('px-4 py-3 text-xs', text.muted)}>{relativeTime(card.created_at)}</td>
+              </tr>
+              {expandedCard === card.id && (
+                <tr key={`${card.id}-expanded`}>
+                  <td colSpan={7} className="px-6 py-4 bg-white/[0.02]">
+                    <div className="space-y-3 text-xs">
+                      <div>
+                        <span className={cn('font-semibold', text.secondary)}>Why it matters: </span>
+                        <span className="text-white/60">{card.why_text}</span>
+                      </div>
+                      <div>
+                        <span className={cn('font-semibold', text.secondary)}>Body: </span>
+                        <span className="text-white/50">{card.body}</span>
+                      </div>
+                      {card.quote && (
+                        <div className="border-l-2 border-cyan-500/30 pl-3 py-1 italic text-white/50">
+                          «{card.quote.text}» — <span className="text-cyan-400/70">{card.quote.person}</span>
+                        </div>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {card.sources.map((s, i) => (
+                          <a key={i} href={s.url} target="_blank" rel="noopener" className="text-cyan-400/60 hover:text-cyan-300 underline underline-offset-2">{s.title}</a>
+                        ))}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </>
           ))}
         </GlassTable>
       </div>
+
+      {/* Row 6: Recent Pipeline Runs */}
       <div>
         <h3 className={cn('text-sm font-medium mb-4', text.secondary)}>Recent Pipeline Runs</h3>
-        <GlassTable headers={['Batch', 'Status', 'Duration', 'Ingested', 'Cards']}>
-          {mockPipelineRuns.slice(0, 3).map(run => (
+        <GlassTable headers={['Batch', 'Status', 'Duration', 'Ingested', 'Passed', 'Embedded', 'Cards', 'Quotes']}>
+          {mockPipelineRuns.map(run => (
             <tr key={run.id} className={glass.tableRow}>
               <td className={cn('px-4 py-3 font-mono text-xs', text.primary)}>{run.batch_id}</td>
               <td className="px-4 py-3"><Badge variant="outline" className={cn('text-[10px] rounded-full px-2.5', statusColor[run.status])}>{run.status}</Badge></td>
               <td className={cn('px-4 py-3 text-xs', text.secondary)}>{formatDuration(run.duration_seconds)}</td>
-              <td className={cn('px-4 py-3', text.secondary)}>{run.metrics.ingested}</td>
-              <td className={cn('px-4 py-3', text.secondary)}>{run.metrics.cards_saved}</td>
+              <td className={cn('px-4 py-3 text-center', text.secondary)}>{run.metrics.ingested}</td>
+              <td className={cn('px-4 py-3 text-center', text.secondary)}>{run.metrics.quality_passed}</td>
+              <td className={cn('px-4 py-3 text-center', text.secondary)}>{run.metrics.embedded}</td>
+              <td className={cn('px-4 py-3 text-center', text.secondary)}>{run.metrics.cards_saved}</td>
+              <td className={cn('px-4 py-3 text-center', text.secondary)}>{run.metrics.quotes_attached}</td>
             </tr>
           ))}
         </GlassTable>
