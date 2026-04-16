@@ -1026,6 +1026,7 @@ export default function Admin() {
       <div className={cn('border-r border-border bg-card flex flex-col shrink-0 transition-all duration-200', sidebarOpen ? 'w-[220px]' : 'w-[52px]')}>
         <div className="h-12 flex items-center justify-between px-3 border-b border-border">
           {sidebarOpen && <span className="text-sm font-semibold text-foreground tracking-tight">Strata Admin</span>}
+          {sidebarOpen && <ThemeSwitcher />}
           <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </Button>
