@@ -48,8 +48,8 @@ const USER_TABS: { id: UserTab; label: string; icon: React.ElementType }[] = [
   { id: 'delivery', label: 'Delivery', icon: Truck },
 ];
 
-// ── Design tokens ──
-const glass = {
+// ── Design tokens (dark) ──
+const glassDark = {
   card: 'bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl',
   cardHover: 'hover:bg-white/[0.07] transition-all duration-200',
   panel: 'bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl',
@@ -61,40 +61,46 @@ const glass = {
   button: 'bg-white/[0.06] border-white/[0.1] text-white/70 hover:bg-white/[0.1] hover:text-white',
   buttonActive: 'bg-white/[0.15] border-white/[0.2] text-white',
 };
-
-const text = {
+const textDark = {
   primary: 'text-white',
   secondary: 'text-[#94A3B8]',
   muted: 'text-white/40',
   heading: 'text-white font-semibold tracking-tight',
 };
 
-// ── Helpers ──
-function relativeTime(dateStr: string) {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${Math.floor(hrs / 24)}d ago`;
-}
-function formatDuration(seconds: number) {
-  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-}
+// ── Design tokens (ledger / light) ──
+const glassLight = {
+  card: 'bg-white border border-[#D3D2D4] rounded-2xl',
+  cardHover: 'hover:bg-gray-50 transition-all duration-200',
+  panel: 'bg-white border border-[#D3D2D4] rounded-2xl',
+  surface: 'bg-[#F0EFF2]',
+  tableHeader: 'bg-[#F7F7F8]',
+  tableRow: 'border-b border-[#E5E5E7] hover:bg-[#F7F7F8] transition-colors duration-150',
+  separator: 'border-[#D3D2D4]',
+  input: 'bg-white border-[#D3D2D4] text-black placeholder:text-gray-400 focus:border-[#75FB90] focus:ring-0',
+  button: 'bg-[#F0EFF2] border-[#D3D2D4] text-gray-600 hover:bg-[#E5E5E7] hover:text-black',
+  buttonActive: 'bg-[#75FB90]/20 border-[#75FB90]/40 text-black',
+};
+const textLight = {
+  primary: 'text-black',
+  secondary: 'text-gray-500',
+  muted: 'text-gray-400',
+  heading: 'text-black font-semibold tracking-tight',
+};
 
-// ── Vibrant badge color maps ──
-const slotColor: Record<string, string> = {
+// ── Badge color maps (dark) ──
+const slotColorDark: Record<string, string> = {
   now: 'bg-cyan-800/50 text-cyan-300 border-cyan-600/30',
   deep: 'bg-violet-800/50 text-violet-300 border-violet-600/30',
   bridge: 'bg-amber-800/50 text-amber-300 border-amber-600/30',
   challenge: 'bg-rose-800/50 text-rose-300 border-rose-600/30',
 };
-const tierColor: Record<number, string> = {
+const tierColorDark: Record<number, string> = {
   1: 'bg-amber-900/40 text-amber-300 border-amber-600/30',
   2: 'bg-slate-700/40 text-slate-300 border-slate-500/30',
   3: 'bg-orange-900/40 text-orange-300 border-orange-600/30',
 };
-const statusColor: Record<string, string> = {
+const statusColorDark: Record<string, string> = {
   success: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
   partial: 'bg-amber-900/40 text-amber-300 border-amber-600/30',
   failed: 'bg-rose-900/40 text-rose-300 border-rose-600/30',
@@ -104,14 +110,14 @@ const statusColor: Record<string, string> = {
   active: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
   stale: 'bg-rose-900/40 text-rose-300 border-rose-600/30',
 };
-const actionColor: Record<string, string> = {
+const actionColorDark: Record<string, string> = {
   read: 'bg-cyan-900/40 text-cyan-300 border-cyan-600/30',
   save: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
   skip: 'bg-white/[0.06] text-white/40 border-white/[0.08]',
   deep_dive: 'bg-violet-900/40 text-violet-300 border-violet-600/30',
   dismiss: 'bg-rose-900/40 text-rose-300 border-rose-600/30',
 };
-const groupColor: Record<string, string> = {
+const groupColorDark: Record<string, string> = {
   research: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/20',
   tech: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/20',
   news: 'bg-amber-500/20 text-amber-300 border-amber-400/20',
@@ -119,6 +125,58 @@ const groupColor: Record<string, string> = {
   business: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/20',
 };
 
+// ── Badge color maps (ledger / light) ──
+const slotColorLight: Record<string, string> = {
+  now: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+  deep: 'bg-violet-50 text-violet-700 border-violet-200',
+  bridge: 'bg-amber-50 text-amber-700 border-amber-200',
+  challenge: 'bg-rose-50 text-rose-700 border-rose-200',
+};
+const tierColorLight: Record<number, string> = {
+  1: 'bg-amber-50 text-amber-700 border-amber-200',
+  2: 'bg-slate-100 text-slate-600 border-slate-200',
+  3: 'bg-orange-50 text-orange-700 border-orange-200',
+};
+const statusColorLight: Record<string, string> = {
+  success: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  partial: 'bg-amber-50 text-amber-700 border-amber-200',
+  failed: 'bg-rose-50 text-rose-700 border-rose-200',
+  running: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+  open: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  archived: 'bg-gray-100 text-gray-500 border-gray-200',
+  active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  stale: 'bg-rose-50 text-rose-700 border-rose-200',
+};
+const actionColorLight: Record<string, string> = {
+  read: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+  save: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  skip: 'bg-gray-100 text-gray-500 border-gray-200',
+  deep_dive: 'bg-violet-50 text-violet-700 border-violet-200',
+  dismiss: 'bg-rose-50 text-rose-700 border-rose-200',
+};
+const groupColorLight: Record<string, string> = {
+  research: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  tech: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+  news: 'bg-amber-50 text-amber-700 border-amber-200',
+  blogs: 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200',
+  business: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+};
+
+// ── Token selector hook ──
+function useAdminTokens() {
+  const { theme } = useTheme();
+  const isLedger = theme === 'ledger';
+  return {
+    isLedger,
+    glass: isLedger ? glassLight : glassDark,
+    text: isLedger ? textLight : textDark,
+    slotColor: isLedger ? slotColorLight : slotColorDark,
+    tierColor: isLedger ? tierColorLight : tierColorDark,
+    statusColor: isLedger ? statusColorLight : statusColorDark,
+    actionColor: isLedger ? actionColorLight : actionColorDark,
+    groupColor: isLedger ? groupColorLight : groupColorDark,
+  };
+}
 // ── Shared ──
 function DetailPanel({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
