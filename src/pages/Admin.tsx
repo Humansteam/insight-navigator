@@ -19,7 +19,7 @@ import {
 } from '@/components/admin/mockData';
 
 // ── Types ──
-type SystemSection = 'categories' | 'sources' | 'persons' | 'quotes' | 'clusters' | 'runs' | 'settings';
+type SystemSection = 'categories' | 'sources' | 'persons' | 'quotes' | 'clusters' | 'runs' | 'settings' | 'users';
 type UserTab = 'profile' | 'subscriptions' | 'feed' | 'events' | 'stats' | 'delivery';
 type ActiveView = 
   | { kind: 'dashboard' }
@@ -34,6 +34,7 @@ const SYSTEM_ITEMS: { id: SystemSection; label: string; icon: React.ElementType 
   { id: 'clusters', label: 'Event Clusters', icon: Layers },
   { id: 'runs', label: 'Pipeline Runs', icon: Activity },
   { id: 'settings', label: 'Settings', icon: Settings },
+  { id: 'users', label: 'Users', icon: Users },
 ];
 
 const USER_TABS: { id: UserTab; label: string; icon: React.ElementType }[] = [
