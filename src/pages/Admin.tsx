@@ -876,6 +876,15 @@ function UsersListSection({ onSelectUser }: { onSelectUser: (userId: string) => 
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">Users ({mockUsers.length})</h2>
       </div>
+
+      {/* Summary KPIs — above the table */}
+      <div className="grid grid-cols-4 gap-4">
+        <KPICard label="Total Users" value={mockUsers.length} />
+        <KPICard label="Avg Read Rate" value={`${Math.round(mockUsers.reduce((a, u) => a + (u.cards_total > 0 ? (u.cards_read / u.cards_total) * 100 : 0), 0) / mockUsers.length)}%`} />
+        <KPICard label="Total Subscriptions" value={mockUsers.reduce((a, u) => a + u.topic_subscriptions.reduce((b, g) => b + g.topics.length, 0) + u.person_subscriptions.length, 0)} />
+        <KPICard label="Events (7d)" value={mockUsers.reduce((a, u) => a + u.events_7d, 0)} />
+      </div>
+
       <div className="rounded-lg border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead><tr className="bg-muted/30 border-b border-border">
@@ -922,14 +931,6 @@ function UsersListSection({ onSelectUser }: { onSelectUser: (userId: string) => 
             );
           })}</tbody>
         </table>
-      </div>
-
-      {/* Summary KPIs */}
-      <div className="grid grid-cols-4 gap-4">
-        <KPICard label="Total Users" value={mockUsers.length} />
-        <KPICard label="Avg Read Rate" value={`${Math.round(mockUsers.reduce((a, u) => a + (u.cards_total > 0 ? (u.cards_read / u.cards_total) * 100 : 0), 0) / mockUsers.length)}%`} />
-        <KPICard label="Total Subscriptions" value={mockUsers.reduce((a, u) => a + u.topic_subscriptions.reduce((b, g) => b + g.topics.length, 0) + u.person_subscriptions.length, 0)} />
-        <KPICard label="Events (7d)" value={mockUsers.reduce((a, u) => a + u.events_7d, 0)} />
       </div>
     </div>
   );
