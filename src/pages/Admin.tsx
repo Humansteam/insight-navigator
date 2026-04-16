@@ -81,47 +81,47 @@ function formatDuration(seconds: number) {
   return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
 }
 
-// ── Vibrant badge color maps ──
+// ── Muted badge color maps (deep space / strata feel) ──
 const slotColor: Record<string, string> = {
-  now: 'bg-cyan-500/90 text-white border-transparent shadow-[0_0_12px_rgba(6,182,212,0.3)]',
-  deep: 'bg-violet-500/90 text-white border-transparent shadow-[0_0_12px_rgba(139,92,246,0.3)]',
-  bridge: 'bg-orange-500/90 text-white border-transparent shadow-[0_0_12px_rgba(249,115,22,0.3)]',
-  challenge: 'bg-rose-500/90 text-white border-transparent shadow-[0_0_12px_rgba(244,63,94,0.3)]',
+  now: 'bg-cyan-600/60 text-cyan-100 border-transparent',
+  deep: 'bg-violet-600/55 text-violet-100 border-transparent',
+  bridge: 'bg-orange-600/55 text-orange-100 border-transparent',
+  challenge: 'bg-rose-600/50 text-rose-100 border-transparent',
 };
 const tierColor: Record<number, string> = {
-  1: 'bg-amber-500/90 text-black font-bold border-transparent',
-  2: 'bg-slate-400/80 text-white border-transparent',
-  3: 'bg-orange-700/80 text-white border-transparent',
+  1: 'bg-amber-600/50 text-amber-100 font-bold border-transparent',
+  2: 'bg-slate-500/40 text-slate-200 border-transparent',
+  3: 'bg-orange-700/45 text-orange-100 border-transparent',
 };
 const statusColor: Record<string, string> = {
-  success: 'bg-emerald-500/90 text-white border-transparent',
-  partial: 'bg-amber-500/90 text-black border-transparent',
-  failed: 'bg-rose-500/90 text-white border-transparent',
-  running: 'bg-cyan-500/90 text-white border-transparent',
-  open: 'bg-emerald-500/90 text-white border-transparent',
-  archived: 'bg-white/10 text-white/50 border-transparent',
-  active: 'bg-emerald-500/90 text-white border-transparent',
-  stale: 'bg-rose-500/90 text-white border-transparent',
+  success: 'bg-emerald-600/50 text-emerald-100 border-transparent',
+  partial: 'bg-amber-600/50 text-amber-100 border-transparent',
+  failed: 'bg-rose-600/50 text-rose-100 border-transparent',
+  running: 'bg-cyan-600/50 text-cyan-100 border-transparent',
+  open: 'bg-emerald-600/50 text-emerald-100 border-transparent',
+  archived: 'bg-white/[0.06] text-white/40 border-transparent',
+  active: 'bg-emerald-600/50 text-emerald-100 border-transparent',
+  stale: 'bg-rose-600/50 text-rose-100 border-transparent',
 };
 const actionColor: Record<string, string> = {
-  read: 'bg-cyan-500/80 text-white border-transparent',
-  save: 'bg-emerald-500/80 text-white border-transparent',
-  skip: 'bg-white/10 text-white/50 border-transparent',
-  deep_dive: 'bg-violet-500/80 text-white border-transparent',
-  dismiss: 'bg-rose-500/80 text-white border-transparent',
+  read: 'bg-cyan-600/45 text-cyan-100 border-transparent',
+  save: 'bg-emerald-600/45 text-emerald-100 border-transparent',
+  skip: 'bg-white/[0.06] text-white/40 border-transparent',
+  deep_dive: 'bg-violet-600/45 text-violet-100 border-transparent',
+  dismiss: 'bg-rose-600/45 text-rose-100 border-transparent',
 };
 const groupColor: Record<string, string> = {
-  research: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/20',
-  tech: 'bg-cyan-500/20 text-cyan-300 border-cyan-400/20',
-  news: 'bg-amber-500/20 text-amber-300 border-amber-400/20',
-  blogs: 'bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-400/20',
-  business: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/20',
+  research: 'bg-indigo-500/15 text-indigo-300/80 border-indigo-400/10',
+  tech: 'bg-cyan-500/15 text-cyan-300/80 border-cyan-400/10',
+  news: 'bg-amber-500/15 text-amber-300/80 border-amber-400/10',
+  blogs: 'bg-fuchsia-500/15 text-fuchsia-300/80 border-fuchsia-400/10',
+  business: 'bg-emerald-500/15 text-emerald-300/80 border-emerald-400/10',
 };
 
 // ── Shared ──
 function DetailPanel({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
-    <div className={cn('w-[420px] flex flex-col shrink-0 border-l border-white/[0.06]')} style={{ background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(20px)' }}>
+    <div className={cn('w-[420px] flex flex-col shrink-0 border-l border-white/[0.05]')} style={{ background: 'rgba(12, 20, 38, 0.95)', backdropFilter: 'blur(20px)' }}>
       <div className="h-14 flex items-center justify-between px-5 border-b border-white/[0.06]">
         <span className={cn('text-sm font-medium', text.primary)}>{title}</span>
         <button className="h-7 w-7 rounded-lg bg-white/[0.06] flex items-center justify-center hover:bg-white/[0.1] transition-colors" onClick={onClose}><X className="h-4 w-4 text-white/60" /></button>
@@ -957,9 +957,9 @@ export default function Admin() {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden" style={{ background: 'linear-gradient(180deg, #0F172A 0%, #0A0F1A 100%)' }}>
+    <div className="h-screen flex overflow-hidden" style={{ background: 'linear-gradient(180deg, #0B1426 0%, #080E1C 100%)' }}>
       {/* Sidebar */}
-      <div className={cn('flex flex-col shrink-0 transition-all duration-300', sidebarOpen ? 'w-[230px]' : 'w-[56px]')} style={{ background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className={cn('flex flex-col shrink-0 transition-all duration-300', sidebarOpen ? 'w-[230px]' : 'w-[56px]')} style={{ background: 'rgba(12, 20, 38, 0.75)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06]">
           {sidebarOpen && <span className="text-sm font-semibold text-white tracking-tight ml-1">Strata Admin</span>}
           {sidebarOpen && <ThemeSwitcher />}
