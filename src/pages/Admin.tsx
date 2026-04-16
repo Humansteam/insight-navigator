@@ -5,6 +5,7 @@ import {
   Check, X, ChevronDown, ChevronUp, CreditCard, Bell, Truck, BarChart2, Network
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
