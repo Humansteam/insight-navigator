@@ -867,6 +867,73 @@ function PipelineRunDetail({ run }: { run: PipelineRun }) {
     </>
   );
 }
+// ══════════════════════════════════════════
+// USERS LIST (system-level table)
+// ══════════════════════════════════════════
+function UsersListSection({ onSelectUser }: { onSelectUser: (userId: string) => void }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-foreground">Users ({mockUsers.length})</h2>
+      </div>
+      <div className="rounded-lg border border-border overflow-hidden">
+        <table className="w-full text-sm">
+          <thead><tr className="bg-muted/30 border-b border-border">
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground">User</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[80px]">Language</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[80px]">Topics</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[80px]">Persons</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[80px]">Cards</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[90px]">Read Rate</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[80px]">Events 7d</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[80px]">Max Cards</th>
+            <th className="text-left px-3 py-2 text-xs font-medium text-muted-foreground w-[100px]">Last Active</th>
+          </tr></thead>
+          <tbody>{mockUsers.map(user => {
+            const totalTopics = user.topic_subscriptions.reduce((a, g) => a + g.topics.length, 0);
+            const readRate = user.cards_total > 0 ? Math.round((user.cards_read / user.cards_total) * 100) : 0;
+            return (
+              <tr key={user.id} className="border-b border-border/50 hover:bg-muted/20 cursor-pointer transition-colors" onClick={() => onSelectUser(user.id)}>
+                <td className="px-3 py-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center text-xs font-semibold text-primary shrink-0">{user.name[0]}</div>
+                    <div>
+                      <div className="text-foreground font-medium">{user.name}</div>
+                      <div className="text-[10px] text-muted-foreground font-mono">{user.id.slice(0, 8)}…</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-3 py-3 text-muted-foreground text-center">{user.language}</td>
+                <td className="px-3 py-3 text-muted-foreground text-center">{totalTopics}</td>
+                <td className="px-3 py-3 text-muted-foreground text-center">{user.person_subscriptions.length}</td>
+                <td className="px-3 py-3 text-center">
+                  <span className="text-foreground">{user.cards_read}</span>
+                  <span className="text-muted-foreground">/{user.cards_total}</span>
+                </td>
+                <td className="px-3 py-3 text-center">
+                  <Badge variant="outline" className={cn('text-[10px]', readRate >= 80 ? 'bg-emerald-500/20 text-emerald-400' : readRate >= 50 ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400')}>
+                    {readRate}%
+                  </Badge>
+                </td>
+                <td className="px-3 py-3 text-muted-foreground text-center">{user.events_7d}</td>
+                <td className="px-3 py-3 text-muted-foreground text-center">{user.max_cards}</td>
+                <td className="px-3 py-3 text-muted-foreground text-xs">{relativeTime(user.last_active)}</td>
+              </tr>
+            );
+          })}</tbody>
+        </table>
+      </div>
+
+      {/* Summary KPIs */}
+      <div className="grid grid-cols-4 gap-4">
+        <KPICard label="Total Users" value={mockUsers.length} />
+        <KPICard label="Avg Read Rate" value={`${Math.round(mockUsers.reduce((a, u) => a + (u.cards_total > 0 ? (u.cards_read / u.cards_total) * 100 : 0), 0) / mockUsers.length)}%`} />
+        <KPICard label="Total Subscriptions" value={mockUsers.reduce((a, u) => a + u.topic_subscriptions.reduce((b, g) => b + g.topics.length, 0) + u.person_subscriptions.length, 0)} />
+        <KPICard label="Events (7d)" value={mockUsers.reduce((a, u) => a + u.events_7d, 0)} />
+      </div>
+    </div>
+  );
+}
 
 // ══════════════════════════════════════════
 // MAIN ADMIN PAGE
@@ -875,8 +942,6 @@ export default function Admin() {
   const [view, setView] = useState<ActiveView>({ kind: 'dashboard' });
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [systemOpen, setSystemOpen] = useState(true);
-  const [usersOpen, setUsersOpen] = useState(true);
-  const [expandedUser, setExpandedUser] = useState<string | null>(null);
   const [detailPanel, setDetailPanel] = useState<{ type: string; data: unknown } | null>(null);
 
   const navigateTo = (v: ActiveView) => { setView(v); setDetailPanel(null); };
@@ -889,7 +954,6 @@ export default function Admin() {
     return false;
   };
 
-  // Render main content
   const renderContent = () => {
     switch (view.kind) {
       case 'dashboard': return <DashboardSection />;
@@ -902,12 +966,23 @@ export default function Admin() {
           case 'clusters': return <ClustersSection onSelect={c => setDetailPanel({ type: 'cluster', data: c })} />;
           case 'runs': return <PipelineRunsSection onSelect={r => setDetailPanel({ type: 'run', data: r })} />;
           case 'settings': return <SettingsSection />;
+          case 'users': return <UsersListSection onSelectUser={id => navigateTo({ kind: 'user', userId: id, tab: 'profile' })} />;
         }
         break;
       case 'user': {
         const user = mockUsers.find(u => u.id === view.userId);
         if (!user) return <div className="text-muted-foreground">User not found</div>;
-        return <UserDetailPage user={user} activeTab={view.tab} onTabChange={tab => setView({ ...view, tab })} />;
+        return (
+          <div>
+            {/* Back button */}
+            <div className="px-6 pt-4">
+              <Button variant="ghost" size="sm" className="text-xs h-7 text-muted-foreground" onClick={() => navigateTo({ kind: 'system', section: 'users' })}>
+                <ChevronLeft className="h-3 w-3 mr-1" /> Back to Users
+              </Button>
+            </div>
+            <UserDetailPage user={user} activeTab={view.tab} onTabChange={tab => setView({ ...view, tab })} />
+          </div>
+        );
       }
     }
   };
@@ -967,88 +1042,33 @@ export default function Admin() {
               {sidebarOpen && <span>Dashboard</span>}
             </button>
 
-            {/* System section */}
+            {/* Collapsible system section header */}
             {sidebarOpen && (
               <button
                 onClick={() => setSystemOpen(!systemOpen)}
                 className="w-full flex items-center justify-between rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground/60 uppercase tracking-wider hover:text-muted-foreground transition-colors mt-3"
               >
-                <span>System</span>
+                <span>Sections</span>
                 {systemOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
               </button>
             )}
-            {(systemOpen || !sidebarOpen) && SYSTEM_ITEMS.map(item => (
-              <button
-                key={item.id}
-                onClick={() => navigateTo({ kind: 'system', section: item.id })}
-                className={cn(
-                  'w-full flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors',
-                  isActive({ kind: 'system', section: item.id }) ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
-                  sidebarOpen && 'pl-4'
-                )}
-              >
-                <item.icon className="h-4 w-4 shrink-0" />
-                {sidebarOpen && <span className="truncate">{item.label}</span>}
-              </button>
-            ))}
-
-            {/* Users section */}
-            {sidebarOpen && (
-              <button
-                onClick={() => setUsersOpen(!usersOpen)}
-                className="w-full flex items-center justify-between rounded-md px-2.5 py-2 text-xs font-medium text-muted-foreground/60 uppercase tracking-wider hover:text-muted-foreground transition-colors mt-3"
-              >
-                <span>Users</span>
-                {usersOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-              </button>
-            )}
-            {!sidebarOpen && (
-              <button
-                onClick={() => { if (mockUsers[0]) navigateTo({ kind: 'user', userId: mockUsers[0].id, tab: 'profile' }); }}
-                className={cn(
-                  'w-full flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors',
-                  view.kind === 'user' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                )}
-              >
-                <Users className="h-4 w-4 shrink-0" />
-              </button>
-            )}
-            {usersOpen && sidebarOpen && mockUsers.map(user => (
-              <div key={user.id}>
+            {(systemOpen || !sidebarOpen) && SYSTEM_ITEMS.map(item => {
+              const active = isActive({ kind: 'system', section: item.id }) || (item.id === 'users' && view.kind === 'user');
+              return (
                 <button
-                  onClick={() => {
-                    setExpandedUser(expandedUser === user.id ? null : user.id);
-                    navigateTo({ kind: 'user', userId: user.id, tab: 'profile' });
-                  }}
+                  key={item.id}
+                  onClick={() => navigateTo({ kind: 'system', section: item.id })}
                   className={cn(
-                    'w-full flex items-center gap-2.5 rounded-md px-4 py-2 text-sm transition-colors',
-                    view.kind === 'user' && view.userId === user.id ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    'w-full flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors',
+                    active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                    sidebarOpen && 'pl-4'
                   )}
                 >
-                  <div className="h-5 w-5 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-semibold text-primary shrink-0">{user.name[0]}</div>
-                  <span className="truncate">{user.name}</span>
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  {sidebarOpen && <span className="truncate">{item.label}</span>}
                 </button>
-                {expandedUser === user.id && view.kind === 'user' && (
-                  <div className="ml-6 space-y-0.5 mt-0.5">
-                    {USER_TABS.map(tab => (
-                      <button
-                        key={tab.id}
-                        onClick={() => navigateTo({ kind: 'user', userId: user.id, tab: tab.id })}
-                        className={cn(
-                          'w-full flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs transition-colors',
-                          view.kind === 'user' && view.tab === tab.id
-                            ? 'text-primary'
-                            : 'text-muted-foreground hover:text-foreground'
-                        )}
-                      >
-                        <tab.icon className="h-3 w-3 shrink-0" />
-                        <span>{tab.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </nav>
         </ScrollArea>
       </div>
