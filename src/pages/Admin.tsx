@@ -83,32 +83,32 @@ function formatDuration(seconds: number) {
 
 // ── Vibrant badge color maps ──
 const slotColor: Record<string, string> = {
-  now: 'bg-cyan-500/90 text-white border-transparent shadow-[0_0_12px_rgba(6,182,212,0.3)]',
-  deep: 'bg-violet-500/90 text-white border-transparent shadow-[0_0_12px_rgba(139,92,246,0.3)]',
-  bridge: 'bg-orange-500/90 text-white border-transparent shadow-[0_0_12px_rgba(249,115,22,0.3)]',
-  challenge: 'bg-rose-500/90 text-white border-transparent shadow-[0_0_12px_rgba(244,63,94,0.3)]',
+  now: 'bg-cyan-800/50 text-cyan-300 border-cyan-600/30',
+  deep: 'bg-violet-800/50 text-violet-300 border-violet-600/30',
+  bridge: 'bg-amber-800/50 text-amber-300 border-amber-600/30',
+  challenge: 'bg-rose-800/50 text-rose-300 border-rose-600/30',
 };
 const tierColor: Record<number, string> = {
-  1: 'bg-amber-500/90 text-black font-bold border-transparent',
-  2: 'bg-slate-400/80 text-white border-transparent',
-  3: 'bg-orange-700/80 text-white border-transparent',
+  1: 'bg-amber-900/40 text-amber-300 border-amber-600/30',
+  2: 'bg-slate-700/40 text-slate-300 border-slate-500/30',
+  3: 'bg-orange-900/40 text-orange-300 border-orange-600/30',
 };
 const statusColor: Record<string, string> = {
-  success: 'bg-emerald-500/90 text-white border-transparent',
-  partial: 'bg-amber-500/90 text-black border-transparent',
-  failed: 'bg-rose-500/90 text-white border-transparent',
-  running: 'bg-cyan-500/90 text-white border-transparent',
-  open: 'bg-emerald-500/90 text-white border-transparent',
-  archived: 'bg-white/10 text-white/50 border-transparent',
-  active: 'bg-emerald-500/90 text-white border-transparent',
-  stale: 'bg-rose-500/90 text-white border-transparent',
+  success: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
+  partial: 'bg-amber-900/40 text-amber-300 border-amber-600/30',
+  failed: 'bg-rose-900/40 text-rose-300 border-rose-600/30',
+  running: 'bg-cyan-900/40 text-cyan-300 border-cyan-600/30',
+  open: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
+  archived: 'bg-white/[0.06] text-white/40 border-white/[0.08]',
+  active: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
+  stale: 'bg-rose-900/40 text-rose-300 border-rose-600/30',
 };
 const actionColor: Record<string, string> = {
-  read: 'bg-cyan-500/80 text-white border-transparent',
-  save: 'bg-emerald-500/80 text-white border-transparent',
-  skip: 'bg-white/10 text-white/50 border-transparent',
-  deep_dive: 'bg-violet-500/80 text-white border-transparent',
-  dismiss: 'bg-rose-500/80 text-white border-transparent',
+  read: 'bg-cyan-900/40 text-cyan-300 border-cyan-600/30',
+  save: 'bg-emerald-900/40 text-emerald-300 border-emerald-600/30',
+  skip: 'bg-white/[0.06] text-white/40 border-white/[0.08]',
+  deep_dive: 'bg-violet-900/40 text-violet-300 border-violet-600/30',
+  dismiss: 'bg-rose-900/40 text-rose-300 border-rose-600/30',
 };
 const groupColor: Record<string, string> = {
   research: 'bg-indigo-500/20 text-indigo-300 border-indigo-400/20',
