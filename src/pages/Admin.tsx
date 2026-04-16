@@ -138,12 +138,35 @@ function DetailPanel({ children, onClose, title }: { children: React.ReactNode; 
   );
 }
 
-function KPICard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
+function Sparkline({ data, dataKey, color = '#4ECDC4', height = 40 }: { data: Record<string, unknown>[]; dataKey: string; color?: string; height?: number }) {
   return (
-    <div className={cn(glass.card, 'p-5')}>
-      <div className={cn('text-xs uppercase tracking-wider mb-2', text.muted)}>{label}</div>
-      <div className={cn('text-3xl font-bold tracking-tight', text.primary)}>{value}</div>
-      {sub && <div className={cn('text-xs mt-2', text.secondary)}>{sub}</div>}
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={data} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id={`spark-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area type="monotone" dataKey={dataKey} stroke={color} fill={`url(#spark-${dataKey})`} strokeWidth={1.5} dot={false} />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+function KPICard({ label, value, sub, sparkData, sparkKey, sparkColor }: { label: string; value: string | number; sub?: string; sparkData?: Record<string, unknown>[]; sparkKey?: string; sparkColor?: string }) {
+  return (
+    <div className={cn(glass.card, 'p-5 flex flex-col justify-between')}>
+      <div>
+        <div className={cn('text-xs uppercase tracking-wider mb-2', text.muted)}>{label}</div>
+        <div className={cn('text-3xl font-bold tracking-tight', text.primary)}>{value}</div>
+        {sub && <div className={cn('text-xs mt-2', text.secondary)}>{sub}</div>}
+      </div>
+      {sparkData && sparkKey && (
+        <div className="mt-3 -mx-1">
+          <Sparkline data={sparkData} dataKey={sparkKey} color={sparkColor} />
+        </div>
+      )}
     </div>
   );
 }
