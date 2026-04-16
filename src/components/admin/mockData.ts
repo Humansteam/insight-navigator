@@ -18,6 +18,7 @@ export interface FeedCard {
   created_at: string;
   read_at: string | null;
   word_count: number;
+  user_id: string;
 }
 
 export interface EventCluster {
@@ -72,10 +73,13 @@ export interface UserProfile {
   name: string;
   language: string;
   timezone: string;
+  soul_md: string;
+  taste_md: string;
   topic_subscriptions: { mc: string; topics: string[] }[];
   person_subscriptions: string[];
   likes: string[];
   dislikes: string[];
+  anti_topics: string[];
   max_cards: number;
   slots: { now: number; deep: number; bridge: number; challenge: number };
   cron: string[];
@@ -110,6 +114,7 @@ export interface UserEvent {
   card_signal: string;
   card_id: string;
   cluster_topic: string;
+  user_id: string;
   user_name: string;
   created_at: string;
   metadata: Record<string, unknown>;
@@ -125,6 +130,8 @@ export interface CategoryTree {
 }
 
 // ── Mock Data ──
+
+const FEDOR_ID = '98f4b1d9-1234-5678-9abc-def012345678';
 
 export const mockFeedCards: FeedCard[] = [
   {
@@ -142,6 +149,7 @@ export const mockFeedCards: FeedCard[] = [
     cluster_id: 'cl-1', cluster_topic: 'AI Safety and Alignment',
     collision_type: 'reinforcement', cosine_score: 0.424, graph_score: 1.0, composite_score: 0.654,
     batch_id: '2026-04-15_test', created_at: '2026-04-15T16:32:04Z', read_at: '2026-04-15T18:00:00Z', word_count: 342,
+    user_id: FEDOR_ID,
   },
   {
     id: 'fc-2', slot: 'deep',
@@ -156,18 +164,18 @@ export const mockFeedCards: FeedCard[] = [
     cluster_id: 'cl-2', cluster_topic: 'Big Tech AI Strategy',
     collision_type: 'contrast', cosine_score: 0.512, graph_score: 0.67, composite_score: 0.582,
     batch_id: '2026-04-15_21', created_at: '2026-04-15T21:15:00Z', read_at: null, word_count: 518,
+    user_id: FEDOR_ID,
   },
   {
     id: 'fc-3', slot: 'bridge',
     signal_text: 'Квантовые компьютеры Google решили задачу, которая заняла бы классическому 10⁵ лет.',
     why_text: 'Google Willow чип с 105 кубитами показал экспоненциальное улучшение error correction.',
     body: 'Подробный разбор квантового преимущества...',
-    sources: [
-      { url: 'https://nature.com/articles/quantum-2026', title: 'Nature: Quantum Supremacy' },
-    ],
+    sources: [{ url: 'https://nature.com/articles/quantum-2026', title: 'Nature: Quantum Supremacy' }],
     cluster_id: 'cl-3', cluster_topic: 'Quantum Computing',
     collision_type: 'analogy', cosine_score: 0.389, graph_score: 0.33, composite_score: 0.355,
     batch_id: '2026-04-14_15', created_at: '2026-04-14T15:00:00Z', read_at: '2026-04-14T20:00:00Z', word_count: 275,
+    user_id: FEDOR_ID,
   },
   {
     id: 'fc-4', slot: 'challenge',
@@ -181,6 +189,7 @@ export const mockFeedCards: FeedCard[] = [
     cluster_id: 'cl-4', cluster_topic: 'Future of Software Engineering',
     collision_type: 'tension', cosine_score: 0.445, graph_score: 0.67, composite_score: 0.541,
     batch_id: '2026-04-15_test', created_at: '2026-04-15T17:00:00Z', read_at: null, word_count: 410,
+    user_id: FEDOR_ID,
   },
   {
     id: 'fc-5', slot: 'now',
@@ -195,6 +204,7 @@ export const mockFeedCards: FeedCard[] = [
     cluster_id: 'cl-5', cluster_topic: 'Brain-Computer Interfaces',
     collision_type: 'reinforcement', cosine_score: 0.567, graph_score: 1.0, composite_score: 0.734,
     batch_id: '2026-04-15_21', created_at: '2026-04-15T21:30:00Z', read_at: '2026-04-16T08:00:00Z', word_count: 290,
+    user_id: FEDOR_ID,
   },
 ];
 
@@ -302,7 +312,53 @@ export const mockQuotes: Quote[] = [
 
 export const mockUsers: UserProfile[] = [
   {
-    id: '98f4b1d9-1234-5678-9abc-def012345678', name: 'Fedor', language: 'ru', timezone: 'Europe/Moscow',
+    id: FEDOR_ID, name: 'Fedor', language: 'ru', timezone: 'Europe/Moscow',
+    soul_md: `# Fedor — SOUL Profile
+
+## Identity
+Founder & builder. Obsessed with the intersection of **AI**, **philosophy**, and **product design**.
+
+## Worldview
+- Technology is the ultimate lever for individual empowerment
+- First-principles thinking > consensus
+- Antifragility as a life operating system
+- Deep work produces exponential returns
+
+## Intellectual Heroes
+Nassim Taleb, Naval Ravikant, Paul Graham, Richard Feynman
+
+## Communication Style
+Direct, no fluff. Prefers dense insights over verbose explanations.
+Values contrarian takes backed by evidence.
+
+## Current Focus
+Building an AI-powered intelligence platform that transforms how people consume information.`,
+    taste_md: `# Fedor — TASTE Profile
+
+## Content Preferences
+- **Loves**: Deep technical analyses, strategic breakdowns, philosophy of technology
+- **Sweet spot**: 300-500 word cards with 3+ sources
+- **Hates**: Clickbait, PR-driven announcements, surface-level summaries
+
+## Signal Types (ranked)
+1. \`now\` — Breaking insights with real implications
+2. \`deep\` — Strategic analysis connecting dots
+3. \`challenge\` — Contrarian takes that challenge assumptions
+4. \`bridge\` — Cross-domain analogies
+
+## Quote Preferences
+Prefers quotes from thinkers (Taleb, Naval) over corporate executives.
+Values timeless wisdom over trending opinions.
+
+## Anti-Topics
+- Climate activism (too political)
+- Biotech details (too specialized)
+- Robotics hardware (too niche)
+
+## Reading Patterns
+- Morning (05:00-06:00): Quick scan of \`now\` cards
+- Midday (11:00-12:00): Deep dives
+- Evening (17:00-18:00): Challenge & bridge cards`,
     topic_subscriptions: [
       { mc: 'Technology', topics: ['AI/ML', 'Software dev', 'LLM architecture', 'AI agents', 'AI safety', 'Interpretability', 'Vibe coding'] },
       { mc: 'Entrepreneurship', topics: ['Startups', 'VC', 'Product'] },
@@ -312,6 +368,7 @@ export const mockUsers: UserProfile[] = [
     person_subscriptions: ['Paul Graham', 'Elon Musk', 'Lex Fridman', 'Naval Ravikant', 'Demis Hassabis', 'Andrew Huberman'],
     likes: ['nuclear', 'physics', 'startups', 'philosophy', 'AI safety'],
     dislikes: ['biotech', 'climate', 'robotics'],
+    anti_topics: ['climate activism', 'biotech details', 'robotics hardware'],
     max_cards: 6, slots: { now: 3, deep: 2, bridge: 1, challenge: 1 },
     cron: ['05:00', '11:00', '17:00'],
     cards_total: 47, cards_read: 38, events_7d: 23, last_active: '2026-04-16T08:15:00Z',
@@ -327,13 +384,13 @@ export const mockPipelineRuns: PipelineRun[] = [
 ];
 
 export const mockUserEvents: UserEvent[] = [
-  { id: 'ue-1', action: 'read', card_signal: 'Нейроинтерфейсы Neuralink прошли FDA одобрение...', card_id: 'fc-5', cluster_topic: 'Brain-Computer Interfaces', user_name: 'Fedor', created_at: '2026-04-16T08:00:00Z', metadata: {} },
-  { id: 'ue-2', action: 'save', card_signal: 'Все тесты безопасности AI проверяют поведение...', card_id: 'fc-1', cluster_topic: 'AI Safety', user_name: 'Fedor', created_at: '2026-04-15T18:05:00Z', metadata: { saved_to: 'favorites' } },
-  { id: 'ue-3', action: 'read', card_signal: 'Квантовые компьютеры Google решили задачу...', card_id: 'fc-3', cluster_topic: 'Quantum Computing', user_name: 'Fedor', created_at: '2026-04-14T20:00:00Z', metadata: {} },
-  { id: 'ue-4', action: 'skip', card_signal: 'EU AI Act вступает в силу для high-risk систем...', card_id: 'fc-6', cluster_topic: 'EU AI Regulation', user_name: 'Fedor', created_at: '2026-04-14T17:00:00Z', metadata: { reason: 'not_interested' } },
-  { id: 'ue-5', action: 'deep_dive', card_signal: 'Open-source как оружие: Meta строит...', card_id: 'fc-2', cluster_topic: 'Big Tech AI Strategy', user_name: 'Fedor', created_at: '2026-04-15T22:00:00Z', metadata: {} },
-  { id: 'ue-6', action: 'read', card_signal: 'Все тесты безопасности AI проверяют поведение...', card_id: 'fc-1', cluster_topic: 'AI Safety', user_name: 'Fedor', created_at: '2026-04-15T18:00:00Z', metadata: {} },
-  { id: 'ue-7', action: 'dismiss', card_signal: 'Новый стандарт USB4 v2.0 обещает 120 Gbps...', card_id: 'fc-7', cluster_topic: 'Hardware', user_name: 'Fedor', created_at: '2026-04-14T12:00:00Z', metadata: { reason: 'irrelevant' } },
+  { id: 'ue-1', action: 'read', card_signal: 'Нейроинтерфейсы Neuralink прошли FDA одобрение...', card_id: 'fc-5', cluster_topic: 'Brain-Computer Interfaces', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-16T08:00:00Z', metadata: {} },
+  { id: 'ue-2', action: 'save', card_signal: 'Все тесты безопасности AI проверяют поведение...', card_id: 'fc-1', cluster_topic: 'AI Safety', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-15T18:05:00Z', metadata: { saved_to: 'favorites' } },
+  { id: 'ue-3', action: 'read', card_signal: 'Квантовые компьютеры Google решили задачу...', card_id: 'fc-3', cluster_topic: 'Quantum Computing', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-14T20:00:00Z', metadata: {} },
+  { id: 'ue-4', action: 'skip', card_signal: 'EU AI Act вступает в силу для high-risk систем...', card_id: 'fc-6', cluster_topic: 'EU AI Regulation', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-14T17:00:00Z', metadata: { reason: 'not_interested' } },
+  { id: 'ue-5', action: 'deep_dive', card_signal: 'Open-source как оружие: Meta строит...', card_id: 'fc-2', cluster_topic: 'Big Tech AI Strategy', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-15T22:00:00Z', metadata: {} },
+  { id: 'ue-6', action: 'read', card_signal: 'Все тесты безопасности AI проверяют поведение...', card_id: 'fc-1', cluster_topic: 'AI Safety', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-15T18:00:00Z', metadata: {} },
+  { id: 'ue-7', action: 'dismiss', card_signal: 'Новый стандарт USB4 v2.0 обещает 120 Gbps...', card_id: 'fc-7', cluster_topic: 'Hardware', user_id: FEDOR_ID, user_name: 'Fedor', created_at: '2026-04-14T12:00:00Z', metadata: { reason: 'irrelevant' } },
 ];
 
 export const mockCategories: CategoryTree[] = [
