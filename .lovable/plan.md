@@ -1,134 +1,191 @@
+# Redesign the Admin page to match a premium airy dark-glass interface inspired by the attached references.
 
+Main goal:
 
-# Plan: Signal Redesign — Apple/Ive Philosophy
+Do not make it look like a generic dark SaaS dashboard. The result should feel elegant, spacious, premium, soft, and high-clarity — with deep navy surfaces, subtle glass layers, thin borders, and carefully controlled vibrant accents.
 
-## Design Principles (Ive approach)
-- Radical reduction: remove all labels like "УРОВЕНЬ 1", "УРОВЕНЬ 2" — content speaks for itself
-- One idea per screen, maximum whitespace
-- Typography as the primary UI element — no emoji, no icons where text works
-- Subtle material hints (thin borders, gentle blurs) instead of colored backgrounds
-- Animation = physics, not decoration
+Art direction:
 
-## Structure (4 screens, scroll-snap)
+- Overall mood: airy, polished, modern, premium, calm
 
-```text
-┌─────────────────────────────────┐
-│  Screen 1: THE SIGNAL           │
-│                                 │
-│  "Open-source как оружие"       │  ← Large, confident typography
-│  Meta строит закрытую...        │
-│                                 │
-│  ┌─ Trending ──────────────┐    │
-│  │ 🔥 В тренде · 87%      │    │  ← "В тренде" label + pulsing dot
-│  │ обсуждения растут       │    │     NOT "температура" — human language
-│  └─────────────────────────┘    │
-│                                 │
-│  ┌─ Источники ─────────────┐    │
-│  │  ▓▓▓▓▓▓▓▓░░░░  27/30   │    │  ← Visual "compression bar"
-│  │  Reuters · Axios · FT   │    │     Shows 27 articles → 1 signal
-│  │  +24 источника          │    │
-│  └─────────────────────────┘    │
-│                                 │
-│  • Bullet 1 (key fact)          │
-│  • Bullet 2                     │
-│  • Bullet 3                     │
-│                                 │
-│  ┌─ Audio ─────────────────┐    │
-│  │  ▶  |||||||||||  1:50   │    │
-│  │     Послушать анализ    │    │
-│  └─────────────────────────┘    │
-│                                 │
-└─────────────────────────────────┘
+- Avoid: harsh black backgrounds, neon glow, oversaturated UI, muddy low-contrast text, heavy shadows, generic dark theme look
 
-┌─────────────────────────────────┐
-│  Screen 2: SYNTHESIS            │
-│                                 │
-│  Interactive transcript         │
-│  (scrollable, speaker-linked)   │
-│  + Meaning map below            │
-│  All one continuous block       │
-│  Audio controls sticky at top   │
-│                                 │
-└─────────────────────────────────┘
+- Visual reference: deep desaturated navy gradient background, frosted/glass panels, subtle highlights, crisp white typography, restrained but vivid badges
 
-┌─────────────────────────────────┐
-│  Screen 3: RABBIT HOLE          │
-│                                 │
-│  Provocative question           │
-│  + Save to brain                │
-│  + Next signal teaser           │
-│                                 │
-└─────────────────────────────────┘
+Design principles:
 
-┌─────────────────────────────────┐
-│  Input bar (fixed bottom)       │
-│                                 │
-│  [Tech] [Econ] [Geo] [Ethics]   │  ← Lens tags as PINS above input
-│  ┌─────────────────────┐  [↑]  │
-│  │ Задать вопрос...    │       │
-│  └─────────────────────┘       │
-└─────────────────────────────────┘
-```
+1. Preserve air and spacing
 
-## Key Changes
+- Increase perceived breathing room with larger paddings and cleaner spacing rhythm
 
-### 1. Temperature → "В тренде" with human language
-- Replace thermometer emoji + "температура" with a clear label: **"В тренде"** or **"Горячая тема"**
-- Add subtext: "обсуждения растут · 3 дня · 4 страны"
-- Pulsing dot animation (like Apple's live indicator) instead of gradient bar
-- Color shifts from green (mild) → orange (hot) → red (very hot) based on score
+- Avoid dense stacking and visually heavy blocks
 
-### 2. Source compression visualization
-- Show a **fill bar**: `▓▓▓▓▓▓▓▓░░░  27 из 30 статей` — visual metaphor for how many sources are compressed into this signal
-- Expandable: tap to see all 27 source names in a minimal list
-- Each source has a one-line fact attribution (existing logic preserved)
+- Let content sit inside soft containers, not boxed into hard borders
 
-### 3. Lenses → Pins above input bar (fixed bottom)
-- Remove Level 2 as separate screen entirely
-- Lens tags become **persistent pill buttons** above the input field at the very bottom
-- Tapping a lens tag **opens a half-sheet overlay** from bottom (like Apple Maps) with the voice cards for that lens
-- When no lens selected, pins sit quietly above input
-- This frees up a whole screen and makes lenses accessible from anywhere
+2. Background and layering
 
-### 4. Synthesis — unified audio+transcript+map block
-- Screen 2 becomes the unified synthesis:
-  - **Sticky mini-player** at top of this screen (play/pause + waveform + time)
-  - **Interactive transcript** below — current segment highlighted, speaker names in accent color, tap to seek
-  - **Meaning map** below transcript — same node graph but cleaner (no emoji, thin lines, subtle glow on active node)
-  - All scrollable together as one continuous reading experience
-  - Audio plays through all of it
+- Use a deep navy gradient background across the whole admin page
 
-### 5. Apple design details
-- **No emoji** — replace all emoji with minimal SVG or nothing
-- **Font sizes**: headline 22px (bold -0.04em tracking), body 12px, mono labels 8px
-- **Colors**: monochrome with ONE accent per screen (purple for signal, blue for synthesis, gold for question)
-- **Borders**: 0.5px instead of 1px, `rgba(255,255,255,0.04)` max
-- **Corners**: 16px for cards, 24px for sheets
-- **Shadows**: `0 2px 20px rgba(0,0,0,0.3)` — soft, diffused
-- **Transitions**: spring physics via framer-motion (`type: "spring", damping: 30, stiffness: 300`)
+- Background should feel atmospheric, not flat
 
-## Files
+- Suggested range:
 
-| File | Action |
-|------|--------|
-| `src/pages/Signal.tsx` | **Rewrite** — new 3-screen + lens overlay structure |
+  - top: #0F172A / #0C1222
 
-## Technical Details
+  - bottom: #0A0F1A / #0B1020
 
-### Lens overlay (half-sheet)
-- `position: absolute; bottom: input-bar-height; left: 0; right: 0`
-- `AnimatePresence` + `motion.div` with `y: "100%"` → `y: 0` spring animation
-- Max height 60% of phone frame
-- Drag-to-dismiss via `drag="y"` with `dragConstraints`
-- Backdrop: subtle blur overlay on drum content
+- Add a very soft radial highlight or subtle cool tint in one area only if needed
 
-### Source compression bar
-- Simple div with `width: ${(27/30)*100}%` fill
-- Tap toggles expanded state showing all source pills
-- Collapsed: show 3 names + "+24"
+- No visible noisy effects, no strong glows
 
-### Trending indicator
-- Pulsing circle (CSS `@keyframes pulse`) in orange/red
-- Text: "В тренде · обсуждения растут"
-- Score shown as percentage with color coding
+3. Sidebar styling
 
+- Sidebar must be slightly separated from the main content, not same-color blending
+
+- Use a darker/lighter navy glass panel with subtle border
+
+- Active navigation item should feel premium:
+
+  - soft highlighted background
+
+  - thin cyan/teal accent line or edge
+
+  - brighter text/icon
+
+- Keep icons and labels understated, clean, and sharp
+
+4. Cards and containers
+
+- All cards, KPI panels, filters, and tables should use soft glassmorphism:
+
+  - bg: rgba(255,255,255,0.04) to 0.06
+
+  - border: rgba(255,255,255,0.08) to 0.12
+
+  - backdrop blur
+
+- Use layered surfaces:
+
+  - page background
+
+  - sidebar surface
+
+  - card surface
+
+  - elevated/hover surface
+
+- Corners should be refined, not too round, not too sharp
+
+- Shadow should be subtle and diffused, almost invisible
+
+5. Typography and contrast
+
+- Primary text: near-white, crisp, premium
+
+- Secondary text: cool slate like #94A3B8, but ensure better readability than standard washed-out muted text
+
+- Table headers: uppercase, slightly tracked, subtle tinted background
+
+- KPI values: larger, bolder, clearer
+
+- Maintain strong readability without making the page feel high-strain
+
+6. Badges and semantic colors
+
+- Badges should be vivid and readable, but still feel premium — not cartoonish
+
+- Use solid or near-solid pill badges with clean text contrast
+
+- Semantic mapping:
+
+  - Tier 1: amber/gold
+
+  - Tier 2: cool silver/slate
+
+  - Tier 3: bronze/copper
+
+  - Slot now: bright blue
+
+  - Slot deep: vivid purple
+
+  - Slot bridge: warm orange
+
+  - Status active: emerald green
+
+  - Status stale: coral/red
+
+- Group badges should each have unique muted identities:
+
+  - research
+
+  - tech
+
+  - news
+
+  - blogs
+
+  - business
+
+- Keep saturation controlled; avoid neon
+
+7. Table redesign
+
+- Put table inside a glass container
+
+- Use a lightly tinted header row
+
+- Rows should have stronger hover feedback with soft glass highlight
+
+- Improve row separation without heavy grid lines
+
+- Text alignment and spacing should feel clean and editorial
+
+8. Interaction quality
+
+- Hover states should be visible but soft
+
+- Selected/active states must feel premium, not default browser-like
+
+- Transitions should be fast and subtle
+
+Implementation constraints:
+
+- Apply styling directly in src/pages/Admin.tsx
+
+- Do not rely only on generic theme tokens if they keep the UI washed out
+
+- Create explicit color maps for:
+
+  - tierColor
+
+  - slotColor
+
+  - statusColor
+
+  - actionColor
+
+  - groupColor
+
+- Keep the page consistently dark regardless of global theme
+
+- Make all sections visually coherent: sidebar, KPI cards, filters, table, badges, tabs, inputs
+
+Important:
+
+The goal is not “more contrast” alone.
+
+The goal is a high-end, airy dark interface with:
+
+- depth
+
+- softness
+
+- clarity
+
+- restrained vibrancy
+
+- premium spacing
+
+- elegant hierarchy
+
+If a styling choice feels generic SaaS, too flat, too neon, or too heavy, revise it toward a softer premium look.
