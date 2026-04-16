@@ -957,9 +957,9 @@ export default function Admin() {
   };
 
   return (
-    <div className="h-screen flex overflow-hidden" style={{ background: 'linear-gradient(180deg, #0F172A 0%, #0A0F1A 100%)' }}>
+    <div className="h-screen flex overflow-hidden" style={{ background: 'linear-gradient(180deg, #0B1426 0%, #080E1C 100%)' }}>
       {/* Sidebar */}
-      <div className={cn('flex flex-col shrink-0 transition-all duration-300', sidebarOpen ? 'w-[230px]' : 'w-[56px]')} style={{ background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className={cn('flex flex-col shrink-0 transition-all duration-300', sidebarOpen ? 'w-[230px]' : 'w-[56px]')} style={{ background: 'rgba(12, 20, 38, 0.75)', backdropFilter: 'blur(20px)', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.06]">
           {sidebarOpen && <span className="text-sm font-semibold text-white tracking-tight ml-1">Strata Admin</span>}
           {sidebarOpen && <ThemeSwitcher />}
