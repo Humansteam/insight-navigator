@@ -121,7 +121,7 @@ const groupColor: Record<string, string> = {
 // ── Shared ──
 function DetailPanel({ children, onClose, title }: { children: React.ReactNode; onClose: () => void; title: string }) {
   return (
-    <div className={cn('w-[420px] flex flex-col shrink-0 border-l border-white/[0.06]')} style={{ background: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(20px)' }}>
+    <div className={cn('w-[420px] flex flex-col shrink-0 border-l border-white/[0.05]')} style={{ background: 'rgba(12, 20, 38, 0.95)', backdropFilter: 'blur(20px)' }}>
       <div className="h-14 flex items-center justify-between px-5 border-b border-white/[0.06]">
         <span className={cn('text-sm font-medium', text.primary)}>{title}</span>
         <button className="h-7 w-7 rounded-lg bg-white/[0.06] flex items-center justify-center hover:bg-white/[0.1] transition-colors" onClick={onClose}><X className="h-4 w-4 text-white/60" /></button>
