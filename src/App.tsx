@@ -15,7 +15,7 @@ import Onboarding from "./pages/Onboarding";
 import { ArtifactsDemo } from "@/components/chat/ArtifactsDemo";
 import Signal from "./pages/Signal";
 import Admin from "./pages/Admin";
-
+import AdminLedger from "./pages/AdminLedger";
 const queryClient = new QueryClient();
 
 const App = () => (
