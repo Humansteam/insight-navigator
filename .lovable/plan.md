@@ -1,56 +1,34 @@
 
 
-# Add "Ledger" Light Theme to Admin Panel
+# Apply Ledger Dashboard Style to /admin (Keep Dark-Blue Too)
 
 ## What Changes
 
-Replace the current dark-glass admin styling with a new light, clean aesthetic inspired by the Ledgerix reference. The admin will have two visual modes accessible via the theme switcher.
+Add the Ledger-style accounting dashboard (currently at `/admin-ledger`) as the **Dashboard view** inside `/admin` when the Ledger theme is active. When any dark theme is active, the existing dark-blue admin dashboard remains unchanged.
 
-**This plan adds a "Ledger" theme option** that transforms the Admin panel into a light, airy interface with crisp white cards on a soft gray background, black typography, and mint-green (#75FB90) accents.
+## How It Works
 
-## Visual Direction
-
-From the reference:
-- **Background**: Light warm gray `#F0EFF2`
-- **Cards/surfaces**: Pure white `#FFFFFF` with subtle `#D3D2D4` borders
-- **Text**: Solid black `#000000` for headings, dark gray for secondary
-- **Accent**: Mint green `#75FB90` for active states, buttons, highlights
-- **Font**: Urbanist (already loaded)
-- **Feel**: Clean, editorial, high-clarity, no shadows or glass effects
+- When theme = `ledger` and view = `dashboard`: render the Ledgerix-style dashboard (income chart, KPI cards with recharts, floating search bar) inside the Admin layout
+- When theme = dark/deep-space and view = `dashboard`: render the existing KPI cards dashboard (current behavior)
+- All other sections (Sources, Users, Settings, etc.) continue using the existing token-based system for both themes
 
 ## Technical Plan
 
-### 1. New CSS theme class in `src/index.css`
+### 1. Extract Ledger Dashboard as a component
 
-Add `.ledger` theme with HSL tokens mapped to the 5-color palette:
-- `--background`: #F0EFF2
-- `--card`: #FFFFFF
-- `--foreground`: #000000
-- `--border`: #D3D2D4
-- `--primary`: #75FB90
-- `--font-sans`: Urbanist
+Move the chart/KPI content from `AdminLedger.tsx` into a reusable `LedgerDashboard` component (or import it directly).
 
-### 2. Register theme in `src/App.tsx`
+### 2. Update Admin.tsx DashboardSection
 
-Add `'ledger'` to `ThemeProvider` themes array.
+In the `DashboardSection` component, check `isLedger` from the token context:
+- If ledger → render the Ledgerix-style dashboard (income chart, sales forecast, monthly expenses, project budget, insight gauge, floating search)
+- If dark → render existing 4 KPI cards + feed table
 
-### 3. Add to `src/components/ThemeSwitcher.tsx`
+### 3. Keep dark-blue style intact
 
-New dropdown item with a leaf/circle icon for "Ledger".
-
-### 4. Adapt `src/pages/Admin.tsx`
-
-The Admin page currently hardcodes dark-glass styles. Two approaches needed:
-- Detect if current theme is `ledger` and swap the design tokens (`glass`, `text`, badge color maps) to light variants
-- **Light tokens**: white cards with `#D3D2D4` borders, black text, mint-green accents for active sidebar items and badges
-- **Badge colors**: Same semantic meaning but light-friendly — e.g., `bg-emerald-50 text-emerald-700 border-emerald-200` instead of dark translucent versions
-- Sidebar: white/light surface, active item gets mint-green left accent
-- KPI cards: white bg, black numbers, subtle border
-- Tables: white container, light gray header row, clean dividers
+The existing dark tokens (`glassDark`, `textDark`, navy gradient background) remain exactly as they are. No changes to the dark theme styling.
 
 ### Files Modified
-- `src/index.css` — new `.ledger` theme variables
-- `src/App.tsx` — register ledger theme
-- `src/components/ThemeSwitcher.tsx` — add Ledger option
-- `src/pages/Admin.tsx` — conditional light/dark token system based on active theme
+- `src/pages/Admin.tsx` — add conditional Ledger dashboard rendering in `DashboardSection`
+- `src/pages/AdminLedger.tsx` — extract chart components for reuse (or inline the dashboard content into Admin.tsx)
 
